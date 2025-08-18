@@ -1,5 +1,106 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Sign Up";
+    Layout = null;
+    <!-- remove layout so it looks like full-screen login -->
 }
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Sign Up</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('/Images/background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .signup-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 350px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+            .signup-container h2 {
+                margin-bottom: 20px;
+                font-size: 22px;
+            }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+            .form-group label {
+                font-size: 14px;
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            .form-group input {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+            }
+
+        .btn {
+            width: 100%;
+            padding: 10px;
+            background: #ccc;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+            .btn:hover {
+                background: #aaa;
+            }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            color: black;
+        }
+
+            .back-link span {
+                margin-left: 5px;
+            }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <a href="@Url.Action("Login", "User")" class="back-link">← <span>Back</span></a>
+        <h2>Sign Up</h2>
+        <form asp-action="Register" method="post">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="Email" placeholder="Email@gmail.com" required />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="Password" placeholder="Password" required />
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" name="ConfirmPassword" placeholder="Confirm Password" required />
+            </div>
+            <button type="submit" class="btn">Sign Up</button>
+        </form>
+    </div>
+</body>
+</html>
