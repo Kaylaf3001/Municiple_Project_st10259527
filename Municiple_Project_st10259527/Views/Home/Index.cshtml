@@ -1,0 +1,93 @@
+﻿<style>
+    /* Hide default navbar and footer for this page */
+    header, footer {
+        display: none;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: url('/Images/background.jpg') no-repeat center center/cover;
+        min-height: 100vh;
+        position: relative;
+    }
+
+    .top-right {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 10;
+    }
+
+        .top-right a {
+            padding: 8px 16px;
+            background: white;
+            border-radius: 20px;
+            font-size: 14px;
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+
+    /* Center container */
+    .center-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    .card {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+        width: 100%;
+        max-width: 350px;
+    }
+
+        .card h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .card hr {
+            margin: 10px auto 20px;
+            width: 80%;
+            border: 0;
+            height: 1px;
+            background-color: #ccc;
+        }
+
+        .card button {
+            display: block;
+            width: 100%;
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 20px;
+            border: 2px solid #ccc;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .card button:hover {
+                background: #f5f5f5;
+            }
+</style>
+
+<div class="top-right">
+    <a asp-controller="User" asp-action="Login">Sign In</a>
+</div>
+
+<div class="center-wrapper">
+    <div class="card">
+        <h1>South African municipality</h1>
+        <hr>
+        <button>Report Issue</button>
+        <button>Local Events and Announcements</button>
+        <button>Service Request Status</button>
+    </div>
+</div>
