@@ -23,6 +23,12 @@ namespace Municiple_Project_st10259527.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult Issue()
+        {
+            return RedirectToAction("ReportIssueStep1");
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

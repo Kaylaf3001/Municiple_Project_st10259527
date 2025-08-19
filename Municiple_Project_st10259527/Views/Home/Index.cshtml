@@ -84,10 +84,22 @@
 
 <div class="center-wrapper">
     <div class="card">
-        <h1>South African municipality</h1>
+        <h1>South African Municipality</h1>
         <hr>
-        <button>Report Issue</button>
-        <button>Local Events and Announcements</button>
-        <button>Service Request Status</button>
+
+        <!-- Report Issue -->
+        <a asp-controller="Report" asp-action="ReportIssueStep1" class="btn btn-primary w-100 mb-2">
+            Report Issue
+        </a>
+
+        <!-- Local Events -->
+        <a asp-controller="Events" asp-action="Index" class="btn btn-primary w-100 mb-2">
+            Local Events and Announcements
+        </a>
+
+        <!-- Service Request -->
+        <a asp-controller="Service" asp-action="Status" class="btn btn-primary w-100">
+            Service Request Status
+        </a>
     </div>
 </div>
