@@ -1,27 +1,151 @@
 ﻿@{
-    ViewData["Title"] = "Upload Files";
+    ViewData["Title"] = "Report Issue - Documentation";
+    Layout = null;
 }
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Upload Files</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Report Issue</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-    <div class="card shadow-lg p-4 rounded-3">
-        <form asp-action="UploadFile" asp-controller="File" enctype="multipart/form-data" method="post">
+        .wizard-container {
+            background: #f7f7f7;
+            padding: 30px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-align: center;
+        }
 
-            <!-- File Title -->
-            <div class="form-group mb-3">
-                <label for="fileTitle" class="form-label">File Title</label>
-                <input type="text" name="fileTitle" id="fileTitle" class="form-control" required />
+            .wizard-container h2 {
+                font-size: 22px;
+                margin-bottom: 10px;
+            }
+
+            .wizard-container h3 {
+                font-size: 16px;
+                margin: 5px 0;
+            }
+
+            .wizard-container p {
+                font-size: 14px;
+                color: #555;
+                margin-bottom: 20px;
+            }
+
+        .file-upload-box {
+            border: 2px dashed #bbb;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+            .file-upload-box:hover {
+                background: #f1f1f1;
+            }
+
+            .file-upload-box i {
+                font-size: 28px;
+                color: #999;
+                margin-bottom: 10px;
+                display: block;
+            }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .progress-step {
+            flex: 1;
+            height: 4px;
+            margin: 0 4px;
+            border-radius: 2px;
+            background: #ddd;
+        }
+
+            .progress-step.active {
+                background: #000;
+            }
+
+        .wizard-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #ccc;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+            .btn:hover {
+                background: #aaa;
+            }
+    </style>
+</head>
+<body>
+    <div class="wizard-container">
+        <h2>Report Issue</h2>
+        <h3>Documentation</h3>
+        <p>Please provide any images or documents</p>
+
+        <form asp-action="ReportIssueStep4" method="post" enctype="multipart/form-data">
+            <div class="file-upload-box">
+                <label for="fileInput">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <p>Choose a file or drag and drop it here</p>
+                    <button type="button" class="btn">Browse File</button>
+                </label>
+                <input type="file" id="fileInput" name="uploadedFile" style="display:none;" />
             </div>
 
-            <!-- File Upload -->
-            <div class="form-group mb-3">
-                <label for="uploadedFile" class="form-label">Select File</label>
-                <input type="file" name="uploadedFile" id="uploadedFile" class="form-control" required />
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress-step active"></div>
+                <div class="progress-step active"></div>
+                <div class="progress-step active"></div>
+                <div class="progress-step active"></div>
             </div>
 
-            <!-- Submit -->
-            <button type="submit" class="btn btn-primary w-100">Upload</button>
+            <!-- Buttons -->
+            <div class="wizard-buttons">
+                <a href="@Url.Action("ReportIssueStep3", "Report")" class="btn">Back</a>
+                <button type="submit" class="btn">Done</button>
+            </div>
         </form>
     </div>
-</div>
+</body>
+</html>
+
+<!-- Simple confirmation pop up -->
+<button onclick="confirmSubmission()">Done</button>
+
+<script>
+    function confirmSubmission() {
+        if (confirm("Are you sure you want to submit?")) {
+            alert("Submission successful!");
+            // Redirect if needed
+            window.location.href = "/thank-you";
+        } else {
+            alert("Submission cancelled.");
+        }
+    }
+</script>
