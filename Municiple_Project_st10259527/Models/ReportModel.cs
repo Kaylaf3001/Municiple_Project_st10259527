@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Municiple_Project_st10259527.Models
 {
@@ -7,8 +8,11 @@ namespace Municiple_Project_st10259527.Models
     //=================================================================
     public class ReportModel
     {
-        public string ReportId { get; set; }
-        public string UserId { get; set; }
+        [Key]
+        public int ReportId { get; set; }
+        [Required]
+        public int UserId { get; set; }
+        [Required]
         public string ReportType { get; set; }
         public string Description { get; set; }
         public DateTime ReportDate { get; set; }
