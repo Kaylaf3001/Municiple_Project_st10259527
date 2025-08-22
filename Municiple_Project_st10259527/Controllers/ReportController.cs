@@ -1,9 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Municiple_Project_st10259527.Services;
 
 namespace Municiple_Project_st10259527.Controllers
 {
     public class ReportController : Controller
     {
+        private readonly AppDbContext _context;
+
+        public ReportController(AppDbContext context)
+        {
+            _context = context;
+        }
         public IActionResult ReportIssueStep1()
         {
             return View();
