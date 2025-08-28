@@ -27,7 +27,7 @@ namespace Municiple_Project_st10259527.Controllers
                 return Unauthorized("Invalid login");
 
             HttpContext.Session.SetInt32("UserId", user.UserId);
-            return Ok("Login successful!");
+            return RedirectToAction("Index", "Home");
         }
 
         public IActionResult SignUp()

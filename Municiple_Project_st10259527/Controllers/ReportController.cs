@@ -15,42 +15,68 @@ namespace Municiple_Project_st10259527.Controllers
         }
 
         // Multi-step reporting process
-        public IActionResult ReportIssueStep1() => View();
+        public IActionResult ReportIssueStep1()
+        {
+            if (!IsUserLoggedIn())
+                return RedirectToAction("Login", "User");
+            return View();
+        }
 
         [HttpPost]
         public IActionResult ReportIssueStep1(string location)
         {
+            if (!IsUserLoggedIn())
+                return RedirectToAction("Login", "User");
             TempData["Location"] = location;
             return RedirectToAction("ReportIssueStep2");
         }
 
-        public IActionResult ReportIssueStep2() => View();
+        public IActionResult ReportIssueStep2()
+        {
+            if (!IsUserLoggedIn())
+                return RedirectToAction("Login", "User");
+            return View();
+        }
 
         [HttpPost]
         public IActionResult ReportIssueStep2(string category)
         {
+            if (!IsUserLoggedIn())
+                return RedirectToAction("Login", "User");
             TempData["Category"] = category;
             return RedirectToAction("ReportIssueStep3");
         }
 
-        public IActionResult ReportIssueStep3() => View();
+        public IActionResult ReportIssueStep3()
+        {
+            if (!IsUserLoggedIn())
+                return RedirectToAction("Login", "User");
+            return View();
+        }
 
         [HttpPost]
         public IActionResult ReportIssueStep3(string description)
         {
+            if (!IsUserLoggedIn())
+                return RedirectToAction("Login", "User");
             TempData["Description"] = description;
             return RedirectToAction("ReportIssueStep4");
         }
 
-        public IActionResult ReportIssueStep4() => View();
+        public IActionResult ReportIssueStep4()
+        {
+            if (!IsUserLoggedIn())
+                return RedirectToAction("Login", "User");
+            return View();
+        }
 
         [HttpPost]
         public IActionResult ReportIssueStep4(string confirmation)
         {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-                return Unauthorized("Please login first");
+            if (!IsUserLoggedIn())
+                return RedirectToAction("Login", "User");
 
+            var userId = HttpContext.Session.GetInt32("UserId");
             var report = new ReportModel
             {
                 UserId = userId.Value,
@@ -70,6 +96,11 @@ namespace Municiple_Project_st10259527.Controllers
         public IActionResult Confirmation()
         {
             return View();
+        }
+
+        private bool IsUserLoggedIn()
+        {
+            return HttpContext.Session.GetInt32("UserId") != null;
         }
     }
 }
