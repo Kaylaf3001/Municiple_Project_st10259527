@@ -1,105 +1,141 @@
-﻿<style>
-    /* Hide default navbar and footer for this page */
-    header, footer {
-        display: none;
+﻿@{
+    ViewData["Title"] = "Municipality of South Africa";
+    Layout = null;
+}
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: url('@Url.Content("~/Images/background_noTitle.png")') no-repeat center center fixed;
+        background-size: cover;
     }
 
     body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background: url('/Images/background.jpg') no-repeat center center/cover;
         min-height: 100vh;
-        position: relative;
-    }
-
-    .top-right {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        z-index: 10;
-    }
-
-        .top-right a {
-            padding: 8px 16px;
-            background: white;
-            border-radius: 20px;
-            font-size: 14px;
-            text-decoration: none;
-            color: black;
-            font-weight: bold;
-        }
-
-    /* Center container */
-    .center-wrapper {
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 100vh;
+    }
+
+    .hero {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-content {
+        padding: 10px 30px 30px 30px; /* Reduced top padding */
+        border-radius: 16px;
+        text-align: center;
+        min-width: 350px;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+        margin: 0 0 0 0;
+        font-weight: bold;
+        letter-spacing: 2px;
+        color: #fff;
+    }
+
+    .hero h2 {
+        font-size: 32px;
+        margin: 0 0 150px 0;
+        font-weight: bold;
+        letter-spacing: 1px;
+        color: #fff;
+    }
+
+    .signin-btn {
+        position: absolute;
+        top: 30px;
+        right: 40px;
+        padding: 10px 24px;
+        border: 1px solid #333;
+        border-radius: 8px;
+        background: #fff;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        transition: background 0.2s, color 0.2s;
+        z-index: 10;
+    }
+
+        .signin-btn:hover {
+            background: #e0e0e0;
+            color: #222;
+        }
+
+    .card-container {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-top: 20px;
     }
 
     .card {
-        background: white;
-        padding: 40px;
+        background: #fff;
+        padding: 24px 18px;
+        width: 220px;
         border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.13);
         text-align: center;
-        box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
-        width: 100%;
-        max-width: 350px;
+        transition: box-shadow 0.2s;
     }
 
-        .card h1 {
-            font-size: 20px;
-            margin-bottom: 8px;
+        .card:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
 
         .card hr {
-            margin: 10px auto 20px;
-            width: 80%;
-            border: 0;
-            height: 1px;
-            background-color: #ccc;
+            width: 60%;
+            margin: 8px auto;
+            border: 1px solid #000;
         }
 
-        .card button {
-            display: block;
-            width: 100%;
-            padding: 10px 20px;
-            margin: 10px 0;
-            border-radius: 20px;
-            border: 2px solid #ccc;
-            background: white;
+        .card p {
             font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            color: #333;
         }
-
-            .card button:hover {
-                background: #f5f5f5;
-            }
 </style>
 
-<div class="top-right">
-    <a asp-controller="User" asp-action="Login">Sign In</a>
-</div>
-
-<div class="center-wrapper">
-    <div class="card">
-        <h1>South African Municipality</h1>
-        <hr>
-
-        <!-- Report Issue -->
-        <a asp-controller="Report" asp-action="ReportIssueStep1" class="btn btn-primary w-100 mb-2">
-            Report Issue
-        </a>
-
-        <!-- Local Events -->
-        <a asp-controller="Events" asp-action="Index" class="btn btn-primary w-100 mb-2">
-            Local Events and Announcements
-        </a>
-
-        <!-- Service Request -->
-        <a asp-controller="Service" asp-action="Status" class="btn btn-primary w-100">
-            Service Request Status
-        </a>
+<div class="hero">
+    <button class="signin-btn" onclick="location.href='@Url.Action("Login", "User")'">Sign In</button>
+    <div class="hero-content">
+        <h1>MUNICIPALITY</h1>
+        <h2>OF SOUTH AFRICA</h2>
+        <div class="card-container">
+            <!-- Report Issue -->
+            <div class="card">
+                <h3>Report Issue</h3>
+                <hr />
+                <p>Report any issues in your community</p>
+            </div>
+            <!-- Local Events -->
+            <div class="card">
+                <h3>Local Events and Announcements</h3>
+                <hr />
+                <p>Work in progress</p>
+            </div>
+            <!-- Service Request -->
+            <div class="card">
+                <h3>Service Request Status</h3>
+                <hr />
+                <p>Work in progress</p>
+            </div>
+        </div>
     </div>
 </div>
