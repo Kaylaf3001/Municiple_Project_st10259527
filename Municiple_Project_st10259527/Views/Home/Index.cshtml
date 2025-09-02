@@ -38,7 +38,7 @@
         .stat-card h3 {
             font-size: 2.5rem; /* bigger number */
             font-weight: bold;
-            color: #0d47a1;
+            color: #0d2b52;
         }
 
     /* Action Cards */
@@ -58,7 +58,7 @@
 
         .action-card i {
             font-size: 3.5rem; /* bigger icons */
-            color: #0d47a1;
+            color: #0d2b52;
             margin-bottom: 20px;
         }
 
@@ -82,6 +82,57 @@
         padding: 18px 0;
         font-size: 1.1rem; /* bigger footer text */
     }
+
+    /* Recent Activity Section */
+    .recent-activity {
+
+        border-radius: 12px;
+        padding: 35px; /* more padding for breathing space */
+    }
+
+        .recent-activity h3 {
+            font-size: 1.8rem; /* same as welcome */
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #1a1a1a; /* same as welcome */
+        }
+
+        /* Table Styling */
+        .recent-activity table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 1.15rem;
+            table-layout: fixed; /* improve spacing */
+        }
+
+            .recent-activity table thead th {
+                background-color: #0d2b52;
+                color: white;
+                font-weight: 700;
+                padding: 15px 12px; /* more padding */
+                text-align: center;
+                border-radius: 8px 8px 0 0;
+            }
+
+            .recent-activity table tbody td {
+                padding: 14px 12px;
+                vertical-align: middle;
+                text-align: center;
+            }
+
+            .recent-activity table tbody tr:nth-child(even) {
+                background-color: #f1f5f9;
+            }
+
+            .recent-activity table tbody tr:hover {
+                background-color: #e3f2fd;
+            }
+
+        .recent-activity .status {
+            font-weight: 600;
+            color: #ff6f00; /* pending color */
+        }
 </style>
 
 <div class="dashboard-container">
@@ -95,19 +146,19 @@
             <div class="col-md-4">
                 <div class="stat-card">
                     <h6>Reports Pending</h6>
-                    <h3>5</h3>
+                    <h3>@ViewBag.TotalReports</h3>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-card">
                     <h6>Upcoming Events</h6>
-                    <h3>5</h3>
+                    <h3>0</h3>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-card">
                     <h6>Open Requests</h6>
-                    <h3>5</h3>
+                    <h3>0</h3>
                 </div>
             </div>
         </div>
@@ -141,6 +192,42 @@
                     </div>
                 </a>
             </div>
+        </div>
+
+        <div class="container recent-activity">
+            <h3>Recent Activity</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Location</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (ViewBag.RecentReports != null && ViewBag.RecentReports.Count > 0)
+                    {
+                        foreach (var report in ViewBag.RecentReports)
+                        {
+                            <tr>
+                                <td>@report.ReportDate.ToString("dd/MM/yyyy")</td>
+                                <td>@report.Location</td>
+                                <td>@report.ReportType</td>
+                                <td>@report.Description</td>
+                                <td class="status">@(string.IsNullOrEmpty(report.Status) ? "Pending" : report.Status)</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center">No recent reports found.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
 
     </div>

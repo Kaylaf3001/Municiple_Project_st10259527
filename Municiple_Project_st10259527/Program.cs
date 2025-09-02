@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Municiple_Project_st10259527.Repositories;
 using Municiple_Project_st10259527.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // ? Add distributed memory cache (required for session)
 builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
 
 // ? Add session
 builder.Services.AddSession(options =>

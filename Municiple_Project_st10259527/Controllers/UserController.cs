@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Municiple_Project_st10259527.Services;
 using Municiple_Project_st10259527.Models;
+using Municiple_Project_st10259527.Repositories;
 
 namespace Municiple_Project_st10259527.Controllers
 {
     public class UserController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IUserRepository _userRepository;
 
-        public UserController(AppDbContext context)
+        public UserController(IUserRepository userRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
         }
 
         public IActionResult Login()
@@ -22,16 +22,12 @@ namespace Municiple_Project_st10259527.Controllers
         [HttpPost]
         public IActionResult Login(string email, string password)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
+            var user = _userRepository.GetUserByEmailAndPassword(email, password);
             if (user == null)
                 return Unauthorized("Invalid login");
 
             HttpContext.Session.SetInt32("UserId", user.UserId);
             return RedirectToAction("Index", "Home");
-
-            //Logins
-           //admin@gmail.com
-          //admin123
         }
 
         public IActionResult SignUp()
@@ -42,12 +38,11 @@ namespace Municiple_Project_st10259527.Controllers
         [HttpPost]
         public IActionResult SignUp(string email, string password)
         {
-            if (_context.Users.Any(u => u.Email == email))
+            if (_userRepository.UserExists(email))
                 return BadRequest("User already exists");
 
             var user = new UserModel { Email = email, Password = password };
-            _context.Users.Add(user);
-            _context.SaveChanges();
+            _userRepository.AddUser(user);
 
             return Ok("User registered!");
         }
