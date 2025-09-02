@@ -28,6 +28,10 @@ namespace Municiple_Project_st10259527.Controllers
 
             HttpContext.Session.SetInt32("UserId", user.UserId);
             return RedirectToAction("Index", "Home");
+
+            //Logins
+           //admin@gmail.com
+          //admin123
         }
 
         public IActionResult SignUp()
