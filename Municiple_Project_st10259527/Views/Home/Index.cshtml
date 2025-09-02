@@ -1,141 +1,147 @@
 ﻿@{
-    ViewData["Title"] = "Municipality of South Africa";
-    Layout = null;
+    ViewData["Title"] = "Dashboard";
 }
 
 <style>
-    html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        background: url('@Url.Content("~/Images/background_noTitle.png")') no-repeat center center fixed;
-        background-size: cover;
-    }
-
+    /* General */
     body {
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        background-color: #fff;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 1.2rem; /* base text bigger */
     }
 
-    .hero {
-        position: relative;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+    
+
+    /* Welcome */
+    .welcome-text {
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 30px 0;
+        font-size: 1.8rem; /* bigger welcome text */
     }
 
-    .hero-content {
-        padding: 10px 30px 30px 30px; /* Reduced top padding */
-        border-radius: 16px;
+    /* Stat Cards */
+    .stat-card {
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 25px;
+        background: white;
         text-align: center;
-        min-width: 350px;
     }
 
-    .hero h1 {
-        font-size: 48px;
-        margin: 0 0 0 0;
-        font-weight: bold;
-        letter-spacing: 2px;
-        color: #fff;
-    }
-
-    .hero h2 {
-        font-size: 32px;
-        margin: 0 0 150px 0;
-        font-weight: bold;
-        letter-spacing: 1px;
-        color: #fff;
-    }
-
-    .signin-btn {
-        position: absolute;
-        top: 30px;
-        right: 40px;
-        padding: 10px 24px;
-        border: 1px solid #333;
-        border-radius: 8px;
-        background: #fff;
-        cursor: pointer;
-        font-weight: bold;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-        transition: background 0.2s, color 0.2s;
-        z-index: 10;
-    }
-
-        .signin-btn:hover {
-            background: #e0e0e0;
-            color: #222;
+        .stat-card h6 {
+            font-size: 1.2rem; /* bigger label */
+            margin-bottom: 12px;
+            font-weight: 600;
         }
 
-    .card-container {
-        display: flex;
-        justify-content: center;
-        gap: 30px;
-        flex-wrap: wrap;
-        margin-top: 20px;
-    }
-
-    .card {
-        background: #fff;
-        padding: 24px 18px;
-        width: 220px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.13);
-        text-align: center;
-        transition: box-shadow 0.2s;
-    }
-
-        .card:hover {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-        }
-
-        .card h3 {
-            font-size: 18px;
-            margin-bottom: 10px;
+        .stat-card h3 {
+            font-size: 2.5rem; /* bigger number */
             font-weight: bold;
+            color: #0d47a1;
         }
 
-        .card hr {
-            width: 60%;
-            margin: 8px auto;
-            border: 1px solid #000;
+    /* Action Cards */
+    .action-card {
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        padding: 40px 25px; /* more space */
+        background: white;
+        transition: 0.3s;
+        text-align: center;
+    }
+
+        .action-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0px 6px 16px rgba(0,0,0,0.15);
         }
 
-        .card p {
-            font-size: 14px;
-            color: #333;
+        .action-card i {
+            font-size: 3.5rem; /* bigger icons */
+            color: #0d47a1;
+            margin-bottom: 20px;
         }
+
+        .action-card h6 {
+            font-weight: bold;
+            font-size: 1.3rem; /* bigger headings */
+            margin-bottom: 12px;
+        }
+
+        .action-card p {
+            font-size: 1.1rem; /* bigger description */
+            color: #555;
+        }
+
+    /* Footer */
+    .footer {
+        background-color: #0d2b52;
+        color: white;
+        margin-top: 60px;
+        text-align: center;
+        padding: 18px 0;
+        font-size: 1.1rem; /* bigger footer text */
+    }
 </style>
 
-<div class="hero">
-    <button class="signin-btn" onclick="location.href='@Url.Action("Login", "User")'">Sign In</button>
-    <div class="hero-content">
-        <h1>MUNICIPALITY</h1>
-        <h2>OF SOUTH AFRICA</h2>
-        <div class="card-container">
-            <!-- Report Issue -->
-            <div class="card">
-                <h3>Report Issue</h3>
-                <hr />
-                <p>Report any issues in your community</p>
+<div class="dashboard-container">
+
+    <!-- Welcome -->
+    <div class="container mt-4">
+        <h2 class="welcome-text">Welcome, User</h2>
+
+        <!-- Stats Row -->
+        <div class="row text-center mb-5">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h6>Reports Pending</h6>
+                    <h3>5</h3>
+                </div>
             </div>
-            <!-- Local Events -->
-            <div class="card">
-                <h3>Local Events and Announcements</h3>
-                <hr />
-                <p>Work in progress</p>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h6>Upcoming Events</h6>
+                    <h3>5</h3>
+                </div>
             </div>
-            <!-- Service Request -->
-            <div class="card">
-                <h3>Service Request Status</h3>
-                <hr />
-                <p>Work in progress</p>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <h6>Open Requests</h6>
+                    <h3>5</h3>
+                </div>
             </div>
         </div>
+
+        <!-- Action Cards -->
+        <div class="row text-center">
+            <div class="col-md-4">
+                <a href="@Url.Action("ReportIssueStep1", "Report")" style="text-decoration: none; color: inherit;">
+                    <div class="action-card">
+                        <i class="bi bi-clipboard2-check"></i>
+                        <h6>Make a Report</h6>
+                        <p>Submit an issue for review</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="@Url.Action("LocalEvents", "Home")" style="text-decoration: none; color: inherit;">
+                    <div class="action-card">
+                        <i class="bi bi-megaphone"></i>
+                        <h6>Local Events & Announcements</h6>
+                        <p>Find out what’s happening in your area</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="@Url.Action("RequestService", "Home")" style="text-decoration: none; color: inherit;">
+                    <div class="action-card">
+                        <i class="bi bi-gear"></i>
+                        <h6>Request a Service</h6>
+                        <p>Submit a service request online</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
     </div>
 </div>
