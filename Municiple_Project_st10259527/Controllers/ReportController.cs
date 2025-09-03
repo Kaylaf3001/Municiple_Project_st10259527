@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Municiple_Project_st10259527.Services;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Municiple_Project_st10259527.Models;
+using Municiple_Project_st10259527.Repositories;
+using Municiple_Project_st10259527.Services;
 
 namespace Municiple_Project_st10259527.Controllers
 {
     public class ReportController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IReportRepository _reportRepository;
 
-        public ReportController(AppDbContext context)
+        public ReportController(IReportRepository reportRepository) // ✅ inject repository only
         {
-            _context = context;
+            _reportRepository = reportRepository;
         }
 
         // Multi-step reporting process
@@ -71,12 +72,13 @@ namespace Municiple_Project_st10259527.Controllers
         }
 
         [HttpPost]
-        public IActionResult ReportIssueStep4(string confirmation)
+        public IActionResult ReportIssueStep4(IFormFile? uploadedFile)
         {
             if (!IsUserLoggedIn())
                 return RedirectToAction("Login", "User");
 
             var userId = HttpContext.Session.GetInt32("UserId");
+
             var report = new ReportModel
             {
                 UserId = userId.Value,
@@ -87,8 +89,7 @@ namespace Municiple_Project_st10259527.Controllers
                 ReportDate = DateTime.Now
             };
 
-            _context.Reports.Add(report);
-            _context.SaveChanges();
+            _reportRepository.AddReport(report, uploadedFile); // ✅ delegate work to repo
 
             return RedirectToAction("Confirmation");
         }
@@ -102,5 +103,13 @@ namespace Municiple_Project_st10259527.Controllers
         {
             return HttpContext.Session.GetInt32("UserId") != null;
         }
+
+        [HttpPost]
+        public IActionResult CreateReport(ReportModel report, IFormFile? uploadedFile)
+        {
+            _reportRepository.AddReport(report, uploadedFile);
+            return RedirectToAction("Index", "Home");
+        }
+
     }
 }

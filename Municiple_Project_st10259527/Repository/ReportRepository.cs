@@ -1,6 +1,8 @@
-﻿using Municiple_Project_st10259527.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Services;
-using System.Collections.Generic;
+using System;
+using System.IO;
 using System.Linq;
 
 namespace Municiple_Project_st10259527.Repositories
@@ -34,5 +36,36 @@ namespace Municiple_Project_st10259527.Repositories
                            .Take(count)
                            .ToList();
         }
+
+        public void AddReport(ReportModel report, IFormFile? uploadedFile)
+        {
+            // Set defaults for required fields
+            report.ReportDate = DateTime.Now;
+            report.Status ??= "Pending";
+            report.ReportType ??= "General";
+            report.Description ??= report.Description ?? "";
+            report.Location ??= report.Location ?? "";
+
+            if (uploadedFile != null && uploadedFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(uploadedFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    uploadedFile.CopyTo(stream);
+                }
+
+                report.FilePath = "/uploads/" + uniqueFileName; // relative path
+            }
+
+            _context.Reports.Add(report);
+            _context.SaveChanges();
+        }
+
     }
 }

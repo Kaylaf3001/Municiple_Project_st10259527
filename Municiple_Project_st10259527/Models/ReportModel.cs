@@ -18,6 +18,7 @@ namespace Municiple_Project_st10259527.Models
         public DateTime ReportDate { get; set; }
         public string Location { get; set; }
         public string Status { get; set; }
+        public string? FilePath { get; set; } 
 
     }
     //=================================================================

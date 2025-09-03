@@ -107,13 +107,10 @@
         <h3>Documentation</h3>
         <p>Please provide any images or documents</p>
 
-        <form asp-action="ReportIssueStep4" method="post" enctype="multipart/form-data">
-            <div class="file-upload-box">
-                <label for="fileInput">
-                    <i class="bi bi-cloud-arrow-up"></i>
-                    <p>Choose a file or drag and drop it here</p>
-                    <button type="button" class="btn">Browse File</button>
-                </label>
+        <form asp-action="CreateReport" method="post" enctype="multipart/form-data">
+            <div class="file-upload-box" onclick="document.getElementById('fileInput').click();">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <p>Choose a file or drag and drop it here</p>
                 <input type="file" id="fileInput" name="uploadedFile" style="display:none;" />
             </div>
 
@@ -131,6 +128,8 @@
                 <button type="submit" class="btn">Done</button>
             </div>
         </form>
+
+        
     </div>
 </body>
 </html>
