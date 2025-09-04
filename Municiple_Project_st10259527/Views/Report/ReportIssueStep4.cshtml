@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Report Issue - Documentation";
     Layout = null;
 }
@@ -8,6 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Report Issue</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
             margin: 0;
@@ -28,46 +29,63 @@
             text-align: center;
         }
 
-            .wizard-container h2 {
-                font-size: 22px;
-                margin-bottom: 10px;
-            }
+        .wizard-container h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+            color: #333;
+        }
 
-            .wizard-container h3 {
-                font-size: 16px;
-                margin: 5px 0;
-            }
+        .wizard-container h3 {
+            font-size: 16px;
+            margin: 5px 0 15px 0;
+            color: #555;
+        }
 
-            .wizard-container p {
-                font-size: 14px;
-                color: #555;
-                margin-bottom: 20px;
-            }
+        .wizard-container p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
 
         .file-upload-box {
             border: 2px dashed #bbb;
             border-radius: 10px;
             padding: 30px;
-            margin-bottom: 20px;
+            margin: 20px 0;
             cursor: pointer;
             text-align: center;
+            transition: all 0.3s ease;
         }
 
-            .file-upload-box:hover {
-                background: #f1f1f1;
-            }
+        .file-upload-box:hover {
+            border-color: #666;
+            background: #f9f9f9;
+        }
 
-            .file-upload-box i {
-                font-size: 28px;
-                color: #999;
-                margin-bottom: 10px;
-                display: block;
-            }
+        .file-upload-box i {
+            font-size: 48px;
+            color: #999;
+            margin-bottom: 15px;
+            display: block;
+        }
 
         .progress-bar {
             display: flex;
             justify-content: space-between;
-            margin: 20px 0;
+            margin: 25px 0;
         }
 
         .progress-step {
@@ -78,73 +96,140 @@
             background: #ddd;
         }
 
-            .progress-step.active {
-                background: #000;
-            }
+        .progress-step.active {
+            background: #1A3456;
+        }
 
         .wizard-buttons {
             display: flex;
             justify-content: space-between;
+            margin-top: 25px;
         }
 
         .btn {
-            padding: 10px 20px;
-            background: #ccc;
+            padding: 10px 25px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
-            .btn:hover {
-                background: #aaa;
-            }
+        .btn-primary {
+            background: #1A3456;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #142a47;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        #fileUploadText {
+            font-size: 14px;
+            color: #666;
+            margin: 10px 0 0 0;
+            word-break: break-word;
+        }
+
+        #fileName {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #888;
+        }
     </style>
 </head>
 <body>
     <div class="wizard-container">
-        <h2>Report Issue</h2>
-        <h3>Documentation</h3>
-        <p>Please provide any images or documents</p>
-
-        <form asp-action="CreateReport" method="post" enctype="multipart/form-data">
-            <div class="file-upload-box" onclick="document.getElementById('fileInput').click();">
-                <i class="bi bi-cloud-arrow-up"></i>
-                <p>Choose a file or drag and drop it here</p>
-                <input type="file" id="fileInput" name="uploadedFile" style="display:none;" />
+        <h2>Report an Issue</h2>
+        <h3>Step 4: Upload Documentation</h3>
+        <p>Upload any supporting documents or images (optional)</p>
+        
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+        
+        <div class="progress-bar">
+            <div class="progress-step active"></div>
+            <div class="progress-step active"></div>
+            <div class="progress-step active"></div>
+            <div class="progress-step active"></div>
+        </div>
+        
+        <form id="reportForm" method="post" enctype="multipart/form-data" asp-action="ReportIssueStep4" asp-controller="Report">
+            @Html.AntiForgeryToken()
+            
+            <div class="file-upload-box" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p id="fileUploadText">Drag and drop files here or click to browse</p>
+                <input type="file" id="fileInput" name="uploadedFile" style="display: none;" onchange="updateFileName(this)" />
+                <div id="fileName"></div>
             </div>
-
-            <!-- Progress Bar -->
-            <div class="progress-bar">
-                <div class="progress-step active"></div>
-                <div class="progress-step active"></div>
-                <div class="progress-step active"></div>
-                <div class="progress-step active"></div>
-            </div>
-
-            <!-- Buttons -->
+            
             <div class="wizard-buttons">
-                <a href="@Url.Action("ReportIssueStep3", "Report")" class="btn">Back</a>
-                <button type="submit" class="btn">Done</button>
+                <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
+                <button type="submit" class="btn btn-primary">Submit Report</button>
             </div>
         </form>
-
-        
     </div>
+    
+    <script>
+        function updateFileName(input) {
+            const fileName = input.files[0] ? input.files[0].name : 'No file selected';
+            document.getElementById('fileUploadText').textContent = fileName;
+            document.getElementById('fileUploadText').style.fontWeight = 'bold';
+            
+            // Show file size if file is selected
+            if (input.files[0]) {
+                const fileSize = (input.files[0].size / 1024 / 1024).toFixed(2); // Convert to MB
+                document.getElementById('fileName').textContent = `Size: ${fileSize} MB`;
+            } else {
+                document.getElementById('fileName').textContent = '';
+            }
+        }
+        
+        // Handle drag and drop
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#1A3456';
+            dropZone.style.backgroundColor = '#f0f4f8';
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.style.borderColor = '#bbb';
+            dropZone.style.backgroundColor = '';
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#bbb';
+            dropZone.style.backgroundColor = '';
+            
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                updateFileName(fileInput);
+            }
+        });
+        
+        // Show loading state on form submission
+        document.getElementById('reportForm').addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        });
+    </script>
 </body>
 </html>
-
-<!-- Simple confirmation pop up -->
-<button onclick="confirmSubmission()">Done</button>
-
-<script>
-    function confirmSubmission() {
-        if (confirm("Are you sure you want to submit?")) {
-            alert("Submission successful!");
-            // Redirect if needed
-            window.location.href = "/thank-you";
-        } else {
-            alert("Submission cancelled.");
-        }
-    }
-</script>

@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Dashboard";
 }
 
@@ -203,15 +203,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (ViewBag.RecentReports != null && ViewBag.RecentReports.Count > 0)
+                    @{
+                        var hasReports = ViewBag.HasRecentReports != null && (bool)ViewBag.HasRecentReports;
+                        var reports = ViewBag.RecentReports as IEnumerable<ReportModel>;
+                    }
+                    @if (hasReports && reports != null)
                     {
-                        foreach (var report in ViewBag.RecentReports)
+                        @foreach (var report in reports)
                         {
                             <tr>
-                                <td>@report.ReportDate.ToString("dd/MM/yyyy")</td>
-                                <td>@report.Location</td>
-                                <td>@report.ReportType</td>
-                                <td>@report.Description</td>
+                                <td>@(report.ReportDate.ToString("dd/MM/yyyy"))</td>
+                                <td>@(string.IsNullOrEmpty(report.Location) ? "N/A" : report.Location)</td>
+                                <td>@(string.IsNullOrEmpty(report.ReportType) ? "N/A" : report.ReportType)</td>
+                                <td>@(string.IsNullOrEmpty(report.Description) ? "No description provided" : report.Description)</td>
                                 <td class="status">@(string.IsNullOrEmpty(report.Status) ? "Pending" : report.Status)</td>
                             </tr>
                         }
