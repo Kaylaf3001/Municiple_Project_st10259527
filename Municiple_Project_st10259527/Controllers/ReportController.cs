@@ -11,9 +11,10 @@ namespace Municiple_Project_st10259527.Controllers
         private readonly IReportRepository _reportRepository;
         private readonly IUserRepository _userRepository;
 
-        public ReportController(IReportRepository reportRepository) // ✅ inject repository only
+        public ReportController(IReportRepository reportRepository, IUserRepository userRepository)
         {
             _reportRepository = reportRepository;
+            _userRepository = userRepository;
         }
 
         // Multi-step reporting process
@@ -204,7 +205,7 @@ namespace Municiple_Project_st10259527.Controllers
             var user = _userRepository.GetUserById(userId.Value); // make sure your repo has this method
             var userEmail = user?.Email ?? "user@example.com";
 
-            ViewData["UserEmail"] = userEmail; // pass to view
+            ViewData["Email"] = userEmail; // pass to view
             return View();
         }
 

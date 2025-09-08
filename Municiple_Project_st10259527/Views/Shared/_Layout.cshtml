@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Municiple_Project_st10259527.styles.css" asp-append-version="true" />
 
+
     <style>
         /* Custom Header */
         .topbar {
@@ -46,19 +47,42 @@
             color: white;
             font-size: 1.5rem;
         }
+
+        /* Ensure dropdown aligns nicely with burger button */
+        .topbar .dropdown-menu {
+            min-width: 180px;
+            border-radius: 8px;
+        }
+
+            .topbar .dropdown-menu a {
+                color: #1A3456;
+                font-weight: 500;
+            }
+
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="topbar">
+    <header class="topbar d-flex justify-content-between align-items-center position-relative">
         <a class="brand" asp-area="" asp-controller="Home" asp-action="Index">
             <img src="~/Images/logo.png" alt="Logo" />
             Western Cape Connect
         </a>
-        <button class="menu-btn">
-            <i class="bi bi-list"></i>
-        </button>
+
+        <div class="dropdown">
+            <button class="menu-btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-list"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" asp-controller="Report" asp-action="ReportIssueStep1">Create a Report</a></li>
+                <li><a class="dropdown-item" href="#">Action 1</a></li>
+                <li><a class="dropdown-item" href="#">Action 2</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" asp-controller="User" asp-action="Logout">Logout</a></li>
+            </ul>
+        </div>
     </header>
+
 
     <!-- Main -->
     <div class="container">
