@@ -9,6 +9,7 @@ namespace Municiple_Project_st10259527.Controllers
     public class ReportController : Controller
     {
         private readonly IReportRepository _reportRepository;
+        private readonly IUserRepository _userRepository;
 
         public ReportController(IReportRepository reportRepository) // ✅ inject repository only
         {
@@ -138,8 +139,6 @@ namespace Municiple_Project_st10259527.Controllers
             var category = TempData.Peek("Category")?.ToString()?.Trim();
             var description = TempData.Peek("Description")?.ToString()?.Trim();
             
-            Console.WriteLine($"[DEBUG] Form data - Location: '{location}', Category: '{category}', Description: '{description}'");
-            
             // Validate required fields with detailed logging
             string missingFields = "";
             if (string.IsNullOrWhiteSpace(location)) missingFields += "Location, ";
@@ -150,15 +149,12 @@ namespace Municiple_Project_st10259527.Controllers
             {
                 // Remove trailing comma and space
                 missingFields = missingFields.TrimEnd(',', ' ');
-                
-                Console.WriteLine($"[ERROR] Missing required fields: {missingFields}");
                 TempData["Error"] = $"Missing required information: {missingFields}. Please start over.";
                 return RedirectToAction("ReportIssueStep1");
             }
 
             try
             {
-                Console.WriteLine("[DEBUG] Creating new report model");
                 
                 var report = new ReportModel
                 {
@@ -170,18 +166,7 @@ namespace Municiple_Project_st10259527.Controllers
                     ReportDate = DateTime.Now
                 };
 
-                Console.WriteLine("[DEBUG] Report model created with values:" +
-                               $"\n  UserId: {report.UserId}" +
-                               $"\n  Location: {report.Location}" +
-                               $"\n  ReportType: {report.ReportType}" +
-                               $"\n  Description: {report.Description}" +
-                               $"\n  Status: {report.Status}" +
-                               $"\n  ReportDate: {report.ReportDate}");
-
-                Console.WriteLine("[DEBUG] Calling AddReport...");
                 _reportRepository.AddReport(report, uploadedFile);
-                
-                Console.WriteLine("[SUCCESS] Report added successfully!");
                 
                 // Clear TempData after successful submission
                 TempData.Remove("Location");
@@ -209,8 +194,21 @@ namespace Municiple_Project_st10259527.Controllers
 
         public IActionResult Confirmation()
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            // Example: fetch user from repository
+            var user = _userRepository.GetUserById(userId.Value); // make sure your repo has this method
+            var userEmail = user?.Email ?? "user@example.com";
+
+            ViewData["UserEmail"] = userEmail; // pass to view
             return View();
         }
+
+
 
         private bool IsUserLoggedIn()
         {

@@ -1,5 +1,120 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Report Confirmation";
+    Layout = null;
+    var userEmail = ViewData["Email"] as string;
 }
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Report Confirmation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #1A3456;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .confirmation-container {
+            background: #f7f7f7;
+            padding: 40px;
+            border-radius: 12px;
+            width: 420px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+            .confirmation-container h2 {
+                font-size: 24px;
+                margin-bottom: 10px;
+                color: #1A3456;
+            }
+
+            .confirmation-container p {
+                font-size: 15px;
+                color: #555;
+                margin-bottom: 25px;
+            }
+
+            .confirmation-container .personal-message {
+                font-weight: bold;
+                color: #1A3456;
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+
+        .btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            background: #1A3456;
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+            .btn:hover {
+                background: #142a47;
+            }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            top: -10px;
+            width: 10px;
+            height: 10px;
+            background-color: #3498db; /* Blue */
+            opacity: 0.8;
+            animation: fall linear forwards;
+        }
+
+        @@keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="confirmation-container">
+        <i class="fas fa-check-circle" style="font-size:48px; color:#1A3456; margin-bottom:15px;"></i>
+        <div class="personal-message">
+            Thank you, @userEmail! 🎉
+        </div>
+        <h2>Congratulations!</h2>
+        <p>
+            Your report has been submitted successfully.<br />
+            Our team will review it and get back to you within <b>3-5 working days</b>.
+        </p>
+        <button class="btn" onclick="window.location.href='@Url.Action("Index", "Home")'">Return Home</button>
+    </div>
+
+    <script>
+        function createConfetti() {
+            const confetti = document.createElement("div");
+            confetti.classList.add("confetti");
+
+            confetti.style.left = Math.random() * window.innerWidth + "px";
+            confetti.style.backgroundColor = ["#3498db", "#2980b9", "#5dade2"][Math.floor(Math.random() * 3)];
+            confetti.style.animationDuration = (Math.random() * 3 + 2) + "s";
+            confetti.style.transform = "rotate(" + Math.random() * 360 + "deg)";
+
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 5000);
+        }
+
+        let interval = setInterval(createConfetti, 100);
+        setTimeout(() => clearInterval(interval), 2000);
+    </script>
+</body>
+</html>
