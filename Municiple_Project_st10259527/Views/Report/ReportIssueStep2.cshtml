@@ -72,7 +72,7 @@
         }
 
             .progress-step.active {
-                background: #000;
+                background: #1A3456;
             }
 
         .wizard-buttons {
@@ -82,15 +82,16 @@
 
         .btn {
             padding: 10px 20px;
-            background: #ccc;
+            background: #1A3456;
             border: none;
+            color: white;
             border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
         }
 
             .btn:hover {
-                background: #aaa;
+                background: #142a47;
             }
     </style>
 </head>
@@ -99,6 +100,14 @@
         <h2>Report Issue</h2>
         <h3>Category</h3>
         <p>Please select a category that the issue falls under</p>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-step active"></div>
+            <div class="progress-step active"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+        </div>
 
         <form asp-action="ReportIssueStep2" method="post">
             <div class="form-group">
@@ -109,15 +118,7 @@
                     <option value="Safety">Safety</option>
                     <option value="Environment">Environment</option>
                 </select>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="progress-bar">
-                <div class="progress-step active"></div>
-                <div class="progress-step active"></div>
-                <div class="progress-step"></div>
-                <div class="progress-step"></div>
-            </div>
+            </div>            
 
             <!-- Buttons -->
             <div class="wizard-buttons">

@@ -74,7 +74,7 @@
         }
 
             .progress-step.active {
-                background: #000;
+                background: #1A3456;
             }
 
         .wizard-buttons {
@@ -84,7 +84,8 @@
 
         .btn {
             padding: 10px 20px;
-            background: #ccc;
+            background: #1A3456;
+            color: white;
             border: none;
             border-radius: 6px;
             cursor: pointer;
@@ -92,7 +93,7 @@
         }
 
             .btn:hover {
-                background: #aaa;
+                background: #142a47;
             }
     </style>
 </head>
@@ -102,17 +103,17 @@
         <h3>Description</h3>
         <p>Please describe the issue</p>
 
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-step active"></div>
+            <div class="progress-step active"></div>
+            <div class="progress-step active"></div>
+            <div class="progress-step"></div>
+        </div>
+
         <form asp-action="ReportIssueStep3" method="post">
             <div class="form-group">
                 <textarea name="Description" placeholder="Example: There is a massive pothole by West Coast Village on the main intersection that is causing back up in traffic." required></textarea>
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="progress-bar">
-                <div class="progress-step active"></div>
-                <div class="progress-step active"></div>
-                <div class="progress-step active"></div>
-                <div class="progress-step"></div>
             </div>
 
             <!-- Buttons -->
