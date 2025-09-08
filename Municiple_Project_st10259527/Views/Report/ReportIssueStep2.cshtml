@@ -120,9 +120,17 @@
                 </select>
             </div>            
 
-            <!-- Buttons -->
+
+
+            <!-- Buttons1 -->
             <div class="wizard-buttons">
-                <a href="@Url.Action("ReportIssueStep1", "Report")" class="btn">Back</a>
+                <button type="button"
+                        class="btn"
+                        asp-controller="Home"
+                        asp-action="Index"
+                        onclick="location.href='@Url.Action("Index", "Home")'">
+                    Back
+                </button>
                 <button type="submit" class="btn">Next</button>
             </div>
         </form>

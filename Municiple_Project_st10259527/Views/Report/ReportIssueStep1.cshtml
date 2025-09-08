@@ -115,7 +115,13 @@
 
             <!-- Buttons -->
             <div class="wizard-buttons">
-                <button type="button" class="btn">Back</button>
+                <button type="button"
+                        class="btn"
+                        asp-controller="Home"
+                        asp-action="Index"
+                        onclick="location.href='@Url.Action("Index", "Home")'">
+                    Back
+                </button>
                 <button type="submit" class="btn">Next</button>
             </div>
         </form>
