@@ -37,13 +37,6 @@ namespace Municiple_Project_st10259527.Controllers
                 var recentReportsQuery = _reportRepository.GetRecentReports(5);
                 ViewBag.HasRecentReports = recentReportsQuery.Any();
                 ViewBag.RecentReports = recentReportsQuery;
-                
-                // Add debug information
-                Console.WriteLine($"[DEBUG] Recent reports query created");
-                foreach (var report in recentReportsQuery)
-                {
-                    Console.WriteLine($"[DEBUG] Report - Location: {report.Location}, Description: {report.Description}");
-                }
             }
             catch (Exception ex)
             {
@@ -76,36 +69,5 @@ namespace Municiple_Project_st10259527.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
         
-        [HttpGet]
-        public IActionResult AddTestReport()
-        {
-            try
-            {
-                var userId = HttpContext.Session.GetInt32("UserId");
-                if (userId == null)
-                    return RedirectToAction("Login", "User");
-                
-                var testReport = new ReportModel
-                {
-                    UserId = userId.Value,
-                    ReportType = "Test",
-                    Description = "This is a test report with location and description",
-                    Location = "Test Location",
-                    Status = "Pending",
-                    ReportDate = DateTime.Now
-                };
-                
-                _reportRepository.AddReport(testReport, null);
-                TempData["Message"] = "Test report added successfully!";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = $"Error adding test report: {ex.Message}";
-                Console.WriteLine($"[ERROR] Error in AddTestReport: {ex.Message}");
-                Console.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
-            }
-            
-            return RedirectToAction("Index");
-        }
     }
 }
