@@ -177,7 +177,13 @@
             </div>
             
             <div class="wizard-buttons">
-                <button type="button" class="btn btn-secondary" onclick="window.history.back()">Back</button>
+                <button type="button"
+                        class="btn"
+                        asp-controller="Report"
+                        asp-action="ReportIssueStep3"
+                        onclick="location.href='@Url.Action("ReportIssueStep3", "Report")'">
+                    Back
+                </button>
                 <button type="submit" class="btn btn-primary">Submit Report</button>
             </div>
         </form>
