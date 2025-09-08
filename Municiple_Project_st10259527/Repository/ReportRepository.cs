@@ -149,16 +149,7 @@ namespace Municiple_Project_st10259527.Repositories
                 
                 throw new Exception("Failed to save report to database. Please try again.", dbEx);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[ERROR] Unexpected error in AddReport: {ex.Message}");
-                Console.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
-                throw new Exception("An unexpected error occurred while saving the report.", ex);
-            }
-            finally
-            {
-                Console.WriteLine("[DEBUG] ===== End AddReport =====");
-            }
+           
         }
 
     }
