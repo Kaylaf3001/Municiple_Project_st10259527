@@ -1,0 +1,194 @@
+@model Municiple_Project_st10259527.Models.ReportModel
+@{
+    ViewData["Title"] = "Report Details";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Report Details</h1>
+        <a asp-action="Dashboard" class="btn btn-secondary btn-sm">Back to Dashboard</a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Report Details Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Report #@Model.ReportId - @Model.ReportType</h6>
+                    <span class="badge @GetStatusBadgeClass(Model.Status)">@Model.Status.ToString()</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="font-weight-bold">Report Information</h5>
+                            <hr>
+                            <p><strong>Reported By:</strong> @Model.User.FullName</p>
+                            <p><strong>Reported On:</strong> @Model.ReportDate.ToString("f")</p>
+                            <p><strong>Location:</strong> @Model.Location</p>
+                            <p><strong>Status:</strong> @Model.Status</p>
+                            
+                            @if (Model.AssignedAdmin != null)
+                            {
+                                <p><strong>Assigned To:</strong> @Model.AssignedAdmin.FullName</p>
+                            }
+                            
+                            @if (Model.LastUpdated.HasValue)
+                            {
+                                <p><strong>Last Updated:</strong> @Model.LastUpdated.Value.ToString("f")</p>
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="font-weight-bold">Description</h5>
+                            <hr>
+                            <div class="border p-3 rounded">
+                                @Model.Description
+                            </div>
+                            
+                            @if (!string.IsNullOrEmpty(Model.FilePath))
+                            {
+                                <div class="mt-3">
+                                    <h6 class="font-weight-bold">Attached File:</h6>
+                                    <a href="@Url.Content($"~/uploads/{Model.FilePath}")" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-download"></i> Download Attachment
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Actions Card -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Admin Actions</h6>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateReportStatus" method="post" class="mb-4">
+                        <input type="hidden" name="reportId" value="@Model.ReportId" />
+                        
+                        <div class="form-group">
+                            <label class="font-weight-bold">Update Status</label>
+                            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+                                <label class="btn btn-outline-primary @(Model.Status == ReportStatus.InReview ? "active" : "")">
+                                    <input type="radio" name="status" value="@ReportStatus.InReview" @(Model.Status == ReportStatus.InReview ? "checked" : "")> In Review
+                                </label>
+                                <label class="btn btn-outline-success @(Model.Status == ReportStatus.Approved ? "active" : "")">
+                                    <input type="radio" name="status" value="@ReportStatus.Approved" @(Model.Status == ReportStatus.Approved ? "checked" : "")> Approved
+                                </label>
+                                <label class="btn btn-outline-danger @(Model.Status == ReportStatus.Rejected ? "active" : "")">
+                                    <input type="radio" name="status" value="@ReportStatus.Rejected" @(Model.Status == ReportStatus.Rejected ? "checked" : "")> Reject
+                                </label>
+                                <label class="btn btn-outline-success @(Model.Status == ReportStatus.Completed ? "active" : "")">
+                                    <input type="radio" name="status" value="@ReportStatus.Completed" @(Model.Status == ReportStatus.Completed ? "checked" : "")> Complete
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group mt-3">
+                            <label for="adminNotes">Admin Notes</label>
+                            <textarea class="form-control" id="adminNotes" name="adminNotes" rows="3">@Model.AdminNotes</textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary mt-2">Update Report</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status History -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Status History</h6>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-primary"></div>
+                            <div class="timeline-content">
+                                <h6 class="font-weight-bold">Report Created</h6>
+                                <p class="text-muted small">@Model.ReportDate.ToString("f")</p>
+                            </div>
+                        </div>
+                        
+                        @if (Model.LastUpdated.HasValue)
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-success"></div>
+                                <div class="timeline-content">
+                                    <h6 class="font-weight-bold">Status Updated to @Model.Status</h6>
+                                    <p class="text-muted small">@Model.LastUpdated.Value.ToString("f")</p>
+                                    @if (!string.IsNullOrEmpty(Model.AdminNotes))
+                                    {
+                                        <div class="alert alert-light p-2 mt-2 small">
+                                            @Model.AdminNotes
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeClass(ReportStatus status)
+    {
+        return status switch
+        {
+            ReportStatus.Pending => "badge-warning",
+            ReportStatus.InReview => "badge-info",
+            ReportStatus.Approved => "badge-primary",
+            ReportStatus.Rejected => "badge-danger",
+            ReportStatus.Completed => "badge-success",
+            _ => "badge-secondary"
+        };
+    }
+}
+
+@section Styles {
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+            border-left: 2px solid #e3e6f0;
+            padding-left: 1.5rem;
+        }
+        
+        .timeline-item:last-child {
+            border-left-color: transparent;
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            left: -8px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            top: 4px;
+        }
+        
+        .timeline-content {
+            margin-left: 0.5rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Initialize Bootstrap tooltips
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

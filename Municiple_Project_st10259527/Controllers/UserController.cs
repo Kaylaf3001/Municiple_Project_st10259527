@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Repositories;
@@ -27,6 +27,11 @@ namespace Municiple_Project_st10259527.Controllers
                 return Unauthorized("Invalid login");
 
             HttpContext.Session.SetInt32("UserId", user.UserId);
+            HttpContext.Session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
+            
+            if (user.IsAdmin)
+                return RedirectToAction("Dashboard", "Admin");
+                
             return RedirectToAction("Index", "Home");
         }
 
@@ -36,15 +41,22 @@ namespace Municiple_Project_st10259527.Controllers
         }
 
         [HttpPost]
-        public IActionResult SignUp(string email, string password)
+        public IActionResult SignUp(string firstName, string lastName, string email, string password)
         {
             if (_userRepository.UserExists(email))
                 return BadRequest("User already exists");
 
-            var user = new UserModel { Email = email, Password = password };
+            var user = new UserModel 
+            { 
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email, 
+                Password = password,
+                IsAdmin = false // Explicitly set to false
+            };
             _userRepository.AddUser(user);
 
-            return Ok("User registered!");
+            return Ok("User registered successfully!");
         }
     }
 }

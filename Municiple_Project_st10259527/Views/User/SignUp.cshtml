@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Sign Up";
     Layout = null;
 }
@@ -85,21 +85,58 @@
     <div class="signup-container">
         <a href="@Url.Action("Login", "User")" class="back-link">← <span>Back</span></a>
         <h2>Sign Up</h2>
-        <form asp-action="SignUp" method="post">
+        <form asp-action="SignUp" method="post" onsubmit="return validateForm()">
             <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="Email" placeholder="Email@gmail.com" required />
+                <label for="FirstName">First Name</label>
+                <input type="text" id="FirstName" name="firstName" placeholder="John" required />
             </div>
             <div class="form-group">
-                <label>Password</label>
-                <input type="password" name="Password" placeholder="Password" required />
+                <label for="LastName">Last Name</label>
+                <input type="text" id="LastName" name="lastName" placeholder="Doe" required />
             </div>
             <div class="form-group">
-                <label>Confirm Password</label>
-                <input type="password" name="ConfirmPassword" placeholder="Confirm Password" required />
+                <label for="Email">Email</label>
+                <input type="email" id="Email" name="email" placeholder="email@example.com" required />
+            </div>
+            <div class="form-group">
+                <label for="Password">Password</label>
+                <input type="password" id="Password" name="password" placeholder="Password" required minlength="6" />
+            </div>
+            <div class="form-group">
+                <label for="ConfirmPassword">Confirm Password</label>
+                <input type="password" id="ConfirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
+                <span id="passwordMatchError" style="color: red; font-size: 12px; display: none;">Passwords do not match</span>
             </div>
             <button type="submit" class="btn">Sign Up</button>
         </form>
+
+        <script>
+            function validateForm() {
+                const password = document.getElementById('Password').value;
+                const confirmPassword = document.getElementById('ConfirmPassword').value;
+                const errorElement = document.getElementById('passwordMatchError');
+                
+                if (password !== confirmPassword) {
+                    errorElement.style.display = 'block';
+                    return false;
+                }
+                errorElement.style.display = 'none';
+                return true;
+            }
+
+            // Add real-time password matching validation
+            document.getElementById('ConfirmPassword').addEventListener('input', function() {
+                const password = document.getElementById('Password').value;
+                const confirmPassword = this.value;
+                const errorElement = document.getElementById('passwordMatchError');
+                
+                if (password !== confirmPassword) {
+                    errorElement.style.display = 'block';
+                } else {
+                    errorElement.style.display = 'none';
+                }
+            });
+        </script>
     </div>
 </body>
 </html>

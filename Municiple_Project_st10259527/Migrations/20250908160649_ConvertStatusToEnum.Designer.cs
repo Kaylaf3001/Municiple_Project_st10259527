@@ -12,8 +12,8 @@ using Municiple_Project_st10259527.Services;
 namespace Municiple_Project_st10259527.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250903143820_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250908160649_ConvertStatusToEnum")]
+    partial class ConvertStatusToEnum
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,12 +33,21 @@ namespace Municiple_Project_st10259527.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReportId"));
 
+                    b.Property<string>("AdminNotes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AssignedAdminId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastUpdated")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -51,14 +60,17 @@ namespace Municiple_Project_st10259527.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("ReportId");
+
+                    b.HasIndex("AssignedAdminId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reports");
                 });
@@ -75,6 +87,17 @@ namespace Municiple_Project_st10259527.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -82,6 +105,31 @@ namespace Municiple_Project_st10259527.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Municiple_Project_st10259527.Models.ReportModel", b =>
+                {
+                    b.HasOne("Municiple_Project_st10259527.Models.UserModel", "AssignedAdmin")
+                        .WithMany("AssignedReports")
+                        .HasForeignKey("AssignedAdminId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Municiple_Project_st10259527.Models.UserModel", "User")
+                        .WithMany("Reports")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssignedAdmin");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Municiple_Project_st10259527.Models.UserModel", b =>
+                {
+                    b.Navigation("AssignedReports");
+
+                    b.Navigation("Reports");
                 });
 #pragma warning restore 612, 618
         }

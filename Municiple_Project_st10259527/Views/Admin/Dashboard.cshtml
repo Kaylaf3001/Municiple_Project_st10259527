@@ -1,0 +1,102 @@
+@model Municiple_Project_st10259527.ViewModels.AdminDashboardViewModel
+
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <h2>Admin Dashboard</h2>
+    
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Reports</h5>
+                    <p class="card-text display-4">@Model.TotalReports</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Pending</h5>
+                    <p class="card-text display-4">@Model.PendingCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">In Progress</h5>
+                    <p class="card-text display-4">@Model.InProgressCount</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Completed</h5>
+                    <p class="card-text display-4">@Model.CompletedCount</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Reports -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Recent Reports</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.RecentReports.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Date Reported</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var report in Model.RecentReports)
+                            {
+                                <tr>
+                                    <td>@report.ReportId</td>
+                                    <td>@report.ReportType</td>
+                                    <td><span class="badge bg-@GetStatusBadgeClass(report.Status)">@report.Status</span></td>
+                                    <td>@report.ReportDate.ToString("g")</td>
+                                    <td>
+                                        <a href="@Url.Action("ReportDetails", new { id = report.ReportId })" class="btn btn-sm btn-info">View</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">No recent reports found.</div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeClass(ReportStatus status)
+    {
+        return status switch
+        {
+            ReportStatus.Pending => "warning",
+            ReportStatus.InReview => "info",
+            ReportStatus.Completed => "success",
+            ReportStatus.Rejected => "danger",
+            _ => "secondary"
+        };
+    }
+}

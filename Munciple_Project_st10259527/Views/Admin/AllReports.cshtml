@@ -1,0 +1,115 @@
+@model IEnumerable<Municiple_Project_st10259527.Models.ReportModel>
+@{
+    ViewData["Title"] = "All Reports";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">All Reports</h1>
+        <div class="d-flex
+            <a href="@Url.Action("Dashboard")" class="btn btn-secondary btn-sm mr-2">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Report List</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-header">Filter by Status:</div>
+                    <a class="dropdown-item" href="?status=all">All Reports</a>
+                    <a class="dropdown-item" href="?status=Pending">Pending</a>
+                    <a class="dropdown-item" href="?status=InReview">In Review</a>
+                    <a class="dropdown-item" href="?status=Approved">Approved</a>
+                    <a class="dropdown-item" href="?status=Completed">Completed</a>
+                    <a class="dropdown-item" href="?status=Rejected">Rejected</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Reported By</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Reported On</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var report in Model)
+                        {
+                            <tr>
+                                <td>@report.ReportId</td>
+                                <td>@report.ReportType</td>
+                                <td>@(report.User?.FullName ?? "N/A")</td>
+                                <td>@report.Location</td>
+                                <td><span class="badge @GetStatusBadgeClass(report.Status)">@report.Status.ToString()</span></td>
+                                <td>@report.ReportDate.ToString("g")</td>
+                                <td>
+                                    <a href="@Url.Action("ReportDetails", new { id = report.ReportId })" class="btn btn-info btn-sm" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    @if (report.Status != ReportStatus.Completed && report.Status != ReportStatus.Rejected)
+                                    {
+                                        <a href="@Url.Action("UpdateReportStatus", new { reportId = report.ReportId, status = ReportStatus.Completed })" 
+                                           class="btn btn-success btn-sm" title="Mark as Complete"
+                                           onclick="return confirm('Are you sure you want to mark this report as completed?')">
+                                            <i class="fas fa-check"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+}
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#dataTable').DataTable({
+                responsive: true,
+                order: [[0, 'desc']], // Sort by report ID descending
+                columnDefs: [
+                    { orderable: false, targets: -1 } // Disable sorting on actions column
+                ]
+            });
+        });
+    </script>
+}
+
+@functions {
+    string GetStatusBadgeClass(ReportStatus status)
+    {
+        return status switch
+        {
+            ReportStatus.Pending => "badge-warning",
+            ReportStatus.InReview => "badge-info",
+            ReportStatus.Approved => "badge-primary",
+            ReportStatus.Rejected => "badge-danger",
+            ReportStatus.Completed => "badge-success",
+            _ => "badge-secondary"
+        };
+    }
+}

@@ -14,8 +14,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // ? Add distributed memory cache (required for session)
 builder.Services.AddDistributedMemoryCache();
 
+// Add HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
 // ? Add session
 builder.Services.AddSession(options =>

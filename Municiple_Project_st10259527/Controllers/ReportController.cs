@@ -163,7 +163,7 @@ namespace Municiple_Project_st10259527.Controllers
                     Location = location!,
                     ReportType = category!,
                     Description = description!,
-                    Status = "Pending",
+                    Status = ReportStatus.Pending,
                     ReportDate = DateTime.Now
                 };
 

@@ -216,7 +216,7 @@
                                 <td>@(string.IsNullOrEmpty(report.Location) ? "N/A" : report.Location)</td>
                                 <td>@(string.IsNullOrEmpty(report.ReportType) ? "N/A" : report.ReportType)</td>
                                 <td>@(string.IsNullOrEmpty(report.Description) ? "No description provided" : report.Description)</td>
-                                <td class="status">@(string.IsNullOrEmpty(report.Status) ? "Pending" : report.Status)</td>
+                                <td class="status">@(report.Status == default ? "Pending" : report.Status.ToString())</td>
                             </tr>
                         }
                     }

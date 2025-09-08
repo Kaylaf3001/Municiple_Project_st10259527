@@ -47,6 +47,116 @@ namespace Municiple_Project_st10259527.Repositories
             return query.ToList().AsEnumerable();
         }
 
+        public async Task<IEnumerable<ReportModel>> GetAllReportsAsync()
+        {
+            return await _context.Reports
+                .OrderByDescending(r => r.ReportDate)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ReportModel>> GetAllReportsWithUsersAsync()
+        {
+            return await _context.Reports
+                .Include(r => r.User)
+                .OrderByDescending(r => r.ReportDate)
+                .ToListAsync();
+        }
+
+        public async Task<ReportModel> GetReportByIdAsync(int id)
+        {
+            return await _context.Reports
+                .FirstOrDefaultAsync(r => r.ReportId == id);
+        }
+
+        public async Task<ReportModel> GetReportWithDetailsAsync(int id)
+        {
+            return await _context.Reports
+                .Include(r => r.User)
+                .FirstOrDefaultAsync(r => r.ReportId == id);
+        }
+
+        public async Task UpdateReportAsync(ReportModel report)
+        {
+            _context.Entry(report).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateReportStatusAsync(int reportId, ReportStatus status, string? adminNotes = null, int? assignedAdminId = null)
+        {
+            var report = await _context.Reports.FindAsync(reportId);
+            if (report == null)
+                throw new KeyNotFoundException($"Report with ID {reportId} not found.");
+
+            report.Status = status;
+            report.LastUpdated = DateTime.UtcNow;
+            
+            if (!string.IsNullOrEmpty(adminNotes))
+                report.AdminNotes = adminNotes;
+                
+            if (assignedAdminId.HasValue)
+                report.AssignedAdminId = assignedAdminId;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> ApproveReportAsync(int reportId, int adminId, string? notes = null)
+        {
+            try
+            {
+                await UpdateReportStatusAsync(reportId, ReportStatus.Approved, notes, adminId);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> RejectReportAsync(int reportId, int adminId, string reason)
+        {
+            if (string.IsNullOrWhiteSpace(reason))
+                throw new ArgumentException("Rejection reason is required.");
+
+            try
+            {
+                await UpdateReportStatusAsync(reportId, ReportStatus.Rejected, $"Rejected: {reason}", adminId);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> MarkInReviewAsync(int reportId, int adminId)
+        {
+            try
+            {
+                await UpdateReportStatusAsync(reportId, ReportStatus.InReview, null, adminId);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<IEnumerable<ReportModel>> GetReportsByStatusAsync(ReportStatus status)
+        {
+            return await _context.Reports
+                .Where(r => r.Status == status)
+                .OrderByDescending(r => r.ReportDate)
+                .ToListAsync();
+        }
+
+        public async Task<Dictionary<ReportStatus, int>> GetReportCountsByStatusAsync()
+        {
+            return await _context.Reports
+                .GroupBy(r => r.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.Status, x => x.Count);
+        }
+
         public IQueryable<ReportModel> GetRecentReports(int count = 5)
         {
             try
@@ -96,7 +206,11 @@ namespace Municiple_Project_st10259527.Repositories
             {
                 // Set default values
                 report.ReportDate = DateTime.Now;
-                report.Status = string.IsNullOrWhiteSpace(report.Status) ? "Pending" : report.Status.Trim();
+                // Status is now an enum, so we don't need to trim it
+                if (report.Status == default)
+                {
+                    report.Status = ReportStatus.Pending;
+                }
                 report.ReportType = string.IsNullOrWhiteSpace(report.ReportType) ? "General" : report.ReportType.Trim();
                 report.Description = string.IsNullOrWhiteSpace(report.Description) ? "No description provided" : report.Description.Trim();
                 report.Location = string.IsNullOrWhiteSpace(report.Location) ? "Location not specified" : report.Location.Trim();

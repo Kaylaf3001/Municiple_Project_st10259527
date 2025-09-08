@@ -1,4 +1,4 @@
-﻿using Municiple_Project_st10259527.Models;
+using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Services;
 using System.Linq;
 using System.Xml.Serialization;
@@ -11,6 +11,7 @@ namespace Municiple_Project_st10259527.Repositories
         bool UserExists(string email);
         void AddUser(UserModel user);
         UserModel GetUserById(int userId);
+        IEnumerable<UserModel> GetAllUsers();
 
     }
 
@@ -42,6 +43,11 @@ namespace Municiple_Project_st10259527.Repositories
         public UserModel GetUserById(int userId)
         {
             return _context.Users.FirstOrDefault(u => u.UserId == userId);
+        }
+
+        public IEnumerable<UserModel> GetAllUsers()
+        {
+            return _context.Users.ToList();
         }
     }
 }
