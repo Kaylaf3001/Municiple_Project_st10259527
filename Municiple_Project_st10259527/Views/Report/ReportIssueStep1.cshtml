@@ -71,7 +71,7 @@
         }
 
             .progress-step.active {
-                background: #000;
+                background: #1A3456;
             }
 
         .wizard-buttons {
@@ -81,15 +81,16 @@
 
         .btn {
             padding: 10px 20px;
-            background: #ccc;
+            background: #1A3456;
             border: none;
+            color: white;
             border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
         }
 
             .btn:hover {
-                background: #aaa;
+                background: #142a47;
             }
     </style>
 </head>
@@ -99,17 +100,17 @@
         <h3>Location</h3>
         <p>Please enter the location where the issue is based</p>
 
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+            <div class="progress-step active"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+        </div>
+
         <form asp-action="ReportIssueStep1" method="post">
             <div class="form-group">
                 <input type="text" name="Location" placeholder="Example: Blouberg, Cape Town, Western Cape" required />
-            </div>
-
-            <!-- Progress Bar -->
-            <div class="progress-bar">
-                <div class="progress-step active"></div>
-                <div class="progress-step"></div>
-                <div class="progress-step"></div>
-                <div class="progress-step"></div>
             </div>
 
             <!-- Buttons -->
