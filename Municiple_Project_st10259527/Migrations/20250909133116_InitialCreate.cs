@@ -62,6 +62,11 @@ namespace Municiple_Project_st10259527.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "Email", "FirstName", "IsAdmin", "LastName", "Password" },
+                values: new object[] { 1, "admin@example.com", "System", true, "Admin", "Admin@123" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Reports_AssignedAdminId",
                 table: "Reports",

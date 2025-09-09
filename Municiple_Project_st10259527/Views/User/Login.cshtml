@@ -139,3 +139,10 @@
     </div>
 </body>
 </html>
+
+@if (TempData["LoginError"] != null)
+{
+    <script>
+        alert('@TempData["LoginError"]');
+    </script>
+}

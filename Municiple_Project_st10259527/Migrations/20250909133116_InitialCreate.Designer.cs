@@ -12,8 +12,8 @@ using Municiple_Project_st10259527.Services;
 namespace Municiple_Project_st10259527.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250908160649_ConvertStatusToEnum")]
-    partial class ConvertStatusToEnum
+    [Migration("20250909133116_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -105,6 +105,17 @@ namespace Municiple_Project_st10259527.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            Email = "admin@example.com",
+                            FirstName = "System",
+                            IsAdmin = true,
+                            LastName = "Admin",
+                            Password = "Admin@123"
+                        });
                 });
 
             modelBuilder.Entity("Municiple_Project_st10259527.Models.ReportModel", b =>

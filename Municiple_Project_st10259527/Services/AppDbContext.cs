@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Municiple_Project_st10259527.Models;
 using System.Collections.Generic;
@@ -29,6 +29,19 @@ namespace Municiple_Project_st10259527.Services
                 .WithMany(a => a.AssignedReports)
                 .HasForeignKey(r => r.AssignedAdminId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // ✅ Seed a default admin user
+            modelBuilder.Entity<UserModel>().HasData(
+                new UserModel
+                {
+                    UserId = 1,
+                    FirstName = "System",
+                    LastName = "Admin",
+                    Email = "admin@example.com",
+                    Password = "Admin@123",
+                    IsAdmin = true
+                }
+            );
         }
     }
 }

@@ -102,6 +102,17 @@ namespace Municiple_Project_st10259527.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            Email = "admin@example.com",
+                            FirstName = "System",
+                            IsAdmin = true,
+                            LastName = "Admin",
+                            Password = "Admin@123"
+                        });
                 });
 
             modelBuilder.Entity("Municiple_Project_st10259527.Models.ReportModel", b =>

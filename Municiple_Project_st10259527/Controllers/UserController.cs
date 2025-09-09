@@ -24,16 +24,20 @@ namespace Municiple_Project_st10259527.Controllers
         {
             var user = _userRepository.GetUserByEmailAndPassword(email, password);
             if (user == null)
-                return Unauthorized("Invalid login");
+            {
+                TempData["LoginError"] = "Invalid email or password!";
+                return RedirectToAction("Login"); // Stay on the same page
+            }
 
             HttpContext.Session.SetInt32("UserId", user.UserId);
             HttpContext.Session.SetString("IsAdmin", user.IsAdmin ? "true" : "false");
-            
+
             if (user.IsAdmin)
                 return RedirectToAction("Dashboard", "Admin");
-                
+
             return RedirectToAction("Index", "Home");
         }
+
 
         public IActionResult SignUp()
         {
@@ -44,19 +48,31 @@ namespace Municiple_Project_st10259527.Controllers
         public IActionResult SignUp(string firstName, string lastName, string email, string password)
         {
             if (_userRepository.UserExists(email))
-                return BadRequest("User already exists");
+            {
+                TempData["SignUpError"] = "A user with this email already exists!";
+                return RedirectToAction("SignUp");
+            }
 
-            var user = new UserModel 
-            { 
+            var user = new UserModel
+            {
                 FirstName = firstName,
                 LastName = lastName,
-                Email = email, 
+                Email = email,
                 Password = password,
-                IsAdmin = false // Explicitly set to false
+                IsAdmin = false
             };
             _userRepository.AddUser(user);
 
-            return Ok("User registered successfully!");
+            TempData["SignUpSuccess"] = "User registered successfully!";
+            return RedirectToAction("Login", "User"); // Redirect to login page after successful signup
+        }
+
+
+        //Logout action
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "User");
         }
     }
 }

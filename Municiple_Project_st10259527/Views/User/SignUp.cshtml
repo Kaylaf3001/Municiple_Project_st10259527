@@ -140,3 +140,17 @@
     </div>
 </body>
 </html>
+
+@if (TempData["SignUpError"] != null)
+{
+    <script>
+        alert('@TempData["SignUpError"]');
+    </script>
+}
+@if (TempData["SignUpSuccess"] != null)
+{
+    <script>
+        alert('@TempData["SignUpSuccess"]');
+    </script>
+}
+
