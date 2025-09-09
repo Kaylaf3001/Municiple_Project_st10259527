@@ -1,0 +1,281 @@
+@model Municiple_Project_st10259527.Models.ReportModel
+
+@{
+    ViewData["Title"] = "Report Details";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Report #@Model.ReportId - @Model.ReportType</h2>
+        <div>
+            <a href="@Url.Action("AllReports")" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" id="reportTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="details-tab" data-bs-toggle="tab" 
+                            data-bs-target="#details" type="button" role="tab" 
+                            aria-controls="details" aria-selected="true">
+                        Details
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" 
+                            data-bs-target="#history" type="button" role="tab" 
+                            aria-controls="history" aria-selected="false">
+                        History
+                    </button>
+                </li>
+                @if (Model.Status == ReportStatus.Pending || Model.Status == ReportStatus.InReview)
+                {
+                    <li class="nav-item ms-auto">
+                        <div class="btn-group">
+                            <form asp-action="ApproveReport" method="post" class="d-inline" 
+                                  onsubmit="return confirm('Are you sure you want to approve this report?');">
+                                <input type="hidden" name="id" value="@Model.ReportId" />
+                                <button type="submit" class="btn btn-success">
+                                    <i class="bi bi-check-circle"></i> Approve
+                                </button>
+                            </form>
+                            <button type="button" class="btn btn-danger" 
+                                    data-bs-toggle="modal" data-bs-target="#rejectModal">
+                                <i class="bi bi-x-circle"></i> Reject
+                            </button>
+                            @if (Model.Status == ReportStatus.Pending)
+                            {
+                                <form asp-action="MarkInReview" method="post" class="d-inline">
+                                    <input type="hidden" name="id" value="@Model.ReportId" />
+                                    <button type="submit" class="btn btn-info text-white">
+                                        <i class="bi bi-arrow-repeat"></i> Mark In Review
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+        
+        <div class="card-body">
+            <div class="tab-content" id="reportTabsContent">
+                <!-- Details Tab -->
+                <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-3">Report Information</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Status:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-@GetStatusBadgeClass(Model.Status)">@Model.Status</span>
+                                </dd>
+                                
+                                <dt class="col-sm-4">Reported On:</dt>
+                                <dd class="col-sm-8">@Model.ReportDate.ToString("f")</dd>
+                                
+                                <dt class="col-sm-4">Last Updated:</dt>
+                                <dd class="col-sm-8">@(Model.UpdatedAt?.ToString("f") ?? "N/A")</dd>
+                                
+                                <dt class="col-sm-4">Location:</dt>
+                                <dd class="col-sm-8">@Model.Location</dd>
+                                
+                                <dt class="col-sm-4">Priority:</dt>
+                                <dd class="col-sm-8">@Model.Priority</dd>
+                            </dl>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h5 class="mb-3">Reporter Information</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Name:</dt>
+                                <dd class="col-sm-8">@(Model.User?.FullName ?? "N/A")</dd>
+                                
+                                <dt class="col-sm-4">Email:</dt>
+                                <dd class="col-sm-8">@(Model.User?.Email ?? "N/A")</dd>
+                                
+                                <dt class="col-sm-4">Phone:</dt>
+                                <dd class="col-sm-8">@(Model.User?.PhoneNumber ?? "N/A")</dd>
+                            </dl>
+                            
+                            @if (Model.AssignedAdminId.HasValue)
+                            {
+                                <h5 class="mt-4 mb-3">Assigned Admin</h5>
+                                <dl class="row">
+                                    <dt class="col-sm-4">Admin:</dt>
+                                    <dd class="col-sm-8">@(Model.AssignedAdmin?.FullName ?? "N/A")</dd>
+                                </dl>
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5>Description</h5>
+                            <div class="border p-3 bg-light rounded">
+                                @Model.Description
+                            </div>
+                        </div>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(Model.AdminNotes))
+                    {
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h5>Admin Notes</h5>
+                                <div class="border p-3 bg-light rounded">
+                                    @Model.AdminNotes
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <!-- History Tab -->
+                <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-badge bg-primary">
+                                <i class="bi bi-plus-circle"></i>
+                            </div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h5 class="timeline-title">Report Created</h5>
+                                    <p class="text-muted">
+                                        <small>@Model.ReportDate.ToString("f")</small>
+                                    </p>
+                                </div>
+                                <div class="timeline-body">
+                                    <p>Report was submitted by @(Model.User?.FullName ?? "a user")</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-badge bg-info">
+                                    <i class="bi bi-arrow-repeat"></i>
+                                </div>
+                                <div class="timeline-panel">
+                                    <div class="timeline-heading">
+                                        <h5 class="timeline-title">Status Updated</h5>
+                                        <p class="text-muted">
+                                            <small>@Model.UpdatedAt.Value.ToString("f")</small>
+                                        </p>
+                                    </div>
+                                    <div class="timeline-body">
+                                        <p>Status was changed to: <span class="badge bg-@GetStatusBadgeClass(Model.Status)">@Model.Status</span></p>
+                                        @if (!string.IsNullOrEmpty(Model.AdminNotes) && Model.Status != ReportStatus.Pending)
+                                        {
+                                            <div class="alert alert-light mt-2">
+                                                <strong>Note:</strong> @Model.AdminNotes
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="rejectModalLabel">Reject Report</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="RejectReport" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="@Model.ReportId" />
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Please provide a reason for rejection:</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Reject Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Timeline styles */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #dee2e6;
+            left: 25px;
+            margin-left: -1.5px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .timeline-badge {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            left: 10px;
+        }
+        
+        .timeline-panel {
+            margin-left: 50px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            background-color: #fff;
+        }
+        
+        .timeline-title {
+            margin-top: 0;
+            color: inherit;
+        }
+        
+        .timeline-body p:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+}
+
+@functions {
+    string GetStatusBadgeClass(ReportStatus status)
+    {
+        return status switch
+        {
+            ReportStatus.Pending => "warning",
+            ReportStatus.InReview => "info",
+            ReportStatus.Completed => "success",
+            ReportStatus.Rejected => "danger",
+            _ => "secondary"
+        };
+    }
+}
