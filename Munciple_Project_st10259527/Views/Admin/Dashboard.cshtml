@@ -85,6 +85,7 @@
         </div>
     </div>
 
+
     <!-- Reports Overview -->
     <div class="row">
         <!-- Pending Reports -->
@@ -223,6 +224,31 @@
         </div>
     </div>
 </div>
+
+<!-- Reject Report Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rejectModalLabel">Reject Report</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="rejectForm" method="post" asp-action="RejectReport">
+                <input type="hidden" name="id" id="reportIdToReject" />
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="rejectionReason" class="col-form-label">Reason for rejection:</label>
+                        <textarea class="form-control" id="rejectionReason" name="reason" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Reject</button>
+                </div>
+        </div>
+    </div>
 
 @section Scripts {
     <script>

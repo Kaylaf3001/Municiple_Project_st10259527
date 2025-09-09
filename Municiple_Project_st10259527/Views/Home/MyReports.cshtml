@@ -1,0 +1,113 @@
+@model Municiple_Project_st10259527.ViewModels.UserReportsViewModel
+
+@{
+    ViewData["Title"] = "My Reports";
+}
+
+<div class="container mt-4">
+    <h2>My Reports</h2>
+    
+    <!-- Status Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Total Reports</h5>
+                    <h2 class="mb-0">@Model.TotalReports</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Resolved</h5>
+                    <h2 class="mb-0">@Model.ResolvedCount</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">In Review</h5>
+                    <h2 class="mb-0">@Model.InReviewCount</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-danger">
+                <div class="card-body">
+                    <h5 class="card-title">Pending</h5>
+                    <h2 class="mb-0">@Model.PendingCount</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Report ID</th>
+                            <th>Location</th>
+                            <th>Category</th>
+                            <th>Date Reported</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var report in Model.Reports)
+                        {
+                            <tr>
+                                <td>@report.ReportId</td>
+                                <td>@report.Location</td>
+                                <td>@report.ReportType</td>
+                                <td>@report.ReportDate.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    @switch (report.Status)
+                                    {
+                                        case ReportStatus.Completed:
+                                            <span class="badge bg-success">@report.Status</span>
+                                            break;
+                                        case ReportStatus.InReview:
+                                            <span class="badge bg-warning text-dark">@report.Status</span>
+                                            break;
+                                        case ReportStatus.Rejected:
+                                            <span class="badge bg-danger">@report.Status</span>
+                                            break;
+                                        case ReportStatus.Approved:
+                                            <span class="badge bg-info">@report.Status</span>
+                                            break;
+                                        default: // Pending
+                                            <span class="badge bg-secondary">@report.Status</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("ReportDetails", "Report", new { id = report.ReportId })" class="btn btn-sm btn-info">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.Reports.Any())
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center">No reports found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mt-3">
+        <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>

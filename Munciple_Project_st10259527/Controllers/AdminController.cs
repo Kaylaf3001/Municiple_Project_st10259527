@@ -12,6 +12,23 @@ namespace Municiple_Project_st10259527.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
+        // GET: Admin/Dashboard
+        public async Task<IActionResult> Dashboard()
+        {
+            var viewModel = new AdminDashboardViewModel
+            {
+                TotalReports = await _adminRepository.GetTotalReportCountAsync(),
+                PendingCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Pending),
+                InReviewCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.InReview),
+                CompletedCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Completed),
+                RejectedCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Rejected),
+                PendingReports = await _adminRepository.GetRecentReportsByStatusAsync(ReportStatus.Pending, 5),
+                InReviewReports = await _adminRepository.GetRecentReportsByStatusAsync(ReportStatus.InReview, 5),
+                RecentReports = await _adminRepository.GetRecentReportsAsync(10)
+            };
+
+            return View(viewModel);
+        }
         private readonly IAdminRepository _adminRepository;
         private const int PageSize = 10;
 
