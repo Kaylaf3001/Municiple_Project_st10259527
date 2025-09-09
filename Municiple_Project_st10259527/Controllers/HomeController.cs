@@ -27,6 +27,13 @@ namespace Municiple_Project_st10259527.Controllers
             
             try
             {
+                // Get user details
+                var user = _userRepository.GetUserById(userId.Value);
+                if (user != null)
+                {
+                    ViewBag.UserFirstName = user.FirstName;
+                }
+                
                 // Get total reports count
                 ViewBag.TotalReports = _reportRepository.GetReportsCountByUserId(userId.Value);
 

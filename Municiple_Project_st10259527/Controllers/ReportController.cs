@@ -244,14 +244,15 @@ namespace Municiple_Project_st10259527.Controllers
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
-            {
                 return RedirectToAction("Login", "User");
-            }
 
+            // Get user's first name
             var user = _userRepository.GetUserById(userId.Value);
-            var FirstName = user?.FirstName ?? "John";
-
-            ViewData["FirstName"] = FirstName;
+            if (user != null)
+            {
+                ViewData["Name"] = user.FirstName;
+            }
+            
             return View();
         }
         //===============================================================================================================
