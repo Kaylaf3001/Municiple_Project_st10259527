@@ -48,6 +48,10 @@
             font-size: 1.5rem;
         }
 
+            .menu-btn::after {
+                display: none !important;
+            }
+
         /* Ensure dropdown aligns nicely with burger button */
         .topbar .dropdown-menu {
             min-width: 180px;
@@ -70,7 +74,7 @@
         </a>
 
         <div class="dropdown">
-            <button class="menu-btn dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="menu-btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-list"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
