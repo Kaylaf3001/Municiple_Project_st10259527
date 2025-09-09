@@ -83,8 +83,6 @@
                                 <dt class="col-sm-4">Location:</dt>
                                 <dd class="col-sm-8">@Model.Location</dd>
                                 
-                                <dt class="col-sm-4">Priority:</dt>
-                                <dd class="col-sm-8">@Model.Priority</dd>
                             </dl>
                         </div>
                         
@@ -97,8 +95,6 @@
                                 <dt class="col-sm-4">Email:</dt>
                                 <dd class="col-sm-8">@(Model.User?.Email ?? "N/A")</dd>
                                 
-                                <dt class="col-sm-4">Phone:</dt>
-                                <dd class="col-sm-8">@(Model.User?.PhoneNumber ?? "N/A")</dd>
                             </dl>
                             
                             @if (Model.AssignedAdminId.HasValue)
