@@ -7,21 +7,21 @@ namespace Municiple_Project_st10259527.ViewModels
     public class AdminDashboardViewModel
     {
         // Report Collections
-        public IEnumerable<ReportModel> PendingReports { get; set; } = Enumerable.Empty<ReportModel>();
-        public IEnumerable<ReportModel> InReviewReports { get; set; } = Enumerable.Empty<ReportModel>();
-        public IEnumerable<ReportModel> RecentReports { get; set; } = Enumerable.Empty<ReportModel>();
+        public List<ReportModel> PendingReports { get; set; } = new List<ReportModel>();
+        public List<ReportModel> InProgressReports { get; set; } = new List<ReportModel>();
+        public List<ReportModel> CompletedReports { get; set; } = new List<ReportModel>();
+        public List<ReportModel> ApprovedReports { get; set; } = new List<ReportModel>();
+        public List<ReportModel> RecentReports { get; set; } = new List<ReportModel>();
         
         // Counts
         public int TotalReports { get; set; }
         public int TotalUsers { get; set; }
-        public int PendingCount { get; set; }
-        public int InReviewCount { get; set; }
-        public int CompletedCount { get; set; }
-        public int RejectedCount { get; set; }
-        public int ApprovedCount { get; set; }
         
         // Computed Properties
-        public int InProgressCount => InReviewCount;
+        public int PendingCount => PendingReports.Count;
+        public int InProgressCount => InProgressReports.Count;
+        public int CompletedCount => CompletedReports.Count;
+        public int ApprovedCount => ApprovedReports.Count;
         
         // Statistics
         public int NewReportsToday { get; set; }

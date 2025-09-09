@@ -23,22 +23,28 @@ namespace Municiple_Project_st10259527.Repository
         {
             var allReports = await _context.Reports
                 .Include(r => r.User)
+                .OrderByDescending(r => r.ReportDate)
                 .ToListAsync();
 
             var now = DateTime.UtcNow;
             var oneWeekAgo = now.AddDays(-7);
             var today = now.Date;
 
-            // Get reports by status
+            // Get reports by status for the dashboard tabs
             var pendingReports = allReports
                 .Where(r => r.Status == ReportStatus.Pending)
-                .OrderByDescending(r => r.ReportDate)
-                .Take(10);
+                .ToList();
 
-            var inReviewReports = allReports
-                .Where(r => r.Status == ReportStatus.InReview)
-                .OrderByDescending(r => r.ReportDate)
-                .Take(10);
+            var inProgressReports = allReports
+                .Where(r => r.Status == ReportStatus.InReview || r.Status == ReportStatus.Approved)
+                .ToList();
+
+            var completedReports = allReports
+                .Where(r => r.Status == ReportStatus.Completed)
+                .ToList();
+
+            // Get recent reports (all statuses, limited to 10)
+            var recentReports = allReports.Take(10).ToList();
 
             // Get statistics
             var reportCounts = allReports
@@ -48,42 +54,42 @@ namespace Municiple_Project_st10259527.Repository
             var newReportsToday = await GetNewReportsCountTodayAsync();
             var resolvedThisWeek = await GetResolvedReportsCountThisWeekAsync();
             var averageResolutionHours = await GetAverageResolutionTimeHoursAsync();
+
+            // Get top reporter
+            var topReporter = allReports
+                .GroupBy(r => r.UserId)
+                .Select(g => new
+                {
+                    User = g.First().User,
+                    Count = g.Count()
+                })
+                .OrderByDescending(x => x.Count)
+                .FirstOrDefault();
+
+            // Get additional data
             var topReporterInfo = await GetTopReporterInfoAsync();
             var statusDistribution = await GetStatusDistributionAsync();
 
-            var viewModel = new AdminDashboardViewModel
+            // Get top reporter info
+            var (topReporterName, reportCount) = topReporterInfo;
+
+            // Create and return the view model
+            return new AdminDashboardViewModel
             {
                 // Report collections
-                PendingReports = pendingReports.ToList(),
-                InProgressReports = allReports
-                    .Where(r => r.Status == ReportStatus.InReview)
-                    .OrderByDescending(r => r.ReportDate)
-                    .Take(10)
-                    .ToList(),
-                CompletedReports = allReports
-                    .Where(r => r.Status == ReportStatus.Completed)
-                    .OrderByDescending(r => r.ReportDate)
-                    .Take(10)
-                    .ToList(),
-                RecentReports = allReports
-                    .OrderByDescending(r => r.ReportDate)
-                    .Take(10)
-                    .ToList(),
-
-                // Counts
+                PendingReports = pendingReports,
+                InProgressReports = inProgressReports,
+                CompletedReports = completedReports,
+                RecentReports = recentReports,
                 TotalReports = allReports.Count,
                 TotalUsers = await _context.Users.CountAsync(),
-
-                // Status Distribution
-                StatusDistribution = allReports
-                    .GroupBy(r => r.Status)
-                    .ToDictionary(
-                        g => g.Key.ToString(),
-                        g => g.Count()
-                    )
+                NewReportsToday = newReportsToday,
+                ResolvedThisWeek = resolvedThisWeek,
+                AverageResolutionTimeHours = averageResolutionHours,
+                StatusDistribution = statusDistribution,
+                TopReporter = topReporter?.User?.FullName ?? "N/A",
+                ReportsByTopReporter = topReporter?.Count ?? 0
             };
-
-            return viewModel;
         }
 
         public async Task<ReportModel> GetReportByIdAsync(int id)
@@ -143,6 +149,23 @@ namespace Municiple_Project_st10259527.Repository
             return await _context.Reports.CountAsync();
         }
 
+        public async Task<IEnumerable<ReportModel>> GetReportsByStatusAsync(ReportStatus status)
+        {
+            return await _context.Reports
+                .Include(r => r.User)
+                .Where(r => r.Status == status)
+                .OrderByDescending(r => r.ReportDate)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ReportModel>> GetAllReportsAsync()
+        {
+            return await _context.Reports
+                .Include(r => r.User)
+                .OrderByDescending(r => r.ReportDate)
+                .ToListAsync();
+        }
+
         public async Task<Dictionary<string, int>> GetStatusDistributionAsync()
         {
             var allReports = await _context.Reports.ToListAsync();
@@ -200,8 +223,26 @@ namespace Municiple_Project_st10259527.Repository
             if (!resolvedReports.Any())
                 return 0;
 
-            return resolvedReports
-                .Average(r => (r.UpdatedAt!.Value - r.ReportDate).TotalHours);
+            var totalHours = resolvedReports
+                .Where(r => r.UpdatedAt.HasValue)
+                .Average(r => (r.UpdatedAt.Value - r.ReportDate).TotalHours);
+
+            return Math.Round(totalHours, 2);
+        }
+
+        public async Task<int> GetTotalUserCountAsync()
+        {
+            return await _context.Users.CountAsync();
+        }
+
+        public async Task<List<ReportModel>> GetRecentReportsByStatusAsync(ReportStatus status, int count)
+        {
+            return await _context.Reports
+                .Include(r => r.User)
+                .Where(r => r.Status == status)
+                .OrderByDescending(r => r.ReportDate)
+                .Take(count)
+                .ToListAsync();
         }
     }
 }

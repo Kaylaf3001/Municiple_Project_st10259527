@@ -267,17 +267,19 @@
                 </a>
             </li>
             <li class="menu-item">
-                <a class="menu-link" href="#">
-                    <i class="bi bi-flag menu-icon"></i>
-                    <span class="menu-text">Pending</span>
+                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "PendingReports" ? "active" : "")" 
+                   asp-controller="Admin" asp-action="PendingReports">
+                    <i class="bi bi-hourglass-split menu-icon"></i>
+                    <span class="menu-text">Pending Reports</span>
                     <span class="badge bg-warning text-dark rounded-pill ms-auto">@ViewBag.PendingCount</span>
                 </a>
             </li>
             <li class="menu-item">
-                <a class="menu-link" href="#">
-                    <i class="bi bi-arrow-repeat menu-icon"></i>
-                    <span class="menu-text">In Progress</span>
-                    <span class="badge bg-info text-dark rounded-pill ms-auto">@ViewBag.InProgressCount</span>
+                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "ApprovedReports" ? "active" : "")" 
+                   asp-controller="Admin" asp-action="ApprovedReports">
+                    <i class="bi bi-check-circle menu-icon"></i>
+                    <span class="menu-text">Approved Reports</span>
+                    <span class="badge bg-success rounded-pill ms-auto">@ViewBag.ApprovedCount</span>
                 </a>
             </li>
             

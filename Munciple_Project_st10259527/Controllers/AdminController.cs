@@ -15,20 +15,16 @@ namespace Municiple_Project_st10259527.Controllers
         // GET: Admin/Dashboard
         public async Task<IActionResult> Dashboard()
         {
-            var viewModel = new AdminDashboardViewModel
+            try 
             {
-                TotalReports = await _adminRepository.GetTotalReportCountAsync(),
-                PendingCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Pending),
-                InReviewCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.InReview),
-                CompletedCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Completed),
-                RejectedCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Rejected),
-                ApprovedCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Approved),
-                PendingReports = await _adminRepository.GetRecentReportsByStatusAsync(ReportStatus.Pending, 5),
-                InReviewReports = await _adminRepository.GetRecentReportsByStatusAsync(ReportStatus.InReview, 5),
-                RecentReports = await _adminRepository.GetRecentReportsAsync(10)
-            };
-
-            return View(viewModel);
+                var dashboardData = await _adminRepository.GetDashboardDataAsync();
+                return View(dashboardData);
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return StatusCode(500, "An error occurred while loading the dashboard.");
+            }
         }
         private readonly IAdminRepository _adminRepository;
         private const int PageSize = 10;

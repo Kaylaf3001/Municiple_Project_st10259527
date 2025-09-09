@@ -46,9 +46,10 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Add authorization middleware
 app.UseAuthorization();
 
-// ? Enable session middleware BEFORE mapping routes
+// Enable session middleware BEFORE mapping routes
 app.UseSession();
 
 app.MapControllerRoute(
