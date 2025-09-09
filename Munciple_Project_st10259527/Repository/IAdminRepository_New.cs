@@ -9,7 +9,7 @@ namespace Municiple_Project_st10259527.Repository
     {
         // Dashboard
         Task<AdminDashboardViewModel> GetDashboardDataAsync();
-
+        
         // Reports
         Task<ReportModel> GetReportByIdAsync(int id);
         Task UpdateReportStatusAsync(int reportId, ReportStatus status, string adminNotes = null);

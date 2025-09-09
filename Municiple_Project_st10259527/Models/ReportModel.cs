@@ -45,14 +45,14 @@ namespace Municiple_Project_st10259527.Models
         [Display(Name = "Status")]
         public ReportStatus Status { get; set; } = ReportStatus.Pending;
         
+        [Display(Name = "Last Updated")]
+        public DateTime? UpdatedAt { get; set; }
+        
         [Display(Name = "File")]
         public string? FilePath { get; set; }
         
         [Display(Name = "Admin Notes")]
         public string? AdminNotes { get; set; }
-        
-        [Display(Name = "Last Updated")]
-        public DateTime? LastUpdated { get; set; }
         
         [Display(Name = "Assigned Admin")]
         public int? AssignedAdminId { get; set; }

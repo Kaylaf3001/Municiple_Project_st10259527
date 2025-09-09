@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Municiple_Project_st10259527.Models;
-using Municiple_Project_st10259527.Repositories;
+using Municiple_Project_st10259527.Repository;
 using System.Diagnostics;
 
 namespace Municiple_Project_st10259527.Controllers

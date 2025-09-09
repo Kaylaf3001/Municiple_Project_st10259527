@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Municiple_Project_st10259527.Repositories;
+using Municiple_Project_st10259527.Repository;
 using Municiple_Project_st10259527.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +21,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
+
 // ? Add session
 builder.Services.AddSession(options =>
 {
@@ -28,6 +29,8 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true; // required for GDPR compliance
 });
+
+
 
 var app = builder.Build();
 

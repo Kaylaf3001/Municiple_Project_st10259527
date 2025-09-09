@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Municiple_Project_st10259527.Repositories
+namespace Municiple_Project_st10259527.Repository
 {
     public class ReportRepository : IReportRepository
     {
@@ -88,7 +88,7 @@ namespace Municiple_Project_st10259527.Repositories
                 throw new KeyNotFoundException($"Report with ID {reportId} not found.");
 
             report.Status = status;
-            report.LastUpdated = DateTime.UtcNow;
+            report.UpdatedAt = DateTime.UtcNow;
             
             if (!string.IsNullOrEmpty(adminNotes))
                 report.AdminNotes = adminNotes;

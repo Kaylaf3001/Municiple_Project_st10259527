@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Municiple_Project_st10259527.Models;
-using Municiple_Project_st10259527.Repositories;
+using Municiple_Project_st10259527.Repository;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -154,7 +154,7 @@ namespace Municiple_Project_st10259527.Controllers
 
             report.Status = status;
             report.AdminNotes = adminNotes;
-            report.LastUpdated = DateTime.Now;
+            report.UpdatedAt = DateTime.Now;
             report.AssignedAdminId = userId.Value;
 
             await _reportRepository.UpdateReportAsync(report);

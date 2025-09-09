@@ -12,7 +12,7 @@ using Municiple_Project_st10259527.Services;
 namespace Municiple_Project_st10259527.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250909191919_InitialCreate")]
+    [Migration("20250909195652_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -46,9 +46,6 @@ namespace Municiple_Project_st10259527.Migrations
                     b.Property<string>("FilePath")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("LastUpdated")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -62,6 +59,9 @@ namespace Municiple_Project_st10259527.Migrations
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Municiple_Project_st10259527.Repositories
+namespace Municiple_Project_st10259527.Repository
 {
     public interface IReportRepository
     {

@@ -40,9 +40,9 @@ namespace Municiple_Project_st10259527.Migrations
                     ReportDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     FilePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AdminNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: true),
                     AssignedAdminId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>

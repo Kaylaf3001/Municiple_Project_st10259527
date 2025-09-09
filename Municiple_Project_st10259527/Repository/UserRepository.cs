@@ -2,19 +2,10 @@ using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Services;
 using System.Linq;
 using System.Xml.Serialization;
+using System.Collections.Generic;
 
-namespace Municiple_Project_st10259527.Repositories
+namespace Municiple_Project_st10259527.Repository
 {
-    public interface IUserRepository
-    {
-        UserModel GetUserByEmailAndPassword(string email, string password);
-        bool UserExists(string email);
-        void AddUser(UserModel user);
-        UserModel GetUserById(int userId);
-        IEnumerable<UserModel> GetAllUsers();
-
-    }
-
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
@@ -51,5 +42,3 @@ namespace Municiple_Project_st10259527.Repositories
         }
     }
 }
-
-
