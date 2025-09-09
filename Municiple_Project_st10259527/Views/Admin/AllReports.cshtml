@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "All Reports";
+    Layout = "_AdminLayout";
+    
     var statusList = Enum.GetValues<ReportStatus>().Select(s => new SelectListItem
     {
         Text = s.ToString(),
@@ -10,78 +12,109 @@
     }).ToList();
     
     // Add an "All" option
-    statusList.Insert(0, new SelectListItem("All", "", ViewBag.CurrentFilter == null));
+    statusList.Insert(0, new SelectListItem("All Reports", "", ViewBag.CurrentFilter == null));
+}
+
+@section Styles {
+    <style>
+        .table th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            color: #6c757d;
+            border-top: none;
+        }
+        
+        .table > :not(caption) > * > * {
+            padding: 1rem 1.5rem;
+        }
+        
+        .table-hover > tbody > tr:hover {
+            background-color: rgba(13, 43, 82, 0.03);
+        }
+        
+        .badge {
+            font-weight: 500;
+            padding: 0.35em 0.65em;
+        }
+        
+        .filter-section .form-select {
+            border-radius: 0.375rem;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-section .form-select:focus {
+            border-color: #0d2b52;
+            box-shadow: 0 0 0 0.25rem rgba(13, 43, 82, 0.25);
+        }
+    </style>
 }
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>All Reports</h2>
+        <h2 class="text-primary"><i class="bi bi-list-check me-2"></i>All Reports</h2>
         <div class="filter-section">
             <form asp-action="AllReports" method="get" class="form-inline">
                 <div class="input-group">
-                    <select name="status" asp-items="statusList" class="form-select" onchange="this.form.submit()">
+                    <select name="status" asp-items="statusList" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width: 180px;">
                     </select>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-body">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
             @if (Model.Any())
             {
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
-                        <thead class="table-dark">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
                             <tr>
-                                <th>ID</th>
+                                <th class="ps-4">#ID</th>
                                 <th>Type</th>
                                 <th>Description</th>
                                 <th>Status</th>
                                 <th>Reported By</th>
                                 <th>Date Reported</th>
-                                <th>Last Updated</th>
-                                <th>Actions</th>
+                                <th class="text-end pe-4">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var report in Model)
                             {
                                 <tr>
-                                    <td>@report.ReportId</td>
+                                    <td class="ps-4">#@report.ReportId</td>
                                     <td>@report.ReportType</td>
                                     <td>@(report.Description.Length > 30 ? report.Description.Substring(0, 30) + "..." : report.Description)</td>
-                                    <td><span class="badge bg-@GetStatusBadgeClass(report.Status)">@report.Status</span></td>
+                                    <td><span class="badge rounded-pill bg-@GetStatusBadgeClass(report.Status) p-2">@report.Status</span></td>
                                     <td>@(report.User?.FullName ?? "N/A")</td>
-                                    <td>@report.ReportDate.ToString("g")</td>
-                                    <td>@(report.UpdatedAt?.ToString("g") ?? "N/A")</td>
-                                    <td>
+                                    <td>@report.ReportDate.ToString("MMM dd, yyyy")</td>
+                                    <td class="text-end pe-4">
                                         <div class="btn-group" role="group">
                                             <a href="@Url.Action("ReportDetails", new { id = report.ReportId })" 
-                                               class="btn btn-sm btn-info" 
+                                               class="btn btn-sm btn-outline-primary" 
                                                title="View Details">
-                                                <i class="bi bi-eye"></i>
+                                                <i class="bi bi-eye me-1"></i>View
                                             </a>
                                             @if (report.Status == ReportStatus.Pending || report.Status == ReportStatus.InReview)
                                             {
-                                                <form asp-action="ApproveReport" method="post" class="d-inline" 
+                                                <form asp-action="ApproveReport" method="post" class="d-inline ms-1" 
                                                       onsubmit="return confirm('Are you sure you want to approve this report?');">
                                                     <input type="hidden" name="id" value="@report.ReportId" />
-                                                    <button type="submit" class="btn btn-sm btn-success ms-1" title="Approve">
-                                                        <i class="bi bi-check-circle"></i>
+                                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Approve">
+                                                        <i class="bi bi-check-circle me-1"></i>Approve
                                                     </button>
                                                 </form>
-                                                <form asp-action="RejectReport" method="post" class="d-inline" 
-                                                      onsubmit="return confirm('Are you sure you want to reject this report?');">
-                                                    <input type="hidden" name="id" value="@report.ReportId" />
-                                                    <button type="button" class="btn btn-sm btn-danger ms-1" 
-                                                            title="Reject" 
-                                                            data-bs-toggle="modal" 
-                                                            data-bs-target="#rejectModal" 
-                                                            data-report-id="@report.ReportId">
-                                                        <i class="bi bi-x-circle"></i>
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm btn-outline-danger ms-1" 
+                                                        title="Reject" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#rejectModal" 
+                                                        data-report-id="@report.ReportId">
+                                                    <i class="bi bi-x-circle me-1"></i>Reject
+                                                </button>
                                             }
                                         </div>
                                     </td>
@@ -93,7 +126,13 @@
             }
             else
             {
-                <div class="alert alert-info">No reports found.</div>
+                <div class="text-center py-5">
+                    <div class="mb-3">
+                        <i class="bi bi-inbox text-muted" style="font-size: 3rem; opacity: 0.5;"></i>
+                    </div>
+                    <h5 class="text-muted">No reports found</h5>
+                    <p class="text-muted">There are no reports matching the selected filter.</p>
+                </div>
             }
         </div>
     </div>
@@ -102,22 +141,30 @@
 <!-- Reject Modal -->
 <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="rejectModalLabel">Reject Report</h5>
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title text-danger" id="rejectModalLabel">
+                    <i class="bi bi-x-circle me-2"></i>Reject Report
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="rejectForm" method="post">
+            <form id="rejectForm" method="post" asp-action="RejectReport">
+                <input type="hidden" id="reportId" name="id" />
                 <div class="modal-body">
-                    <input type="hidden" name="id" id="reportId" />
+                    <p class="mb-3">Please provide a reason for rejecting this report:</p>
                     <div class="mb-3">
-                        <label for="reason" class="form-label">Reason for rejection</label>
-                        <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                        <label for="rejectionReason" class="form-label fw-semibold">Reason <span class="text-danger">*</span></label>
+                        <textarea class="form-control" id="rejectionReason" name="rejectionReason" rows="4" required
+                                 placeholder="Enter the reason for rejection..."></textarea>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Reject Report</button>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-lg me-1"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-x-circle me-1"></i>Confirm Rejection
+                    </button>
                 </div>
             </form>
         </div>
@@ -126,22 +173,18 @@
 
 @section Scripts {
     <script>
-        // Handle reject button click to set the report ID in the modal
         document.addEventListener('DOMContentLoaded', function() {
             var rejectModal = document.getElementById('rejectModal');
             if (rejectModal) {
-                rejectModal.addEventListener('show.bs.modal', function (event) {
+                rejectModal.addEventListener('show.bs.modal', function(event) {
                     var button = event.relatedTarget;
                     var reportId = button.getAttribute('data-report-id');
-                    var modal = this;
-                    modal.querySelector('#reportId').value = reportId;
-                    
-                    // Set the form action
-                    var form = modal.querySelector('form');
-                    form.action = '/Admin/RejectReport';
-                    
-                    // Clear the textarea when modal is shown
-                    modal.querySelector('#reason').value = '';
+                    document.getElementById('reportId').value = reportId;
+                });
+                
+                // Reset form when modal is hidden
+                rejectModal.addEventListener('hidden.bs.modal', function() {
+                    document.getElementById('rejectForm').reset();
                 });
             }
         });

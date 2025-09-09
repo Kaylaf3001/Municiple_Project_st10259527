@@ -35,6 +35,12 @@ namespace Municiple_Project_st10259527.Controllers
             try
             {
                 var viewModel = await _adminRepository.GetDashboardDataAsync();
+                
+                // Add data needed for the admin layout
+                ViewBag.TotalReports = await _reportRepository.GetTotalReportCountAsync();
+                ViewBag.PendingCount = await _reportRepository.GetReportCountByStatusAsync(ReportStatus.Pending);
+                ViewBag.InProgressCount = await _reportRepository.GetReportCountByStatusAsync(ReportStatus.InReview);
+                
                 return View(viewModel);
             }
             catch (Exception ex)
@@ -49,6 +55,10 @@ namespace Municiple_Project_st10259527.Controllers
         {
             try
             {
+                // Add data needed for the admin layout
+                ViewBag.TotalReports = await _reportRepository.GetTotalReportCountAsync();
+                ViewBag.PendingCount = await _reportRepository.GetReportCountByStatusAsync(ReportStatus.Pending);
+                ViewBag.InProgressCount = await _reportRepository.GetReportCountByStatusAsync(ReportStatus.InReview);
                 IEnumerable<ReportModel> reports;
                 
                 if (status.HasValue)

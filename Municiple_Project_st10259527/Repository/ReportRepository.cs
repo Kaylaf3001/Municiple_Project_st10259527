@@ -156,6 +156,17 @@ namespace Municiple_Project_st10259527.Repository
                 .Select(g => new { Status = g.Key, Count = g.Count() })
                 .ToDictionaryAsync(x => x.Status, x => x.Count);
         }
+        
+        public async Task<int> GetReportCountByStatusAsync(ReportStatus status)
+        {
+            return await _context.Reports
+                .CountAsync(r => r.Status == status);
+        }
+        
+        public async Task<int> GetTotalReportCountAsync()
+        {
+            return await _context.Reports.CountAsync();
+        }
 
         public IQueryable<ReportModel> GetRecentReports(int count = 5)
         {

@@ -72,10 +72,20 @@
 <body>
     <!-- Header -->
     <header class="topbar d-flex justify-content-between align-items-center position-relative">
-        <a class="brand" asp-area="" asp-controller="Home" asp-action="Index">
-            <img src="~/Images/logo.png" alt="Logo" />
-            Western Cape Connect
-        </a>
+        @if (User.IsInRole("Admin") || User.IsInRole("Administrator"))
+        {
+            <a class="brand" asp-area="" asp-controller="Admin" asp-action="Dashboard">
+                <img src="~/Images/logo.png" alt="Logo" />
+                Western Cape Connect
+            </a>
+        }
+        else
+        {
+            <a class="brand" asp-area="" asp-controller="Home" asp-action="Index">
+                <img src="~/Images/logo.png" alt="Logo" />
+                Western Cape Connect
+            </a>
+        }
 
         <div class="dropdown">
             <button class="menu-btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">

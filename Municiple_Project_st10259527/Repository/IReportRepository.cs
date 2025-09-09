@@ -33,5 +33,9 @@ namespace Municiple_Project_st10259527.Repository
         Task<bool> ApproveReportAsync(int reportId, int adminId, string? notes = null);
         Task<bool> RejectReportAsync(int reportId, int adminId, string reason);
         Task<bool> MarkInReviewAsync(int reportId, int adminId);
+        
+        // Report Counts
+        Task<int> GetReportCountByStatusAsync(ReportStatus status);
+        Task<int> GetTotalReportCountAsync();
     }
 }
