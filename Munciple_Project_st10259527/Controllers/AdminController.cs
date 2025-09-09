@@ -22,6 +22,7 @@ namespace Municiple_Project_st10259527.Controllers
                 InReviewCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.InReview),
                 CompletedCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Completed),
                 RejectedCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Rejected),
+                ApprovedCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Approved),
                 PendingReports = await _adminRepository.GetRecentReportsByStatusAsync(ReportStatus.Pending, 5),
                 InReviewReports = await _adminRepository.GetRecentReportsByStatusAsync(ReportStatus.InReview, 5),
                 RecentReports = await _adminRepository.GetRecentReportsAsync(10)

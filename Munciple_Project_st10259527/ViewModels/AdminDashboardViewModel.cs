@@ -18,6 +18,7 @@ namespace Municiple_Project_st10259527.ViewModels
         public int InReviewCount { get; set; }
         public int CompletedCount { get; set; }
         public int RejectedCount { get; set; }
+        public int ApprovedCount { get; set; }
         
         // Computed Properties
         public int InProgressCount => InReviewCount;
