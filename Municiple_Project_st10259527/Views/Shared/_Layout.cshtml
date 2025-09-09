@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -77,14 +80,25 @@
             <button class="menu-btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-list"></i>
             </button>
+
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" asp-controller="Report" asp-action="ReportIssueStep1">Create a Report</a></li>
-                <li><a class="dropdown-item" href="#">Action 1</a></li>
-                <li><a class="dropdown-item" href="#">Action 2</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" asp-controller="User" asp-action="Logout">Logout</a></li>
+                @if (HttpContextAccessor.HttpContext.Session.GetString("IsAdmin") == "true")
+                {
+                    <!-- Admin: only one dropdown item -->
+                    <li><a class="dropdown-item" asp-controller="User" asp-action="Logout">Logout</a></li>
+                }
+                else
+                {
+                    <!-- Normal user menu -->
+                    <li><a class="dropdown-item" asp-controller="Report" asp-action="ReportIssueStep1">Create a Report</a></li>
+                    <li><a class="dropdown-item" href="#">Action 1</a></li>
+                    <li><a class="dropdown-item" href="#">Action 2</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" asp-controller="User" asp-action="Logout">Logout</a></li>
+                }
             </ul>
         </div>
+
     </header>
 
 

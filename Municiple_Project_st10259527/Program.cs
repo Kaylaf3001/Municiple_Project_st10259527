@@ -31,16 +31,6 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var admin = context.Users.FirstOrDefault(u => u.IsAdmin);
-    if (admin != null)
-        Console.WriteLine($"Admin exists: {admin.Email} / {admin.Password}");
-    else
-        Console.WriteLine("No admin found!");
-}
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
