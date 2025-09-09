@@ -93,6 +93,28 @@
             .btn:hover {
                 background: #142a47;
             }
+
+        .autocomplete-items {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            border: 1px solid #ddd;
+            background: white;
+            z-index: 99;
+            max-height: 180px;
+            overflow-y: auto;
+            border-radius: 6px;
+        }
+
+            .autocomplete-items div {
+                padding: 10px;
+                cursor: pointer;
+            }
+
+                .autocomplete-items div:hover {
+                    background-color: #e3f2fd;
+                }
     </style>
 </head>
 <body>

@@ -110,7 +110,18 @@
 
         <form asp-action="ReportIssueStep1" method="post">
             <div class="form-group">
-                <input type="text" name="Location" placeholder="Example: Blouberg, Cape Town, Western Cape" required />
+                <input type="text"
+                       name="Location"
+                       placeholder="Example: Blouberg, Cape Town, Western Cape"
+                       list="locationOptions"
+                       autocomplete="off"
+                       required />
+                <datalist id="locationOptions">
+                    @foreach (var loc in ViewBag.WesternCapeLocations)
+                    {
+                        <option value="@loc"></option>
+                    }
+                </datalist>
             </div>
 
             <!-- Buttons -->
@@ -128,3 +139,47 @@
     </div>
 </body>
 </html>
+<script>
+    const locations = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.WesternCapeLocations));
+    const input = document.getElementById("locationInput");
+
+    input.addEventListener("input", function() {
+        const val = this.value.toLowerCase();
+        closeAllLists();
+
+        if (!val) return false;
+
+        const list = document.createElement("div");
+        list.setAttribute("class", "autocomplete-items");
+        this.parentNode.appendChild(list);
+
+        let count = 0;
+        for (let loc of locations) {
+            if (loc.toLowerCase().includes(val) && count < 10) {
+                const item = document.createElement("div");
+                item.innerHTML = "<strong>" + loc.substr(0, val.length) + "</strong>" + loc.substr(val.length);
+                item.addEventListener("click", function() {
+                    input.value = loc;
+                    closeAllLists();
+                });
+                list.appendChild(item);
+                count++;
+            }
+        }
+    });
+
+    function closeAllLists(elmnt) {
+        const items = document.getElementsByClassName("autocomplete-items");
+        for (let i = 0; i < items.length; i++) {
+            if (elmnt != items[i] && elmnt != input) {
+                items[i].parentNode.removeChild(items[i]);
+            }
+        }
+    }
+
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
+    });
+</script>
+
+

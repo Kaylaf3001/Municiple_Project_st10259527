@@ -4,6 +4,7 @@ using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Repositories;
 using Municiple_Project_st10259527.Services;
 
+
 namespace Municiple_Project_st10259527.Controllers
 {
     public class ReportController : Controller
@@ -17,32 +18,34 @@ namespace Municiple_Project_st10259527.Controllers
             _userRepository = userRepository;
         }
 
-        // Multi-step reporting process
         public IActionResult ReportIssueStep1()
         {
             if (!IsUserLoggedIn())
                 return RedirectToAction("Login", "User");
+
+            // Pass the dictionary/list of locations to the view
+            ViewBag.WesternCapeLocations = LocationService.WesternCapeLocations.Values.ToList();
+
             return View();
         }
 
         [HttpPost]
         public IActionResult ReportIssueStep1(string location)
         {
-            
             if (!IsUserLoggedIn())
-            {
                 return RedirectToAction("Login", "User");
-            }
-                
+
             if (string.IsNullOrWhiteSpace(location))
             {
                 ModelState.AddModelError("", "Location is required");
+
+                // Repopulate locations
+                ViewBag.WesternCapeLocations = LocationService.WesternCapeLocations.Values.ToList();
+
                 return View();
             }
-            
-            // Store location in TempData
+
             TempData["Location"] = location.Trim();
-            
             return RedirectToAction("ReportIssueStep2");
         }
 
@@ -83,6 +86,7 @@ namespace Municiple_Project_st10259527.Controllers
                 return RedirectToAction("Login", "User");
             return View();
         }
+
 
         [HttpPost]
         public IActionResult ReportIssueStep3(string description)
