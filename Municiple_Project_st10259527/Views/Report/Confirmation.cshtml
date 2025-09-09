@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Report Confirmation";
     Layout = null;
-    var userEmail = ViewData["Email"] as string;
+    var FirstName = ViewData["Name"] as string;
 }
 
 <!DOCTYPE html>
@@ -89,7 +89,7 @@
     <div class="confirmation-container">
         <i class="fas fa-check-circle" style="font-size:48px; color:#1A3456; margin-bottom:15px;"></i>
         <div class="personal-message">
-            Thank you, @userEmail! 🎉
+            Thank you, @FirstName! 🎉
         </div>
         <h2>Congratulations!</h2>
         <p>
