@@ -1,6 +1,128 @@
-﻿@{
+@{
     ViewData["Title"] = "Privacy Policy";
+    Layout = "_Layout";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="privacy-policy">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card shadow-sm border-0 rounded-lg">
+                    <div class="card-header bg-primary text-white py-4">
+                        <div class="text-center">
+                            <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+                            <p class="mb-0">Last Updated: September 10, 2025</p>
+                        </div>
+                    </div>
+                    <div class="card-body p-5">
+                        <div class="mb-5">
+                            <p class="lead">At Western Cape Connect, we are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you use our services.</p>
+                        </div>
+
+                        <div class="mb-5">
+                            <h2 class="h4 text-primary mb-3">1. Information We Collect</h2>
+                            <p>We collect various types of information to provide and improve our services to you, including:</p>
+                            <ul>
+                                <li>Personal identification information (Name, email address, phone number)</li>
+                                <li>Location data when you submit a report</li>
+                                <li>Device and usage information</li>
+                                <li>Any other information you choose to provide</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-5">
+                            <h2 class="h4 text-primary mb-3">2. How We Use Your Information</h2>
+                            <p>We use the information we collect to:</p>
+                            <ul>
+                                <li>Process and respond to your reports</li>
+                                <li>Improve our services and user experience</li>
+                                <li>Communicate with you about your account or our services</li>
+                                <li>Ensure the security of our platform</li>
+                                <li>Comply with legal obligations</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-5">
+                            <h2 class="h4 text-primary mb-3">3. Data Security</h2>
+                            <p>We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. However, no internet transmission is completely secure, and we cannot guarantee absolute security.</p>
+                        </div>
+
+                        <div class="mb-5">
+                            <h2 class="h4 text-primary mb-3">4. Your Rights</h2>
+                            <p>You have the right to:</p>
+                            <ul>
+                                <li>Access your personal information</li>
+                                <li>Request correction of your personal information</li>
+                                <li>Request deletion of your personal information</li>
+                                <li>Object to processing of your personal information</li>
+                                <li>Request restriction of processing your personal information</li>
+                                <li>Request transfer of your personal information</li>
+                                <li>Withdraw consent</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-5">
+                            <h2 class="h4 text-primary mb-3">5. Changes to This Policy</h2>
+                            <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h2 class="h4 text-primary mb-3">6. Contact Us</h2>
+                            <p>If you have any questions about this Privacy Policy, please contact us at:</p>
+                            <address>
+                                <strong>Western Cape Connect</strong><br>
+                                Privacy Officer<br>
+                                Email: privacy@westerncapeconnect.gov.za<br>
+                                Phone: 021 123 4567
+                            </address>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .privacy-policy {
+        background-color: #f8f9fa;
+        min-height: calc(100vh - 200px);
+        padding: 40px 0;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background: linear-gradient(135deg, #0d2b52 0%, #1a4b8c 100%);
+        border-bottom: none;
+    }
+    
+    h1 {
+        font-weight: 600;
+    }
+    
+    h2 {
+        font-weight: 600;
+        margin-top: 2rem;
+    }
+    
+    ul {
+        padding-left: 1.5rem;
+    }
+    
+    li {
+        margin-bottom: 0.5rem;
+    }
+    
+    address {
+        font-style: normal;
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #1A3456;
+    }
+</style>

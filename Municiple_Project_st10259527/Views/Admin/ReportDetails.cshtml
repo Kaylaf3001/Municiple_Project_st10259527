@@ -69,16 +69,16 @@
                         @if (Model.Status == ReportStatus.Pending)
                         {
                             <button type="button" class="btn btn-outline-info"
-                                    onclick="updateStatus(@Model.ReportId, @((int)ReportStatus.InReview), document.getElementById('adminNotes').value)">
+                                    onclick="getNotesAndUpdateStatus(@Model.ReportId, @((int)ReportStatus.InReview))">
                                 <i class="bi bi-arrow-repeat me-1"></i> Mark In Review
                             </button>
                         }
                         <button type="button" class="btn btn-outline-danger"
-                                onclick="updateStatus(@Model.ReportId, @((int)ReportStatus.Rejected), document.getElementById('adminNotes').value)">
+                                onclick="getNotesAndUpdateStatus(@Model.ReportId, @((int)ReportStatus.Rejected))">
                             <i class="bi bi-x-circle me-1"></i> Reject
                         </button>
                         <button type="button" class="btn btn-primary"
-                                onclick="updateStatus(@Model.ReportId, @((int)ReportStatus.Approved), document.getElementById('adminNotes').value)">
+                                onclick="getNotesAndUpdateStatus(@Model.ReportId, @((int)ReportStatus.Approved))">
                             <i class="bi bi-check-circle me-1"></i> Approve
                         </button>
                     </div>
@@ -88,33 +88,55 @@
                         <textarea class="form-control" id="adminNotes" name="adminNotes" rows="3">@Model.AdminNotes</textarea>
                     </div>
 
+                    @Html.AntiForgeryToken()
                     <script>
+                        // Helper function to get notes and call updateStatus
+                        function getNotesAndUpdateStatus(reportId, status) {
+                            const notesElement = document.getElementById('adminNotes');
+                            const notes = notesElement ? notesElement.value : '';
+                            updateStatus(reportId, status, notes);
+                        }
+
+                        function getToken() {
+                            return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+                        }
+
                         async function updateStatus(reportId, status, adminNotes) {
                             if (!confirm('Are you sure you want to update the status?')) {
                                 return false;
                             }
 
                             try {
+                                const token = getToken();
                                 const formData = new FormData();
                                 formData.append('reportId', reportId);
                                 formData.append('status', status);
-                                formData.append('adminNotes', adminNotes);
-                                formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+                                formData.append('adminNotes', adminNotes || '');
+                                
+                                const headers = {
+                                    'RequestVerificationToken': token,
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                };
 
                                 const response = await fetch('/Admin/UpdateStatus', {
                                     method: 'POST',
                                     body: new URLSearchParams(formData),
-                                    headers: {
-                                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                                    }
+                                    headers: headers
                                 });
 
                                 if (!response.ok) {
-                                    const errorData = await response.json().catch(() => ({}));
-                                    throw new Error(errorData.error || 'Failed to update status');
+                                    const errorText = await response.text();
+                                    let errorMessage = 'Failed to update status';
+                                    try {
+                                        const errorData = JSON.parse(errorText);
+                                        errorMessage = errorData.error || errorMessage;
+                                    } catch (e) {
+                                        errorMessage = errorText || errorMessage;
+                                    }
+                                    throw new Error(errorMessage);
                                 }
 
-                                const result = await response.json();
+                                const result = await response.json().catch(() => ({}));
                                 if (result.success) {
                                     alert('Status updated successfully!');
                                     window.location.reload();
