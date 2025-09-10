@@ -9,6 +9,10 @@ namespace Municiple_Project_st10259527.Controllers
 {
     public class HomeController : Controller
     {
+        //==============================================================================================
+        // Dependency Injection
+        //==============================================================================================
+        #region
         private readonly IUserRepository _userRepository;
         private readonly IReportRepository _reportRepository;
 
@@ -17,7 +21,11 @@ namespace Municiple_Project_st10259527.Controllers
             _userRepository = userRepository;
             _reportRepository = reportRepository;
         }
+        #endregion
+        //==============================================================================================
 
+        //==============================================================================================
+        //
         public IActionResult Index()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
