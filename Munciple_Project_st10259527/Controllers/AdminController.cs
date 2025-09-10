@@ -9,7 +9,6 @@ using Municiple_Project_st10259527.ViewModels;
 
 namespace Municiple_Project_st10259527.Controllers
 {
-    [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         // GET: Admin/Dashboard
@@ -38,7 +37,9 @@ namespace Municiple_Project_st10259527.Controllers
         public async Task<IActionResult> Reports(ReportStatus? status = null, int page = 1, string searchTerm = null)
         {
             var reports = await _adminRepository.GetReportsAsync(status, page, PageSize, searchTerm);
-            var totalCount = await _adminRepository.GetTotalReportCountAsync();
+            var totalCount = status.HasValue 
+                ? await _adminRepository.GetReportCountByStatusAsync(status.Value)
+                : await _adminRepository.GetTotalReportCountAsync();
 
             var viewModel = new AdminReportsListViewModel
             {
@@ -56,6 +57,38 @@ namespace Municiple_Project_st10259527.Controllers
             };
 
             return View(viewModel);
+        }
+        
+        // GET: Admin/AllReports
+        public async Task<IActionResult> AllReports(ReportStatus? status = null, int page = 1, string searchTerm = null)
+        {
+            var reports = await _adminRepository.GetReportsAsync(status, page, PageSize, searchTerm);
+            return View(reports);
+        }
+
+        // GET: Admin/PendingReports
+        public async Task<IActionResult> PendingReports(int page = 1, string searchTerm = null)
+        {
+            var reports = await _adminRepository.GetReportsAsync(ReportStatus.Pending, page, PageSize, searchTerm);
+            return View("AllReports", reports);
+        }
+
+        // GET: Admin/ApprovedReports
+        public async Task<IActionResult> ApprovedReports(int page = 1, string searchTerm = null)
+        {
+            var reports = await _adminRepository.GetReportsAsync(ReportStatus.Approved, page, PageSize, searchTerm);
+            return View("AllReports", reports);
+        }
+
+        // GET: Admin/ViewReport/5
+        public async Task<IActionResult> ViewReport(int id)
+        {
+            var report = await _adminRepository.GetReportByIdAsync(id);
+            if (report == null)
+            {
+                return NotFound();
+            }
+            return View("ReportDetails", report);
         }
 
         // GET: Admin/Review/5
@@ -88,45 +121,56 @@ namespace Municiple_Project_st10259527.Controllers
         // POST: Admin/UpdateStatus/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateStatus(int id, ReportReviewViewModel model)
+        public async Task<IActionResult> UpdateStatus()
         {
-            if (id != model.ReportId)
+            try
             {
-                return BadRequest();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
+                Console.WriteLine("UpdateStatus called");
+                var form = await Request.ReadFormAsync();
+                
+                if (!form.ContainsKey("reportId") || !form.ContainsKey("status"))
                 {
-                    await _adminRepository.UpdateReportStatusAsync(model.ReportId, model.NewStatus, model.AdminNotes);
-                    TempData["SuccessMessage"] = "Report status updated successfully.";
-                    return RedirectToAction(nameof(Review), new { id = model.ReportId });
+                    return BadRequest(new { success = false, error = "Missing required parameters" });
                 }
-                catch (Exception)
+
+                if (!int.TryParse(form["reportId"], out int reportId))
                 {
-                    ModelState.AddModelError("", "An error occurred while updating the report status.");
+                    return BadRequest(new { success = false, error = "Invalid report ID" });
                 }
-            }
 
-            // If we got this far, something failed, redisplay form
-            var report = await _adminRepository.GetReportByIdAsync(model.ReportId);
-            if (report == null)
+                if (!Enum.TryParse<ReportStatus>(form["status"], out var status))
+                {
+                    return BadRequest(new { success = false, error = "Invalid status value" });
+                }
+
+                string adminNotes = form["adminNotes"];
+                Console.WriteLine($"Updating report {reportId} to status {status}");
+                
+                await _adminRepository.UpdateReportStatusAsync(reportId, status, adminNotes);
+                
+                // Check if this is an AJAX request
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                {
+                    return Json(new { success = true, redirectUrl = Url.Action("ApprovedReports") });
+                }
+                
+                // For non-AJAX requests, redirect based on status
+                if (status == ReportStatus.Approved || status == ReportStatus.Completed)
+                {
+                    return RedirectToAction("ApprovedReports");
+                }
+                
+                return RedirectToAction("PendingReports");
+            }
+            catch (Exception ex)
             {
-                return NotFound();
+                Console.WriteLine($"Error in UpdateStatus: {ex}");
+                return StatusCode(500, new { 
+                    success = false, 
+                    error = ex.Message,
+                    stackTrace = ex.StackTrace
+                });
             }
-
-            // Repopulate the view model with the original report data
-            model.ReportType = report.ReportType;
-            model.Description = report.Description;
-            model.ReportDate = report.ReportDate;
-            model.Location = report.Location;
-            model.Status = report.Status;
-            model.FilePath = report.FilePath;
-            model.SubmittedBy = $"{report.User?.FirstName} {report.User?.LastName}";
-            model.UserEmail = report.User?.Email;
-
-            return View("Review", model);
         }
     }
 }

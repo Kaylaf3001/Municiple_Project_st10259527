@@ -93,12 +93,16 @@ namespace Municiple_Project_st10259527.Repository
         {
             return await _context.Reports
                 .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.Id == id);
+                .FirstOrDefaultAsync(r => r.ReportId == id);
         }
 
         public async Task UpdateReportStatusAsync(int reportId, ReportStatus status, string adminNotes = null)
         {
             var report = await _context.Reports.FindAsync(reportId);
+            if (report == null)
+            {
+                throw new Exception($"Report with ID {reportId} not found");
+            }
             if (report != null)
             {
                 report.Status = status;

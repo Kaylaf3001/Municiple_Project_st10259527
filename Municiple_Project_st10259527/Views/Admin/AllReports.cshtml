@@ -1,192 +1,100 @@
 @model IEnumerable<Municiple_Project_st10259527.Models.ReportModel>
-
 @{
     ViewData["Title"] = "All Reports";
     Layout = "_AdminLayout";
-    
-    var statusList = Enum.GetValues<ReportStatus>().Select(s => new SelectListItem
-    {
-        Text = s.ToString(),
-        Value = s.ToString(),
-        Selected = (ViewBag.CurrentFilter?.ToString() == s.ToString())
-    }).ToList();
-    
-    // Add an "All" option
-    statusList.Insert(0, new SelectListItem("All Reports", "", ViewBag.CurrentFilter == null));
 }
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">All Reports</h1>
+        <div class="d-flex
+            <a href="@Url.Action("Dashboard")" class="btn btn-secondary btn-sm mr-2">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Report List</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-header">Filter by Status:</div>
+                    <a class="dropdown-item" href="?status=all">All Reports</a>
+                    <a class="dropdown-item" href="?status=Pending">Pending</a>
+                    <a class="dropdown-item" href="?status=InReview">In Review</a>
+                    <a class="dropdown-item" href="?status=Approved">Approved</a>
+                    <a class="dropdown-item" href="?status=Completed">Completed</a>
+                    <a class="dropdown-item" href="?status=Rejected">Rejected</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Reported By</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Reported On</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var report in Model)
+                        {
+                            <tr>
+                                <td>@report.ReportId</td>
+                                <td>@report.ReportType</td>
+                                <td>@(report.User?.FullName ?? "N/A")</td>
+                                <td>@report.Location</td>
+                                <td><span class="badge @GetStatusBadgeClass(report.Status)">@report.Status.ToString()</span></td>
+                                <td>@report.ReportDate.ToString("g")</td>
+                                <td>
+                                    <a href="@Url.Action("ViewReport", "Admin", new { id = report.ReportId })" class="btn btn-info btn-sm" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    @if (report.Status != ReportStatus.Completed && report.Status != ReportStatus.Rejected)
+                                    {
+                                        <a href="@Url.Action("UpdateReportStatus", new { reportId = report.ReportId, status = ReportStatus.Completed })"
+                                           class="btn btn-success btn-sm" title="Mark as Complete"
+                                           onclick="return confirm('Are you sure you want to mark this report as completed?')">
+                                            <i class="fas fa-check"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Styles {
-    <style>
-        .table th {
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
-            color: #6c757d;
-            border-top: none;
-        }
-        
-        .table > :not(caption) > * > * {
-            padding: 1rem 1.5rem;
-        }
-        
-        .table-hover > tbody > tr:hover {
-            background-color: rgba(13, 43, 82, 0.03);
-        }
-        
-        .badge {
-            font-weight: 500;
-            padding: 0.35em 0.65em;
-        }
-        
-        .filter-section .form-select {
-            border-radius: 0.375rem;
-            border: 1px solid #dee2e6;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
-        }
-        
-        .filter-section .form-select:focus {
-            border-color: #0d2b52;
-            box-shadow: 0 0 0 0.25rem rgba(13, 43, 82, 0.25);
-        }
-    </style>
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-primary"><i class="bi bi-list-check me-2"></i>All Reports</h2>
-        <div class="filter-section">
-            <form asp-action="AllReports" method="get" class="form-inline">
-                <div class="input-group">
-                    <select name="status" asp-items="statusList" class="form-select form-select-sm" onchange="this.form.submit()" style="min-width: 180px;">
-                    </select>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            @if (Model.Any())
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-4">#ID</th>
-                                <th>Type</th>
-                                <th>Description</th>
-                                <th>Status</th>
-                                <th>Reported By</th>
-                                <th>Date Reported</th>
-                                <th class="text-end pe-4">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var report in Model)
-                            {
-                                <tr>
-                                    <td class="ps-4">#@report.ReportId</td>
-                                    <td>@report.ReportType</td>
-                                    <td>@(report.Description.Length > 30 ? report.Description.Substring(0, 30) + "..." : report.Description)</td>
-                                    <td><span class="badge rounded-pill bg-@GetStatusBadgeClass(report.Status) p-2">@report.Status</span></td>
-                                    <td>@(report.User?.FullName ?? "N/A")</td>
-                                    <td>@report.ReportDate.ToString("MMM dd, yyyy")</td>
-                                    <td class="text-end pe-4">
-                                        <div class="btn-group" role="group">
-                                            <a href="@Url.Action("ReportDetails", new { id = report.ReportId })" 
-                                               class="btn btn-sm btn-outline-primary" 
-                                               title="View Details">
-                                                <i class="bi bi-eye me-1"></i>View
-                                            </a>
-                                            @if (report.Status == ReportStatus.Pending || report.Status == ReportStatus.InReview)
-                                            {
-                                                <form asp-action="ApproveReport" method="post" class="d-inline ms-1" 
-                                                      onsubmit="return confirm('Are you sure you want to approve this report?');">
-                                                    <input type="hidden" name="id" value="@report.ReportId" />
-                                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Approve">
-                                                        <i class="bi bi-check-circle me-1"></i>Approve
-                                                    </button>
-                                                </form>
-                                                <button type="button" class="btn btn-sm btn-outline-danger ms-1" 
-                                                        title="Reject" 
-                                                        data-bs-toggle="modal" 
-                                                        data-bs-target="#rejectModal" 
-                                                        data-report-id="@report.ReportId">
-                                                    <i class="bi bi-x-circle me-1"></i>Reject
-                                                </button>
-                                            }
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-            else
-            {
-                <div class="text-center py-5">
-                    <div class="mb-3">
-                        <i class="bi bi-inbox text-muted" style="font-size: 3rem; opacity: 0.5;"></i>
-                    </div>
-                    <h5 class="text-muted">No reports found</h5>
-                    <p class="text-muted">There are no reports matching the selected filter.</p>
-                </div>
-            }
-        </div>
-    </div>
-</div>
-
-<!-- Reject Modal -->
-<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title text-danger" id="rejectModalLabel">
-                    <i class="bi bi-x-circle me-2"></i>Reject Report
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="rejectForm" method="post" asp-action="RejectReport">
-                <input type="hidden" id="reportId" name="id" />
-                <div class="modal-body">
-                    <p class="mb-3">Please provide a reason for rejecting this report:</p>
-                    <div class="mb-3">
-                        <label for="rejectionReason" class="form-label fw-semibold">Reason <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="rejectionReason" name="rejectionReason" rows="4" required
-                                 placeholder="Enter the reason for rejection..."></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                        <i class="bi bi-x-lg me-1"></i>Cancel
-                    </button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="bi bi-x-circle me-1"></i>Confirm Rejection
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var rejectModal = document.getElementById('rejectModal');
-            if (rejectModal) {
-                rejectModal.addEventListener('show.bs.modal', function(event) {
-                    var button = event.relatedTarget;
-                    var reportId = button.getAttribute('data-report-id');
-                    document.getElementById('reportId').value = reportId;
-                });
-                
-                // Reset form when modal is hidden
-                rejectModal.addEventListener('hidden.bs.modal', function() {
-                    document.getElementById('rejectForm').reset();
-                });
-            }
+        $(document).ready(function() {
+            $('#dataTable').DataTable({
+                responsive: true,
+                order: [[0, 'desc']], // Sort by report ID descending
+                columnDefs: [
+                    { orderable: false, targets: -1 } // Disable sorting on actions column
+                ]
+            });
         });
     </script>
 }
@@ -196,11 +104,12 @@
     {
         return status switch
         {
-            ReportStatus.Pending => "warning",
-            ReportStatus.InReview => "info",
-            ReportStatus.Completed => "success",
-            ReportStatus.Rejected => "danger",
-            _ => "secondary"
+            ReportStatus.Pending => "badge-warning",
+            ReportStatus.InReview => "badge-info",
+            ReportStatus.Approved => "badge-primary",
+            ReportStatus.Rejected => "badge-danger",
+            ReportStatus.Completed => "badge-success",
+            _ => "badge-secondary"
         };
     }
 }

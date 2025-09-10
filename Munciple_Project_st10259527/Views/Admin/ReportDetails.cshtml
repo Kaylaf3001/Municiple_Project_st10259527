@@ -33,9 +33,9 @@
                                 <p><strong>Assigned To:</strong> @Model.AssignedAdmin.FullName</p>
                             }
                             
-                            @if (Model.LastUpdated.HasValue)
+                            @if (Model.UpdatedAt.HasValue)
                             {
-                                <p><strong>Last Updated:</strong> @Model.LastUpdated.Value.ToString("f")</p>
+                                <p><strong>Last Updated:</strong> @Model.UpdatedAt.Value.ToString("f")</p>
                             }
                         </div>
                         <div class="col-md-6">
@@ -65,34 +65,78 @@
                     <h6 class="m-0 font-weight-bold text-primary">Admin Actions</h6>
                 </div>
                 <div class="card-body">
-                    <form asp-action="UpdateReportStatus" method="post" class="mb-4">
-                        <input type="hidden" name="reportId" value="@Model.ReportId" />
+                    <div class="btn-group">
+                        @if (Model.Status == ReportStatus.Pending)
+                        {
+                            <button type="button" class="btn btn-outline-info" 
+                                    onclick="updateStatus(@Model.ReportId, @((int)ReportStatus.InReview), document.getElementById('adminNotes').value)">
+                                <i class="bi bi-arrow-repeat me-1"></i> Mark In Review
+                            </button>
+                        }
+                        <button type="button" class="btn btn-outline-danger" 
+                                onclick="updateStatus(@Model.ReportId, @((int)ReportStatus.Rejected), document.getElementById('adminNotes').value)">
+                            <i class="bi bi-x-circle me-1"></i> Reject
+                        </button>
+                        <button type="button" class="btn btn-primary" 
+                                onclick="updateStatus(@Model.ReportId, @((int)ReportStatus.Approved), document.getElementById('adminNotes').value)">
+                            <i class="bi bi-check-circle me-1"></i> Approve
+                        </button>
+                    </div>
+                    
+                    <div class="form-group mt-3">
+                        <label for="adminNotes">Admin Notes</label>
+                        <textarea class="form-control" id="adminNotes" name="adminNotes" rows="3">@Model.AdminNotes</textarea>
+                    </div>
+                    
+                    <script>
+                    async function updateStatus(reportId, status, adminNotes) {
+                        if (!confirm('Are you sure you want to update the status?')) {
+                            return false;
+                        }
                         
-                        <div class="form-group">
-                            <label class="font-weight-bold">Update Status</label>
-                            <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
-                                <label class="btn btn-outline-primary @(Model.Status == ReportStatus.InReview ? "active" : "")">
-                                    <input type="radio" name="status" value="@ReportStatus.InReview" @(Model.Status == ReportStatus.InReview ? "checked" : "")> In Review
-                                </label>
-                                <label class="btn btn-outline-success @(Model.Status == ReportStatus.Approved ? "active" : "")">
-                                    <input type="radio" name="status" value="@ReportStatus.Approved" @(Model.Status == ReportStatus.Approved ? "checked" : "")> Approved
-                                </label>
-                                <label class="btn btn-outline-danger @(Model.Status == ReportStatus.Rejected ? "active" : "")">
-                                    <input type="radio" name="status" value="@ReportStatus.Rejected" @(Model.Status == ReportStatus.Rejected ? "checked" : "")> Reject
-                                </label>
-                                <label class="btn btn-outline-success @(Model.Status == ReportStatus.Completed ? "active" : "")">
-                                    <input type="radio" name="status" value="@ReportStatus.Completed" @(Model.Status == ReportStatus.Completed ? "checked" : "")> Complete
-                                </label>
-                            </div>
-                        </div>
+                        try {
+                            const formData = new FormData();
+                            formData.append('reportId', reportId);
+                            formData.append('status', status);
+                            formData.append('adminNotes', adminNotes);
+                            
+                            // Get the anti-forgery token
+                            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                            
+                            const response = await fetch('@Url.Action("UpdateStatus")', {
+                                method: 'POST',
+                                headers: {
+                                    'RequestVerificationToken': token,
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                },
+                                body: new URLSearchParams({
+                                    reportId: reportId,
+                                    status: status,
+                                    adminNotes: adminNotes,
+                                    __RequestVerificationToken: token
+                                })
+                            });
+                            
+                            const result = await response.json();
+                            
+                            if (result.success) {
+                                if (result.redirectUrl) {
+                                    window.location.href = result.redirectUrl;
+                                } else {
+                                    window.location.reload();
+                                }
+                            } else {
+                                alert('Error: ' + (result.error || 'Unknown error occurred'));
+                            }
+                        } catch (error) {
+                            console.error('Error details:', error);
+                            alert('Error: ' + (error.message || 'An error occurred while updating the status. Please check the console for details.'));
+                        }
                         
-                        <div class="form-group mt-3">
-                            <label for="adminNotes">Admin Notes</label>
-                            <textarea class="form-control" id="adminNotes" name="adminNotes" rows="3">@Model.AdminNotes</textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary mt-2">Update Report</button>
-                    </form>
+                        return false;
+                    }
+                    </script>
                 </div>
             </div>
         </div>
@@ -113,13 +157,13 @@
                             </div>
                         </div>
                         
-                        @if (Model.LastUpdated.HasValue)
+                        @if (Model.UpdatedAt.HasValue)
                         {
                             <div class="timeline-item">
                                 <div class="timeline-marker bg-success"></div>
                                 <div class="timeline-content">
                                     <h6 class="font-weight-bold">Status Updated to @Model.Status</h6>
-                                    <p class="text-muted small">@Model.LastUpdated.Value.ToString("f")</p>
+                                    <p class="text-muted small">@Model.UpdatedAt.Value.ToString("f")</p>
                                     @if (!string.IsNullOrEmpty(Model.AdminNotes))
                                     {
                                         <div class="alert alert-light p-2 mt-2 small">
