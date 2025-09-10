@@ -12,7 +12,7 @@ namespace Municiple_Project_st10259527.Repository
     public class ReportRepository : IReportRepository
     {
         //==============================================================
-        // Dependency Injection
+        // Dependency Injection.
         //==============================================================
         private readonly AppDbContext _context;
 
