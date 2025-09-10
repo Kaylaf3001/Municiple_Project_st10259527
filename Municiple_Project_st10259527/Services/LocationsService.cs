@@ -4,6 +4,9 @@ namespace Municiple_Project_st10259527.Services
 {
     public static class LocationService
     {
+        //===================================================================================
+        // Static Dictionary of Locations in Western Cape
+        //===================================================================================
         public static Dictionary<int, string> WesternCapeLocations = new Dictionary<int, string>
         {
             // Cape Town Metro
@@ -98,4 +101,6 @@ namespace Municiple_Project_st10259527.Services
             { 75, "Western Cape, Grabouw, 7160" }
         };
     }
+    //===================================================================================
 }
+//====================================End=Of=File=============================================

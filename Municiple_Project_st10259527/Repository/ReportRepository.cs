@@ -11,25 +11,40 @@ namespace Municiple_Project_st10259527.Repository
 {
     public class ReportRepository : IReportRepository
     {
+        //==============================================================
+        // Dependency Injection
+        //==============================================================
         private readonly AppDbContext _context;
 
         public ReportRepository(AppDbContext context)
         {
             _context = context;
         }
+        //==============================================================
 
+        //==============================================================
+        // Report Management Methods
+        //==============================================================
         public int GetTotalReports()
         {
             // Execute count directly in database
             return _context.Reports.Count();
         }
+        //==============================================================
 
+        //==============================================================    
+        // User-Specific Report Methods
+        //==============================================================
         public int GetReportsCountByUserId(int userId)
         {
             // Execute count directly in database
             return _context.Reports.Count(r => r.UserId == userId);
         }
+        //==============================================================
 
+        //==============================================================
+        // Retrieve reports for a specific user, optionally limited by count
+        //==============================================================
         public IEnumerable<ReportModel> GetReportsByUserId(int userId, int? count = null)
         {
             // Create base query
@@ -46,14 +61,22 @@ namespace Municiple_Project_st10259527.Repository
             // Execute query and return materialized results
             return query.ToList().AsEnumerable();
         }
+        //==============================================================
 
+        //==============================================================
+        // Report Retrieval Methods
+        //==============================================================
         public async Task<IEnumerable<ReportModel>> GetAllReportsAsync()
         {
             return await _context.Reports
                 .OrderByDescending(r => r.ReportDate)
                 .ToListAsync();
         }
+        //==============================================================
 
+        //==============================================================
+        // Retrieve all reports with associated user details
+        //==============================================================
         public async Task<IEnumerable<ReportModel>> GetAllReportsWithUsersAsync()
         {
             return await _context.Reports
@@ -61,26 +84,42 @@ namespace Municiple_Project_st10259527.Repository
                 .OrderByDescending(r => r.ReportDate)
                 .ToListAsync();
         }
+        //==============================================================
 
+        //==============================================================
+        // Retrieve a specific report by its ID
+        //==============================================================
         public async Task<ReportModel> GetReportByIdAsync(int id)
         {
             return await _context.Reports
                 .FirstOrDefaultAsync(r => r.ReportId == id);
         }
+        //==============================================================
 
+        //==============================================================
+        // Retrieve a specific report with user details
+        //==============================================================
         public async Task<ReportModel> GetReportWithDetailsAsync(int id)
         {
             return await _context.Reports
                 .Include(r => r.User)
                 .FirstOrDefaultAsync(r => r.ReportId == id);
         }
+        //==============================================================
 
+        //==============================================================
+        // Update an existing report
+        //==============================================================
         public async Task UpdateReportAsync(ReportModel report)
         {
             _context.Entry(report).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+        //==============================================================
 
+        //==============================================================
+        // Update report status with optional admin notes and assignment
+        //==============================================================
         public async Task UpdateReportStatusAsync(int reportId, ReportStatus status, string? adminNotes = null, int? assignedAdminId = null)
         {
             var report = await _context.Reports.FindAsync(reportId);
@@ -98,7 +137,11 @@ namespace Municiple_Project_st10259527.Repository
 
             await _context.SaveChangesAsync();
         }
+        //==============================================================
 
+        //==============================================================
+        // Admin Action Methods
+        //==============================================================
         public async Task<bool> ApproveReportAsync(int reportId, int adminId, string? notes = null)
         {
             try
@@ -111,7 +154,11 @@ namespace Municiple_Project_st10259527.Repository
                 return false;
             }
         }
+        //==============================================================
 
+        //==============================================================
+        // Reject a report with a required reason
+        //==============================================================
         public async Task<bool> RejectReportAsync(int reportId, int adminId, string reason)
         {
             if (string.IsNullOrWhiteSpace(reason))
@@ -127,7 +174,11 @@ namespace Municiple_Project_st10259527.Repository
                 return false;
             }
         }
+        //==============================================================
 
+        //==============================================================
+        // Mark a report as In Review
+        //==============================================================
         public async Task<bool> MarkInReviewAsync(int reportId, int adminId)
         {
             try
@@ -140,7 +191,11 @@ namespace Municiple_Project_st10259527.Repository
                 return false;
             }
         }
+        //==============================================================
 
+        //==============================================================
+        // Status-Based Report Retrieval Methods
+        //==============================================================
         public async Task<IEnumerable<ReportModel>> GetReportsByStatusAsync(ReportStatus status)
         {
             return await _context.Reports
@@ -148,7 +203,11 @@ namespace Municiple_Project_st10259527.Repository
                 .OrderByDescending(r => r.ReportDate)
                 .ToListAsync();
         }
+        //==============================================================
 
+        //==============================================================
+        // Report Count Methods
+        //==============================================================
         public async Task<Dictionary<ReportStatus, int>> GetReportCountsByStatusAsync()
         {
             return await _context.Reports
@@ -156,18 +215,30 @@ namespace Municiple_Project_st10259527.Repository
                 .Select(g => new { Status = g.Key, Count = g.Count() })
                 .ToDictionaryAsync(x => x.Status, x => x.Count);
         }
-        
+        //==============================================================
+
+        //==============================================================
+        // Get report count by specific status
+        //==============================================================
         public async Task<int> GetReportCountByStatusAsync(ReportStatus status)
         {
             return await _context.Reports
                 .CountAsync(r => r.Status == status);
         }
-        
+        //==============================================================
+
+        //==============================================================
+        // Get total report count
+        //==============================================================
         public async Task<int> GetTotalReportCountAsync()
         {
             return await _context.Reports.CountAsync();
         }
+        //==============================================================
 
+        //==============================================================
+        // Get recent reports with detailed debug information
+        //==============================================================
         public IQueryable<ReportModel> GetRecentReports(int count = 5)
         {
             try
@@ -204,7 +275,11 @@ namespace Municiple_Project_st10259527.Repository
                 return _context.Reports.Take(0).AsQueryable();
             }
         }
+        //==============================================================
 
+        //==============================================================
+        // Add a new report with optional file upload
+        //==============================================================
         public void AddReport(ReportModel report, IFormFile? uploadedFile)
         {
             
@@ -276,6 +351,7 @@ namespace Municiple_Project_st10259527.Repository
             }
            
         }
-
+        //==============================================================
     }
 }
+//======================End=Of=File======================================

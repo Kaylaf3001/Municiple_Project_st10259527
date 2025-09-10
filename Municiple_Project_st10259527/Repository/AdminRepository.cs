@@ -10,15 +10,25 @@ using System.Threading.Tasks;
 
 namespace Municiple_Project_st10259527.Repository
 {
+    //===================================================================================
+    // Admin Repository Implementation
+    //===================================================================================
     public class AdminRepository : IAdminRepository
     {
+        //===================================================================================
+        // Constructor
+        //===================================================================================
         private readonly AppDbContext _context;
 
         public AdminRepository(AppDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Dashboard Methods
+        //===================================================================================
         public async Task<AdminDashboardViewModel> GetDashboardDataAsync()
         {
             var allReports = await _context.Reports
@@ -101,7 +111,11 @@ namespace Municiple_Project_st10259527.Repository
                 ReportsByTopReporter = topReporter?.Count ?? 0
             };
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Report Management Methods
+        //===================================================================================
         public async Task<ReportModel> GetReportByIdAsync(int id)
         {
             return await _context.Reports
@@ -120,7 +134,11 @@ namespace Municiple_Project_st10259527.Repository
                 await _context.SaveChangesAsync();
             }
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Additional Methods
+        //===================================================================================
         public async Task<IEnumerable<ReportModel>> GetReportsAsync(ReportStatus? status = null, int page = 1, int pageSize = 10, string searchTerm = null)
         {
             IQueryable<ReportModel> query = _context.Reports
@@ -148,17 +166,29 @@ namespace Municiple_Project_st10259527.Repository
                 .Take(pageSize)
                 .ToListAsync();
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Helper Methods
+        //===================================================================================
         public async Task<int> GetReportCountByStatusAsync(ReportStatus status)
         {
             return await _context.Reports.CountAsync(r => r.Status == status);
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Statistics and Analytics Methods
+        //===================================================================================
         public async Task<int> GetTotalReportCountAsync()
         {
             return await _context.Reports.CountAsync();
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Additional Helper Methods
+        //===================================================================================
         public async Task<IEnumerable<ReportModel>> GetReportsByStatusAsync(ReportStatus status)
         {
             return await _context.Reports
@@ -167,7 +197,11 @@ namespace Municiple_Project_st10259527.Repository
                 .OrderByDescending(r => r.ReportDate)
                 .ToListAsync();
         }
+        //===================================================================================
 
+        //===================================================================================
+        // More Helper Methods
+        //===================================================================================
         public async Task<IEnumerable<ReportModel>> GetAllReportsAsync()
         {
             return await _context.Reports
@@ -175,7 +209,11 @@ namespace Municiple_Project_st10259527.Repository
                 .OrderByDescending(r => r.ReportDate)
                 .ToListAsync();
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Even More Helper Methods
+        //===================================================================================
         public async Task<Dictionary<string, int>> GetStatusDistributionAsync()
         {
             var allReports = await _context.Reports.ToListAsync();
@@ -187,7 +225,11 @@ namespace Municiple_Project_st10259527.Repository
                     g => g.Count()
                 );
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Final Helper Methods
+        //===================================================================================
         public async Task<(string topReporter, int reportCount)> GetTopReporterInfoAsync()
         {
             var reports = await _context.Reports
@@ -207,14 +249,22 @@ namespace Municiple_Project_st10259527.Repository
 
             return (topReporter?.User?.FullName ?? "N/A", topReporter?.Count ?? 0);
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Private Methods for Statistics
+        //===================================================================================
         public async Task<int> GetNewReportsCountTodayAsync()
         {
             var today = DateTime.UtcNow.Date;
             return await _context.Reports
                 .CountAsync(r => r.ReportDate >= today);
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Private Methods for Statistics
+        //===================================================================================
         public async Task<int> GetResolvedReportsCountThisWeekAsync()
         {
             var oneWeekAgo = DateTime.UtcNow.AddDays(-7);
@@ -223,7 +273,11 @@ namespace Municiple_Project_st10259527.Repository
                     (r.Status == ReportStatus.Completed || r.Status == ReportStatus.Rejected) &&
                     r.UpdatedAt >= oneWeekAgo);
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Private Methods for Statistics
+        //===================================================================================
         public async Task<double> GetAverageResolutionTimeHoursAsync()
         {
             var resolvedReports = await _context.Reports
@@ -239,12 +293,20 @@ namespace Municiple_Project_st10259527.Repository
 
             return Math.Round(totalHours, 2);
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Additional Methods
+        //===================================================================================
         public async Task<int> GetTotalUserCountAsync()
         {
             return await _context.Users.CountAsync();
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Get recent reports by status
+        //===================================================================================
         public async Task<List<ReportModel>> GetRecentReportsByStatusAsync(ReportStatus status, int count)
         {
             return await _context.Reports
@@ -254,5 +316,7 @@ namespace Municiple_Project_st10259527.Repository
                 .Take(count)
                 .ToListAsync();
         }
+        //===================================================================================
     }
 }
+//=============================End=Of=File====================================================
