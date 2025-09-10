@@ -19,30 +19,57 @@
 
     <style>
         /* Custom Header */
-        .topbar {
-            background-color: #0d2b52;
-            height: 100px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 20px;
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #0d2b52 0%, #1a4b8c 100%);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1030;
         }
 
-            .topbar .brand {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                color: #fff;
-                font-weight: 600;
-                font-size: 1.5rem;
-                text-decoration: none;
+        .nav-link {
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+            .nav-link:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                transform: translateY(-2px);
             }
 
-                .topbar .brand img {
-                    width: 120px;
-                    height: 120px;
-                }
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem 0;
+            display: block !important; /* Force display */
+            position: absolute !important; /* Ensure proper positioning */
+            left: auto !important; /* Reset left positioning */
+            right: 0 !important; /* Align to right */
+            top: 100% !important; /* Position below the button */
+            opacity: 0; /* Start hidden */
+            visibility: hidden; /* Start hidden */
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(5px);
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+            .dropdown-item:hover {
+                background-color: #f8f9fa;
+                transform: translateX(5px);
+            }
 
         .menu-btn {
             background: none;
@@ -71,44 +98,73 @@
 </head>
 <body>
     <!-- Header -->
-    <header class="topbar d-flex justify-content-between align-items-center position-relative">
-        @if (User.IsInRole("Admin") || User.IsInRole("Administrator"))
-        {
-            <a class="brand" asp-area="" asp-controller="Admin" asp-action="Dashboard">
-                <img src="~/Images/logo.png" alt="Logo" />
-                Western Cape Connect
-            </a>
-        }
-        else
-        {
-            <a class="brand" asp-area="" asp-controller="User" asp-action="UserDashboard">
-                <img src="~/Images/logo.png" alt="Logo" />
-                Western Cape Connect
-            </a>
-        }
+    <header class="bg-primary text-white">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center py-3">
+                <div class="d-flex align-items-center">
+                    <a class="navbar-brand d-flex align-items-center text-white text-decoration-none" href="/">
+                        <img src="~/Images/logo.png" alt="Logo" class="me-2" style="height: 50px; width: auto;">
+                        <span class="h4 mb-0 fw-bold" style="font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;">Western Cape Connect</span>
+                    </a>
+                </div>
+                <div class="d-flex align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-link text-white menu-btn" type="button" id="dropdownMenuButton"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-list" style="font-size: 1.8rem;"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuButton">                            
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Admin" asp-action="Dashboard">
+                                            <i class="bi bi-speedometer2 me-2"></i> Admin Dashboard
+                                        </a>
+                                    </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" asp-controller="User" asp-action="Logout">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                    </a>
+                                </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="User" asp-action="UserDashboard">
+                                            <i class="bi bi-house-door me-2"></i> My Dashboard
+                                        </a>
+                                    </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Report" asp-action="ReportIssueStep1">
+                                        <i class="bi bi-plus-circle me-2"></i> Create a Report
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-calendar-event me-2"></i> Local Events & Announcements
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="bi bi-tools me-2"></i> Request a Service
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" asp-controller="User" asp-action="Logout">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                    </a>
+                                </li>
+                            }
+                                                    
+                        </ul>
+                    </div>
 
-        <div class="dropdown">
-            <button class="menu-btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-list"></i>
-            </button>
-
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                @if (HttpContextAccessor.HttpContext.Session.GetString("IsAdmin") == "true")
-                {
-                    <!-- Admin: only one dropdown item -->
-                    <li><a class="dropdown-item" asp-controller="User" asp-action="Logout">Logout</a></li>
-                }
-                else
-                {
-                    <!-- Normal user menu -->
-                    <li><a class="dropdown-item" asp-controller="Report" asp-action="ReportIssueStep1">Create a Report</a></li>
-                    <li><a class="dropdown-item" href="#">Local Events & Announcements</a></li>
-                    <li><a class="dropdown-item" href="#">Request a Service</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" asp-controller="User" asp-action="Logout">Logout</a></li>
-                }
-            </ul>
+                </div>
+            </div>
         </div>
+
 
     </header>
 
@@ -127,9 +183,25 @@
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function() {
+            $('.menu-btn').on('click', function() {
+                var menu = $(this).next('.dropdown-menu');
+                $('.dropdown-menu').not(menu).hide();
+                menu.toggle();
+            });
+            
+            // Close dropdown when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.dropdown').length) {
+                    $('.dropdown-menu').hide();
+                }
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

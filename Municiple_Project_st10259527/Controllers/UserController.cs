@@ -187,7 +187,7 @@ namespace Municiple_Project_st10259527.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Login", "User");
+            return RedirectToAction("Index", "Home");
         }
         // ==============================================================================================
     }

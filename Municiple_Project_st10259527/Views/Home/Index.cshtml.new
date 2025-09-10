@@ -37,17 +37,17 @@
             overflow: hidden;
         }
 
-            .hero::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: url('~/Images/WesternCape.jpg') center/cover no-repeat;
-                opacity: 0.2;
-                z-index: 0;
-            }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('~/Images/WesternCape.jpg') center/cover no-repeat;
+            opacity: 0.2;
+            z-index: 0;
+        }
 
         .hero-content {
             position: relative;
@@ -78,33 +78,33 @@
             margin-bottom: 5rem;
         }
 
-            .section-title h2 {
-                font-size: 2.5rem;
-                font-weight: 700;
-                color: var(--primary);
-                margin-bottom: 1rem;
-                position: relative;
-                display: inline-block;
-            }
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
 
-                .section-title h2::after {
-                    content: '';
-                    position: absolute;
-                    width: 80px;
-                    height: 4px;
-                    background: var(--accent);
-                    bottom: -15px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    border-radius: 2px;
-                }
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
 
-            .section-title p {
-                font-size: 1.25rem;
-                color: #64748b;
-                max-width: 700px;
-                margin: 1.5rem auto 0;
-            }
+        .section-title p {
+            font-size: 1.25rem;
+            color: #64748b;
+            max-width: 700px;
+            margin: 1.5rem auto 0;
+        }
 
         .service-card {
             background: white;
@@ -116,29 +116,29 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
 
-            .service-card:hover {
-                transform: translateY(-10px);
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            }
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
 
-            .service-card i {
-                font-size: 2.5rem;
-                color: var(--accent);
-                margin-bottom: 1.5rem;
-                display: inline-block;
-            }
+        .service-card i {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
 
-            .service-card h3 {
-                font-size: 1.5rem;
-                font-weight: 600;
-                margin-bottom: 1rem;
-                color: var(--primary);
-            }
+        .service-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
 
-            .service-card p {
-                color: #64748b;
-                margin-bottom: 1.5rem;
-            }
+        .service-card p {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
 
         /* CTA Section */
         .cta-section {
@@ -182,11 +182,11 @@
             border: 2px solid white;
         }
 
-            .btn-cta:hover {
-                background: transparent;
-                color: white;
-                transform: translateY(-3px);
-            }
+        .btn-cta:hover {
+            background: transparent;
+            color: white;
+            transform: translateY(-3px);
+        }
 
         /* Footer */
         footer {
@@ -218,24 +218,24 @@
             margin-bottom: 2rem;
         }
 
-            .social-icons a {
-                color: white;
-                font-size: 1.25rem;
-                width: 42px;
-                height: 42px;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.1);
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                transition: all 0.3s ease;
-            }
+        .social-icons a {
+            color: white;
+            font-size: 1.25rem;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
 
-                .social-icons a:hover {
-                    background: var(--accent);
-                    transform: translateY(-3px);
-                    text-decoration: none;
-                }
+        .social-icons a:hover {
+            background: var(--accent);
+            transform: translateY(-3px);
+            text-decoration: none;
+        }
 
         .footer-links h5 {
             color: white;
@@ -246,15 +246,15 @@
             padding-bottom: 0.75rem;
         }
 
-            .footer-links h5::after {
-                content: '';
-                position: absolute;
-                left: 0;
-                bottom: 0;
-                width: 40px;
-                height: 2px;
-                background: var(--accent);
-            }
+        .footer-links h5::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
+        }
 
         .footer-links ul {
             list-style: none;
@@ -273,10 +273,10 @@
             display: inline-block;
         }
 
-            .footer-links a:hover {
-                color: white;
-                transform: translateX(5px);
-            }
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
 
         .footer-contact p {
             display: flex;
@@ -297,68 +297,61 @@
             text-align: center;
         }
 
-            .footer-bottom p {
-                margin: 0;
-                color: #94a3b8;
-                font-size: 0.9rem;
+        .footer-bottom p {
+            margin: 0;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 991.98px) {
+            .hero {
+                padding: 6rem 0;
+                text-align: center;
             }
 
-        @@media (max-width: 991.98px) {
-            
-            
-            .hero{
+            .hero h1 {
+                font-size: 2.5rem;
+            }
 
-        
-            padding: 6rem 0;
-            text-align: center;
+            .hero p {
+                font-size: 1.25rem;
+            }
+
+            .service-card {
+                margin-bottom: 2rem;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .section-title p {
+                font-size: 1.1rem;
+            }
         }
 
-        .hero h1 {
-            font-size: 2.5rem;
+        @media (max-width: 767.98px) {
+            .hero {
+                padding: 5rem 0;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .cta-section h2 {
+                font-size: 2rem;
+            }
+
+            .cta-section p {
+                font-size: 1.1rem;
+            }
         }
-
-        .hero p {
-            font-size: 1.25rem;
-        }
-
-        .service-card {
-            margin-bottom: 2rem;
-        }
-
-        .section-title h2 {
-            font-size: 2rem;
-        }
-
-        .section-title p {
-            font-size: 1.1rem;
-        }
-
-        }
-
-        @@media (max-width: 767.98px) {
-            .hero
-
-        {
-            padding: 5rem 0;
-        }
-
-        .hero h1 {
-            font-size: 2rem;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-        }
-
-        .cta-section h2 {
-            font-size: 2rem;
-        }
-
-        .cta-section p {
-            font-size: 1.1rem;
-        }
-
-        }</style>
+    </style>
 </head>
 <body>
 
