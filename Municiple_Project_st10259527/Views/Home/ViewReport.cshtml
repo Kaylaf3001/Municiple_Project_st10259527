@@ -1,0 +1,152 @@
+@model Municiple_Project_st10259527.Models.ReportModel
+
+@{
+    ViewData["Title"] = "View Report";
+    
+    // Helper function to get badge class based on status
+    string GetStatusBadgeClass(ReportStatus status)
+    {
+        return status switch
+        {
+            ReportStatus.Pending => "bg-secondary",
+            ReportStatus.InReview => "bg-warning text-dark",
+            ReportStatus.Approved => "bg-success",
+            ReportStatus.Rejected => "bg-danger",
+            ReportStatus.Completed => "bg-primary",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+<div class="container py-4">
+    <!-- Back button -->
+    <div class="mb-4">
+        <a href="@Url.Action("MyReports", "Home")" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to My Reports
+        </a>
+    </div>
+
+    <!-- Report Header -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Report #@Model.ReportId</h4>
+            <span class="badge @GetStatusBadgeClass(Model.Status) px-3 py-2">
+                @Model.Status
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="text-muted mb-3">Report Information</h5>
+                    <dl class="row">
+                        <dt class="col-sm-4">Report ID</dt>
+                        <dd class="col-sm-8">@Model.ReportId</dd>
+
+                        <dt class="col-sm-4">Reported On</dt>
+                        <dd class="col-sm-8">@Model.ReportDate.ToString("f")</dd>
+
+                        @if (Model.UpdatedAt.HasValue)
+                        {
+                            <dt class="col-sm-4">Last Updated</dt>
+                            <dd class="col-sm-8">@Model.UpdatedAt.Value.ToString("f")</dd>
+                        }
+
+                        <dt class="col-sm-4">Location</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Location) ? "Not specified" : Model.Location)</dd>
+
+                        <dt class="col-sm-4">Category</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.ReportType) ? "Not specified" : Model.ReportType)</dd>
+                    </dl>
+                </div>
+                <div class="col-md-6">
+                    <h5 class="text-muted mb-3">Status</h5>
+                    <div class="alert @(Model.Status == ReportStatus.Approved ? "alert-success" : 
+                                      Model.Status == ReportStatus.Rejected ? "alert-danger" :
+                                      Model.Status == ReportStatus.InReview ? "alert-warning" : "alert-secondary") mb-0">
+                        <div class="d-flex align-items-center">
+                            <i class="bi @(Model.Status == ReportStatus.Approved ? "bi-check-circle" : 
+                                         Model.Status == ReportStatus.Rejected ? "bi-x-circle" :
+                                         Model.Status == ReportStatus.InReview ? "bi-hourglass-split" : "bi-clock") me-2"></i>
+                            <div>
+                                <h6 class="alert-heading mb-1">
+                                    @(Model.Status == ReportStatus.Approved ? "Report Approved" :
+                                      Model.Status == ReportStatus.Rejected ? "Report Rejected" :
+                                      Model.Status == ReportStatus.InReview ? "Under Review" : "Pending Review")
+                                </h6>
+                                <p class="mb-0">
+                                    @(Model.Status == ReportStatus.Approved ? "Your report has been approved and is being processed." :
+                                      Model.Status == ReportStatus.Rejected ? "Your report has been reviewed but was not approved." :
+                                      Model.Status == ReportStatus.InReview ? "Your report is currently under review by our team." : 
+                                      "Your report has been received and is awaiting review.")
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Report Description -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title text-muted">Report Details</h5>
+                            <div class="p-3 bg-white rounded">
+                                @if (string.IsNullOrEmpty(Model.Description))
+                                {
+                                    <p class="text-muted fst-italic mb-0">No description provided.</p>
+                                }
+                                else
+                                {
+                                    <p class="mb-0">@Model.Description</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+            
+
+<!-- Add some custom styling for the timeline -->
+<style>
+    .timeline {
+        position: relative;
+        padding-left: 2rem;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+        padding-left: 2rem;
+        border-left: 2px solid #e9ecef;
+    }
+
+    .timeline-item:last-child {
+        border-left-color: transparent;
+    }
+
+    .timeline-badge {
+        position: absolute;
+        left: -1rem;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+        border: 2px solid #fff;
+    }
+
+    .timeline-content {
+        padding-left: 1rem;
+    }
+
+    .timeline-content h6 {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+</style>

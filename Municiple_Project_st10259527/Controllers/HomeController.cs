@@ -79,6 +79,23 @@ namespace Municiple_Project_st10259527.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> ViewReport(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null)
+                return RedirectToAction("Login", "User");
+
+            var report = await _reportRepository.GetReportByIdAsync(id);
+            
+            // Ensure the report exists and belongs to the current user
+            if (report == null || report.UserId != userId)
+            {
+                return NotFound();
+            }
+
+            return View(report);
+        }
+
         public IActionResult Privacy()
         {
             return View();
