@@ -70,7 +70,7 @@ namespace Municiple_Project_st10259527.Controllers
             {
                 Reports = reports,
                 TotalReports = reports.Count(),
-                ResolvedCount = reports.Count(r => r.Status == ReportStatus.Completed),
+                ApprovedCount = reports.Count(r => r.Status == ReportStatus.Approved),
                 InReviewCount = reports.Count(r => r.Status == ReportStatus.InReview),
                 DeniedCount = reports.Count(r => r.Status == ReportStatus.Rejected),
                 PendingCount = reports.Count(r => r.Status == ReportStatus.Pending)
