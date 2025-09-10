@@ -11,13 +11,18 @@ namespace Municiple_Project_st10259527.Controllers
 {
     public class AdminController : Controller
     {
+        //==========================================================================================================================
+        #region Fields and Constructor
         private readonly IAdminRepository _adminRepository;
         private const int PageSize = 10;
+
 
         public AdminController(IAdminRepository adminRepository)
         {
             _adminRepository = adminRepository ?? throw new ArgumentNullException(nameof(adminRepository));
         }
+        #endregion
+        //==========================================================================================================================
 
         // GET: Admin/Dashboard
         public async Task<IActionResult> Dashboard()
@@ -93,6 +98,37 @@ namespace Municiple_Project_st10259527.Controllers
             }
         }
 
+        // GET: Admin/ReportDetails/5
+        public async Task<IActionResult> ReportDetails(int id)
+        {
+            var isAdmin = HttpContext.Session.GetString("IsAdmin") == "true";
+            if (!isAdmin)
+            {
+                return RedirectToAction("Login", "User");
+            }
+
+            try
+            {
+                var report = await _adminRepository.GetReportByIdAsync(id);
+                if (report == null)
+                {
+                    return NotFound();
+                }
+
+                // Set counts for the sidebar
+                ViewBag.TotalReports = await _adminRepository.GetTotalReportCountAsync();
+                ViewBag.PendingCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Pending);
+                ViewBag.ApprovedCount = await _adminRepository.GetReportCountByStatusAsync(ReportStatus.Approved);
+                
+                return View(report);
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return StatusCode(500, "An error occurred while loading the report details.");
+            }
+        }
+
         // GET: Admin/Reports
         public async Task<IActionResult> Reports(ReportStatus? status = null, int page = 1, string searchTerm = null)
         {
@@ -117,6 +153,14 @@ namespace Municiple_Project_st10259527.Controllers
             return View(viewModel);
         }
 
+        //==========================================================================================================================
+        // New Action to View All Reports
+        //==========================================================================================================================
+        public async Task<IActionResult> AllReports()
+        {
+            var reports = await _adminRepository.GetAllReportsAsync(); // Make sure this returns IEnumerable<ReportModel>
+            return View(reports);
+        }
         // GET: Admin/Review/5
         public async Task<IActionResult> Review(int id)
         {
