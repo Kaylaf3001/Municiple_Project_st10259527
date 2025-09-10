@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Report Issue - Location";
     Layout = null;
 }
@@ -47,6 +47,7 @@
         .form-group {
             margin-bottom: 20px;
             text-align: left;
+            position: relative;
         }
 
             .form-group input {
@@ -54,7 +55,29 @@
                 padding: 10px;
                 border: 1px solid #ccc;
                 border-radius: 8px;
+                box-sizing: border-box;
             }
+
+        datalist {
+            position: absolute;
+            width: 100%;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 0 0 8px 8px;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        datalist option {
+            padding: 8px 10px;
+            cursor: pointer;
+        }
+
+        datalist option:hover {
+            background-color: #f0f0f0;
+        }
 
         .progress-bar {
             display: flex;
@@ -139,47 +162,5 @@
     </div>
 </body>
 </html>
-<script>
-    const locations = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.WesternCapeLocations));
-    const input = document.getElementById("locationInput");
-
-    input.addEventListener("input", function() {
-        const val = this.value.toLowerCase();
-        closeAllLists();
-
-        if (!val) return false;
-
-        const list = document.createElement("div");
-        list.setAttribute("class", "autocomplete-items");
-        this.parentNode.appendChild(list);
-
-        let count = 0;
-        for (let loc of locations) {
-            if (loc.toLowerCase().includes(val) && count < 10) {
-                const item = document.createElement("div");
-                item.innerHTML = "<strong>" + loc.substr(0, val.length) + "</strong>" + loc.substr(val.length);
-                item.addEventListener("click", function() {
-                    input.value = loc;
-                    closeAllLists();
-                });
-                list.appendChild(item);
-                count++;
-            }
-        }
-    });
-
-    function closeAllLists(elmnt) {
-        const items = document.getElementsByClassName("autocomplete-items");
-        for (let i = 0; i < items.length; i++) {
-            if (elmnt != items[i] && elmnt != input) {
-                items[i].parentNode.removeChild(items[i]);
-            }
-        }
-    }
-
-    document.addEventListener("click", function (e) {
-        closeAllLists(e.target);
-    });
-</script>
 
 

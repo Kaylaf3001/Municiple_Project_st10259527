@@ -126,7 +126,7 @@
         }
 
         .btn-secondary {
-            background: #6c757d;
+            background: #1A3456;
             color: white;
         }
 
@@ -178,10 +178,11 @@
             
             <div class="wizard-buttons">
                 <button type="button"
-                        class="btn"
+                        class="btn btn-secondary"
                         asp-controller="Report"
                         asp-action="ReportIssueStep3"
-                        onclick="location.href='@Url.Action("ReportIssueStep3", "Report")'">
+                        onclick="location.href='@Url.Action("ReportIssueStep3", "Report")'"
+                        style="margin-right: 10px;">
                     Back
                 </button>
                 <button type="submit" class="btn btn-primary">Submit Report</button>
