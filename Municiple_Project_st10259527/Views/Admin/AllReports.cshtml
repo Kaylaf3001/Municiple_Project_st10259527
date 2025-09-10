@@ -4,6 +4,44 @@
     Layout = "_AdminLayout";
 }
 
+@section Styles {
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
+    <style>
+        /* Improve spacing and readability */
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .btn-sm {
+            border-radius: 8px;
+            padding: 4px 10px;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.5em 0.8em;
+        }
+
+        <style >
+        /* Bigger and consistent action buttons */
+        .btn-action {
+            padding: 6px 14px;
+            font-size: 0.9rem;
+            border-radius: 10px;
+        }
+
+        .btn-action i {
+            margin-right: 5px;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
+
+}
+
 <div class="container-fluid">
     <!-- Header -->
     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -76,44 +114,6 @@
     </div>
 </div>
 
-@section Styles {
-    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-
-    <style>
-        /* Improve spacing and readability */
-        .table th, .table td {
-            vertical-align: middle;
-        }
-
-        .btn-sm {
-            border-radius: 8px;
-            padding: 4px 10px;
-        }
-
-        .badge {
-            font-size: 0.8rem;
-            padding: 0.5em 0.8em;
-        }
-
-        <style >
-        /* Bigger and consistent action buttons */
-        .btn-action {
-            padding: 6px 14px;
-            font-size: 0.9rem;
-            border-radius: 10px;
-        }
-
-        .btn-action i {
-            margin-right: 5px;
-        }
-
-        .table td {
-            vertical-align: middle;
-        }
-    </style>
-
-    </style>
-}
 
 @section Scripts {
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>

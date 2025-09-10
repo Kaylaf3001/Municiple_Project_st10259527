@@ -60,4 +60,5 @@ namespace Municiple_Project_st10259527.Models
         [ForeignKey("AssignedAdminId")]
         public virtual UserModel? AssignedAdmin { get; set; }
     }
+    //=================================================================
 }
