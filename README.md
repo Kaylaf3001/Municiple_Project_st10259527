@@ -6,14 +6,12 @@ A comprehensive web application for managing municipal reports with user and adm
 - [Features](#features)
 - [Technology Stack](#technology-stack)
 - [Installation](#installation)
-- [Configuration](#configuration)
 - [Database Schema](#database-schema)
 - [Project Structure](#project-structure)
 - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
 - [Screenshots](#screenshots)
-- [Contributing](#contributing)
-- [License](#license)
+- [Admin Login](#admin-login)
 
 ## Features
 
@@ -44,6 +42,23 @@ A comprehensive web application for managing municipal reports with user and adm
 - **Client-side Scripting**: JavaScript, jQuery
 - **Charts**: Chart.js (for admin dashboard)
 - **Maps**: (If applicable, e.g., Google Maps API for location selection)
+
+## Data Structure
+### HashSet
+<img width="1004" height="534" alt="image" src="https://github.com/user-attachments/assets/e2e4a359-c5a1-49d5-ae7d-b576d2dca8ea" />
+
+### Dictionary
+<img width="1035" height="541" alt="image" src="https://github.com/user-attachments/assets/f4f4308b-06ab-4e73-8af8-a7bba128502f" />
+
+### Database
+<img width="1139" height="1159" alt="image" src="https://github.com/user-attachments/assets/a63c8333-99f2-4ae6-9228-9ecee2769efc" />
+
+### IQueryable
+<img width="923" height="836" alt="image" src="https://github.com/user-attachments/assets/13080132-2050-4b36-93a0-8d47dfbe4f94" />
+
+### IEnumerable
+<img width="446" height="120" alt="image" src="https://github.com/user-attachments/assets/12be66f9-8bf5-4117-a4fe-00328afd52a2" />
+<img width="1501" height="634" alt="image" src="https://github.com/user-attachments/assets/74a74470-82c8-4c08-9197-eda48b2a6047" />
 
 ## Installation
 
@@ -79,26 +94,6 @@ A comprehensive web application for managing municipal reports with user and adm
    ```bash
    dotnet run
    ```
-
-## Configuration
-
-### Environment Variables
-Create a `appsettings.Development.json` file in the project root with the following content:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=your_server;Database=MunicipalReports;Trusted_Connection=True;TrustServerCertificate=True;"
-  },
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
-  "AllowedHosts": "*"
-}
-```
 
 ## Database Schema
 
@@ -177,36 +172,24 @@ Municiple_Project_st10259527/
 ### User Interface
 <!-- Add your screenshots here -->
 1. **Home Page**
-   ![Home Page](screenshots/home-page.png)
+<img width="2493" height="1278" alt="image" src="https://github.com/user-attachments/assets/ed4dc695-68c5-4c4f-bbc5-2a300929ba48" />
 
-2. **Report Submission**
-   ![Report Submission](screenshots/report-submission.png)
+2. **Login and Sign Upload**
+<img width="2513" height="1278" alt="image" src="https://github.com/user-attachments/assets/6a9bc7cb-3fac-46b3-87d9-fb1404f362cd" />
+<img width="2498" height="1221" alt="image" src="https://github.com/user-attachments/assets/d160f3d9-c2c2-492b-80c9-1f2edb656ca4" />
 
 3. **User Dashboard**
-   ![User Dashboard](screenshots/user-dashboard.png)
+<img width="2503" height="1220" alt="image" src="https://github.com/user-attachments/assets/a0d40b18-0b4d-4c2e-ac0d-bcf1c1958c47" />
+
 
 ### Admin Interface
 1. **Admin Dashboard**
-   ![Admin Dashboard](screenshots/admin-dashboard.png)
+<img width="2497" height="1222" alt="image" src="https://github.com/user-attachments/assets/426144a5-651c-4ac9-8fbb-93fb2adf7ddc" />
 
 2. **Report Management**
-   ![Report Management](screenshots/report-management.png)
+<img width="2496" height="1131" alt="image" src="https://github.com/user-attachments/assets/c9f6dcba-d7dd-4fb4-8096-a3b8da5da097" />
+<img width="2514" height="1130" alt="image" src="https://github.com/user-attachments/assets/1c82cf7b-5355-49fc-b0c9-287c81220886" />
 
-3. **User Management**
-   ![User Management](screenshots/user-management.png)
-
-## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-*Note: Replace `[repository-url]` with your actual repository URL and add your screenshots to the `screenshots` directory.*
+## Admin Login
+- admin@example.com
+- Admin@123
