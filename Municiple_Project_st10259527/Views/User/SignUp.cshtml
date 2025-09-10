@@ -7,137 +7,324 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - Western Cape Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #1A3456;
-            background-size: cover;
-            height: 100vh;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0d2b52 0%, #1a4b8c 100%);
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            padding: 40px 20px;
+            box-sizing: border-box;
         }
 
-        .signup-container {
+        .back-to-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+        }
+
+        .back-to-home:hover {
+            color: #f8f9fa;
+            transform: translateX(-3px);
+        }
+
+        .main-container {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
-            width: 350px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border-radius: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .logo-section {
+            background: linear-gradient(135deg, #0d2b52 0%, #1a4b8c 100%);
+            color: white;
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 30px;
+            box-sizing: border-box;
+        }
+
+        .logo-section img {
+            width: 200px;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .logo-section h1 {
+            font-size: 22px;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .signup-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+
+        .signup-section h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            font-size: 14px;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        /* Standardize all buttons */
+        .btn, .btn-outline {
+            width: 100%;
+            max-width: 100%;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+            line-height: 1.5;
+            border: 2px solid transparent;
+        }
+
+        .btn {
+            background: #1A3456;
+            color: white;
+        }
+
+        .btn:hover {
+            background: #0f2238;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #1A3456;
+            color: #1A3456;
+        }
+
+        .btn-outline:hover {
+            background: #1A3456;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .button-container {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .button-container .btn,
+        .button-container .btn-outline {
+            margin: 10px 0;
+        }
+
+        .error-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #f8d7da;
+            color: #721c24;
+            font-size: 14px;
             text-align: center;
         }
 
-            .signup-container h2 {
-                margin-bottom: 20px;
-                font-size: 22px;
+        @@media (max-width: 900px) {
+            body {
+                padding: 60px 15px 30px;
+            }
+            
+            .main-container {
+                flex-direction: column;
+                max-width: 500px;
+                margin: 0 auto;
             }
 
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
+            .logo-section, .signup-section {
+                width: 100% !important;
+                padding: 30px 25px !important;
+                text-align: center;
+                min-height: auto;
+            }
 
-            .form-group label {
+            .logo-section {
+                padding-top: 50px !important;
+            }
+
+            .logo-section img {
+                width: 120px;
+                height: 120px;
+                margin-bottom: 15px;
+            }
+            
+            .back-to-home {
+                top: 10px;
+                left: 10px;
                 font-size: 14px;
-                display: block;
-                margin-bottom: 5px;
+                padding: 6px 10px;
             }
-
-            .form-group input {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 6px;
-            }
-
-        .btn {
-            width: 100%;
-            padding: 10px;
-            background: #ccc;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
         }
-
-            .btn:hover {
-                background: #aaa;
+        
+        @@media (max-width: 480px) {
+            .logo-section, .signup-section {
+                padding: 25px 20px !important;
             }
-
-        .back-link {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            cursor: pointer;
-            font-size: 14px;
-            text-decoration: none;
-            color: black;
+            
+            .logo-section img {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .signup-section h2 {
+                font-size: 1.5rem;
+                margin-bottom: 20px;
+            }
         }
-
-            .back-link span {
-                margin-left: 5px;
-            }
     </style>
 </head>
 <body>
-    <div class="signup-container">
-        <a href="@Url.Action("Login", "User")" class="back-link">← <span>Back</span></a>
-        <h2>Sign Up</h2>
-        <form asp-action="SignUp" method="post" onsubmit="return validateForm()">
-            <div class="form-group">
-                <label for="FirstName">First Name</label>
-                <input type="text" id="FirstName" name="firstName" placeholder="John" required />
-            </div>
-            <div class="form-group">
-                <label for="LastName">Last Name</label>
-                <input type="text" id="LastName" name="lastName" placeholder="Doe" required />
-            </div>
-            <div class="form-group">
-                <label for="Email">Email</label>
-                <input type="email" id="Email" name="email" placeholder="email@example.com" required />
-            </div>
-            <div class="form-group">
-                <label for="Password">Password</label>
-                <input type="password" id="Password" name="password" placeholder="Password" required minlength="6" />
-            </div>
-            <div class="form-group">
-                <label for="ConfirmPassword">Confirm Password</label>
-                <input type="password" id="ConfirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
-                <span id="passwordMatchError" style="color: red; font-size: 12px; display: none;">Passwords do not match</span>
-            </div>
-            <button type="submit" class="btn">Sign Up</button>
-        </form>
+    <a href="/" class="back-to-home">
+        <i class="bi bi-arrow-left"></i>
+        <span>Back to Home</span>
+    </a>
+    
+    <div class="main-container">
+        <!-- Left section -->
+        <div class="logo-section">
+            <img src="~/images/logo.png" alt="Logo" />
+            <h1>Western Cape Connect</h1>
+        </div>
 
-        <script>
-            function validateForm() {
-                const password = document.getElementById('Password').value;
-                const confirmPassword = document.getElementById('ConfirmPassword').value;
-                const errorElement = document.getElementById('passwordMatchError');
-                
-                if (password !== confirmPassword) {
-                    errorElement.style.display = 'block';
-                    return false;
-                }
-                errorElement.style.display = 'none';
-                return true;
+        <!-- Right section -->
+        <div class="signup-section">
+            <h2>Create Account</h2>
+
+            @if (TempData["SignUpError"] != null)
+            {
+                <div class="error-message">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    @TempData["SignUpError"]
+                </div>
             }
 
-            // Add real-time password matching validation
-            document.getElementById('ConfirmPassword').addEventListener('input', function() {
-                const password = document.getElementById('Password').value;
-                const confirmPassword = this.value;
-                const errorElement = document.getElementById('passwordMatchError');
+            <form asp-action="SignUp" method="post" class="button-container" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="FirstName">First Name</label>
+                    <input type="text" id="FirstName" name="firstName" placeholder="John" required />
+                </div>
+                <div class="form-group">
+                    <label for="LastName">Last Name</label>
+                    <input type="text" id="LastName" name="lastName" placeholder="Doe" required />
+                </div>
+                <div class="form-group">
+                    <label for="Email">Email</label>
+                    <input type="email" id="Email" name="email" placeholder="email@example.com" required />
+                </div>
+                <div class="form-group">
+                    <label for="Password">Password</label>
+                    <input type="password" id="Password" name="password" placeholder="Create a password" required />
+                </div>
+                <div class="form-group">
+                    <label for="ConfirmPassword">Confirm Password</label>
+                    <input type="password" id="ConfirmPassword" name="confirmPassword" placeholder="Confirm your password" required />
+                    <div id="passwordMatchError" class="error-message" style="display: none; margin-top: 5px;">
+                        <i class="bi bi-exclamation-circle"></i> Passwords do not match
+                    </div>
+                </div>
                 
-                if (password !== confirmPassword) {
-                    errorElement.style.display = 'block';
-                } else {
-                    errorElement.style.display = 'none';
-                }
-            });
-        </script>
+                <div class="text-center mt-3">
+                    <a href="@Url.Action("Login", "User")" class="btn btn-outline">
+                        <i class="bi bi-box-arrow-in-right"></i> Back to Login
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
+
+    <script>
+        function validateForm() {
+            const password = document.getElementById('Password').value;
+            const confirmPassword = document.getElementById('ConfirmPassword').value;
+            const errorElement = document.getElementById('passwordMatchError');
+            
+            if (password !== confirmPassword) {
+                errorElement.style.display = 'block';
+                return false;
+            }
+            errorElement.style.display = 'none';
+            return true;
+        }
+
+        // Add real-time password matching validation
+        document.getElementById('ConfirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('Password').value;
+            const confirmPassword = this.value;
+            const errorElement = document.getElementById('passwordMatchError');
+            
+            if (password !== confirmPassword) {
+                errorElement.style.display = 'block';
+            } else {
+                errorElement.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
 
@@ -149,8 +336,20 @@
 }
 @if (TempData["SignUpSuccess"] != null)
 {
+    <div class="alert alert-success" style="display: none;">
+        @TempData["SignUpSuccess"]
+    </div>
     <script>
-        alert('@TempData["SignUpSuccess"]');
+        // Show success message in a more elegant way
+        document.addEventListener('DOMContentLoaded', function() {
+            const successMessage = document.querySelector('.alert-success');
+            if (successMessage) {
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+            }
+        });
     </script>
 }
 

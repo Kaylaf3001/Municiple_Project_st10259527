@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Sign In";
     Layout = null;
 }
@@ -7,95 +7,234 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Sign In</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In - Western Cape Connect</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: #1A3456;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Main container with two columns */
-        .main-container {
-            background: white;
-            border-radius: 12px;
-            display: flex;
-            overflow: hidden;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-            width: 750px;
-            max-width: 95%;
-        }
-
-        /* Left section */
-        .logo-section {
-            background: #16324F;
-            color: white;
-            flex: 1;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0d2b52 0%, #1a4b8c 100%);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .back-to-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 4px;
+            backdrop-filter: blur(5px);
+        }
+
+            .back-to-home:hover {
+                color: #f8f9fa;
+                transform: translateX(-3px);
+            }
+
+        .main-container {
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        @@media (max-width: 900px) {
+            body
+
+        {
+            padding: 60px 15px 30px;
+        }
+
+        .main-container {
+            flex-direction: column;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .logo-section, .login-section {
+            width: 100% !important;
+            padding: 30px 25px !important;
+            text-align: center;
+            min-height: auto;
+        }
+
+        .logo-section {
+            padding-top: 50px !important;
+        }
+
+            .logo-section img {
+                width: 120px;
+                height: 120px;
+                margin-bottom: 15px;
+            }
+
+        .back-to-home {
+            top: 10px;
+            left: 10px;
+            font-size: 14px;
+            padding: 6px 10px;
+        }
+
+        }
+
+        @@media (max-width: 480px) {
+            .logo-section, .login-section
+
+        {
+            padding: 25px 20px !important;
+        }
+
+        .logo-section img {
+            width: 100px;
+            height: 100px;
+        }
+
+        .login-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        }
+
+        .logo-section {
+            background: linear-gradient(135deg, #0d2b52 0%, #1a4b8c 100%);
+            color: white;
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 30px;
+            box-sizing: border-box;
         }
 
             .logo-section img {
                 width: 200px;
-                height: 200px
+                height: 200px;
                 margin-bottom: 20px;
             }
 
             .logo-section h1 {
                 font-size: 22px;
                 margin: 0;
+                font-weight: 500;
             }
 
-        /* Right section (form) */
         .login-section {
             flex: 1;
-            padding: 40px;
+            min-width: 300px;
+            padding: 40px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-sizing: border-box;
         }
 
             .login-section h2 {
                 text-align: center;
                 margin-bottom: 25px;
+                font-weight: 600;
             }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
         }
 
             .form-group label {
                 font-size: 14px;
+                font-weight: 500;
                 display: block;
-                margin-bottom: 5px;
+                margin-bottom: 6px;
             }
 
             .form-group input {
                 width: 100%;
-                padding: 10px;
+                padding: 11px;
                 border: 1px solid #ccc;
                 border-radius: 6px;
+                font-size: 15px;
             }
 
-        .btn {
+        /* Standardize all buttons */
+        .btn, .btn-outline {
             width: 100%;
-            padding: 12px;
-            background: #1A3456;
-            border: none;
+            max-width: 100%;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
-            color: white;
-            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 8px 0;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+            line-height: 1.5;
+            border: 2px solid transparent;
         }
 
-            .btn:hover {
-                background: #16324F;
-            }
+        .btn {
+            background: #1A3456;
+            color: white;
+        }
+
+        .btn:hover {
+            background: #0f2238;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #1A3456;
+            color: #1A3456;
+        }
+
+        .btn-outline:hover {
+            background: #1A3456;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Ensure consistent button container */
+        .button-container {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .button-container .btn,
+        .button-container .btn-outline {
+            margin: 10px 0;
+        }
 
         .signup-link {
             margin-top: 15px;
@@ -108,20 +247,44 @@
                 text-decoration: none;
                 color: #1A3456;
             }
+
+        .error-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #f8d7da;
+            color: #721c24;
+            font-size: 14px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
+    <a href="/" class="back-to-home">
+        <i class="bi bi-arrow-left"></i>
+        <span style="margin-left: 5px;">Back to Home</span>
+    </a>
+
     <div class="main-container">
-        <!-- Left section: Logo + Text -->
+        <!-- Left section -->
         <div class="logo-section">
-            <img src="~/images/logo.png" alt="Logo" /> <!-- replace with your logo path -->
+            <img src="~/images/logo.png" alt="Logo" />
             <h1>Western Cape Connect</h1>
         </div>
 
-        <!-- Right section: Sign in form -->
+        <!-- Right section -->
         <div class="login-section">
             <h2>Sign In</h2>
-            <form asp-action="Login" method="post">
+
+            @if (TempData["LoginError"] != null)
+            {
+                <div class="error-message">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    @TempData["LoginError"]
+                </div>
+            }
+
+            <form asp-action="Login" method="post" class="button-container">
                 <div class="form-group">
                     <label>Email</label>
                     <input type="email" name="Email" placeholder="Email@gmail.com" required />
@@ -130,19 +293,17 @@
                     <label>Password</label>
                     <input type="password" name="Password" placeholder="Password" required />
                 </div>
-                <button type="submit" class="btn">Sign In</button>
+                <button type="submit" class="btn">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In
+                </button>
+                
+                <div class="text-center">
+                    <a href="/User/SignUp" class="btn btn-outline">
+                        <i class="bi bi-person-plus"></i> Create New Account
+                    </a>
+                </div>
             </form>
-            <div class="signup-link">
-                Don’t have an account? <a asp-action="SignUp">Sign Up</a>
-            </div>
         </div>
     </div>
 </body>
 </html>
-
-@if (TempData["LoginError"] != null)
-{
-    <script>
-        alert('@TempData["LoginError"]');
-    </script>
-}
