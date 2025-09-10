@@ -25,6 +25,11 @@ namespace Municiple_Project_st10259527.Repository
             return _context.Users.Any(u => u.Email == email);
         }
 
+        public HashSet<string> GetAllUserEmails()
+        {
+            return _context.Users.Select(u => u.Email).ToHashSet();
+        }
+
         public void AddUser(UserModel user)
         {
             _context.Users.Add(user);

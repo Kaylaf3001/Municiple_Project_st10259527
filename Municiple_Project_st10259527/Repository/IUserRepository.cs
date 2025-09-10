@@ -7,6 +7,7 @@ namespace Municiple_Project_st10259527.Repository
     {
         UserModel GetUserByEmailAndPassword(string email, string password);
         bool UserExists(string email);
+        HashSet<string> GetAllUserEmails();
         void AddUser(UserModel user);
         UserModel GetUserById(int userId);
         IEnumerable<UserModel> GetAllUsers();

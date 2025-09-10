@@ -70,7 +70,8 @@ namespace Municiple_Project_st10259527.Controllers
         [HttpPost]
         public IActionResult SignUp(string firstName, string lastName, string email, string password)
         {
-            if (_userRepository.UserExists(email))
+            HashSet<string> existingEmails = _userRepository.GetAllUserEmails();
+            if (existingEmails.Contains(email))
             {
                 TempData["SignUpError"] = "A user with this email already exists!";
                 return RedirectToAction("SignUp");
