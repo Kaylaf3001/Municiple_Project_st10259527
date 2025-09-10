@@ -65,44 +65,9 @@ namespace Municiple_Project_st10259527.Controllers
             return View(recentUserReports); // pass user reports as model
         }
 
-        [HttpGet]
-        public IActionResult MyReports()
-        {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-                return RedirectToAction("Login", "User");
-
-            var reports = _reportRepository.GetReportsByUserId(userId.Value);
         
-            var viewModel = new UserReportsViewModel
-            {
-                Reports = reports,
-                TotalReports = reports.Count(),
-                ApprovedCount = reports.Count(r => r.Status == ReportStatus.Approved),
-                InReviewCount = reports.Count(r => r.Status == ReportStatus.InReview),
-                DeniedCount = reports.Count(r => r.Status == ReportStatus.Rejected),
-                PendingCount = reports.Count(r => r.Status == ReportStatus.Pending)
-            };
 
-            return View(viewModel);
-        }
-
-        public async Task<IActionResult> ViewReport(int id)
-        {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-                return RedirectToAction("Login", "User");
-
-            var report = await _reportRepository.GetReportByIdAsync(id);
-            
-            // Ensure the report exists and belongs to the current user
-            if (report == null || report.UserId != userId)
-            {
-                return NotFound();
-            }
-
-            return View(report);
-        }
+        
 
         public IActionResult Privacy()
         {
