@@ -11,7 +11,23 @@ namespace Municiple_Project_st10259527.Controllers
 {
     public class AdminController : Controller
     {
+        //===============================================================================================
+        // Dependency Injection for Repositories and Constants
+        //===============================================================================================
+        #region
+        private readonly IAdminRepository _adminRepository;
+        private const int PageSize = 10;
+
+        public AdminController(IAdminRepository adminRepository)
+        {
+            _adminRepository = adminRepository;
+        }
+        #endregion
+        //===============================================================================================
+
+        //===============================================================================================
         // GET: Admin/Dashboard
+        //===============================================================================================
         public async Task<IActionResult> Dashboard()
         {
             try
@@ -25,15 +41,11 @@ namespace Municiple_Project_st10259527.Controllers
                 return StatusCode(500, "An error occurred while loading the dashboard.");
             }
         }
-        private readonly IAdminRepository _adminRepository;
-        private const int PageSize = 10;
+        //===============================================================================================
 
-        public AdminController(IAdminRepository adminRepository)
-        {
-            _adminRepository = adminRepository;
-        }
-
+        //===============================================================================================
         // GET: Admin/Reports
+        //===============================================================================================
         public async Task<IActionResult> Reports(ReportStatus? status = null, int page = 1, string searchTerm = null)
         {
             var reports = await _adminRepository.GetReportsAsync(status, page, PageSize, searchTerm);
@@ -58,29 +70,41 @@ namespace Municiple_Project_st10259527.Controllers
 
             return View(viewModel);
         }
+        //===============================================================================================
 
+        //===============================================================================================
         // GET: Admin/AllReports
+        //===============================================================================================
         public async Task<IActionResult> AllReports(ReportStatus? status = null, int page = 1, string searchTerm = null)
         {
             var reports = await _adminRepository.GetReportsAsync(status, page, PageSize, searchTerm);
             return View(reports);
         }
+        //===============================================================================================
 
+        //===============================================================================================
         // GET: Admin/PendingReports
+        //===============================================================================================
         public async Task<IActionResult> PendingReports(int page = 1, string searchTerm = null)
         {
             var reports = await _adminRepository.GetReportsAsync(ReportStatus.Pending, page, PageSize, searchTerm);
             return View("AllReports", reports);
         }
+        //===============================================================================================
 
+        //===============================================================================================
         // GET: Admin/ApprovedReports
+        //===============================================================================================
         public async Task<IActionResult> ApprovedReports(int page = 1, string searchTerm = null)
         {
             var reports = await _adminRepository.GetReportsAsync(ReportStatus.Approved, page, PageSize, searchTerm);
             return View("AllReports", reports);
         }
+        //===============================================================================================
 
-        // GET: Admin/ViewReport/5
+        //===============================================================================================
+        // GET: Admin/ViewReport/id
+        //===============================================================================================
         public async Task<IActionResult> ViewReport(int id)
         {
             var report = await _adminRepository.GetReportByIdAsync(id);
@@ -90,8 +114,11 @@ namespace Municiple_Project_st10259527.Controllers
             }
             return View("ReportDetails", report);
         }
+        //===============================================================================================
 
-        // GET: Admin/Review/5
+        //===============================================================================================
+        // GET: Admin/Review/id
+        //===============================================================================================
         public async Task<IActionResult> Review(int id)
         {
             var report = await _adminRepository.GetReportByIdAsync(id);
@@ -117,8 +144,11 @@ namespace Municiple_Project_st10259527.Controllers
 
             return View(viewModel);
         }
+        //===============================================================================================
 
-        // POST: Admin/UpdateStatus/5
+        //===============================================================================================
+        // POST: Admin/UpdateStatus/id
+        //===============================================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus()
@@ -160,5 +190,7 @@ namespace Municiple_Project_st10259527.Controllers
                 });
             }
         }
+        //===============================================================================================
     }
 }
+//================================================End=Of=File================================================

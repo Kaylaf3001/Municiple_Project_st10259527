@@ -9,18 +9,20 @@ namespace Municiple_Project_st10259527.Controllers
 {
     public class ReportController : Controller
     {
+        //===============================================================================================
         // Dependency Injection for Repositories
+        //===============================================================================================
+        #region
         private readonly IReportRepository _reportRepository;
         private readonly IUserRepository _userRepository;
 
-        //===============================================================================================
-        // Constructor
         //===============================================================================================
         public ReportController(IReportRepository reportRepository, IUserRepository userRepository)
         {
             _reportRepository = reportRepository;
             _userRepository = userRepository;
         }
+        #endregion
         //===============================================================================================
 
         //===============================================================================================================
@@ -273,7 +275,7 @@ namespace Municiple_Project_st10259527.Controllers
         public IActionResult CreateReport(ReportModel report, IFormFile? uploadedFile)
         {
             _reportRepository.AddReport(report, uploadedFile);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("UserDashboard", "User");
         }
         //===============================================================================================================
     }
