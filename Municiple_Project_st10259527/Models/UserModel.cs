@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Municiple_Project_st10259527.Models
 {
+    //=================================================================
+    // User Model
+    //=================================================================
     public class UserModel
     {
         [Key]
@@ -37,4 +40,5 @@ namespace Municiple_Project_st10259527.Models
         [Display(Name = "Full Name")]
         public string FullName => $"{FirstName} {LastName}";
     }
+    //=================================================================
 }
