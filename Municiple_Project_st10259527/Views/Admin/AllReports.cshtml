@@ -5,37 +5,38 @@
 }
 
 <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">All Reports</h1>
-        <div class="d-flex
-            <a href="@Url.Action("Dashboard")" class="btn btn-secondary btn-sm mr-2">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
-        </div>
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 fw-bold text-dark">?? All Reports</h1>
+        <a href="@Url.Action("Dashboard")" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
     </div>
 
-    <div class="card shadow mb-4">
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Report List</h6>
-            <div class="dropdown no-arrow">
-                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+    <!-- Report Card -->
+    <div class="card shadow-lg border-0 rounded-3">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h6 class="m-0 fw-bold text-primary">Report List</h6>
+            <div class="dropdown">
+                <a class="btn btn-sm btn-light dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                    Filter by Status
                 </a>
-                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                    <div class="dropdown-header">Filter by Status:</div>
-                    <a class="dropdown-item" href="?status=all">All Reports</a>
-                    <a class="dropdown-item" href="?status=Pending">Pending</a>
-                    <a class="dropdown-item" href="?status=InReview">In Review</a>
-                    <a class="dropdown-item" href="?status=Approved">Approved</a>
-                    <a class="dropdown-item" href="?status=Completed">Completed</a>
-                    <a class="dropdown-item" href="?status=Rejected">Rejected</a>
-                </div>
+                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink">
+                    <li><a class="dropdown-item" href="?status=all">All Reports</a></li>
+                    <li><a class="dropdown-item" href="?status=Pending">Pending</a></li>
+                    <li><a class="dropdown-item" href="?status=InReview">In Review</a></li>
+                    <li><a class="dropdown-item" href="?status=Approved">Approved</a></li>
+                    <li><a class="dropdown-item" href="?status=Completed">Completed</a></li>
+                    <li><a class="dropdown-item" href="?status=Rejected">Rejected</a></li>
+                </ul>
             </div>
         </div>
+
+        <!-- Table -->
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
+                <table class="table table-hover align-middle" id="dataTable" width="100%">
+                    <thead class="table-light">
                         <tr>
                             <th>ID</th>
                             <th>Type</th>
@@ -43,31 +44,28 @@
                             <th>Location</th>
                             <th>Status</th>
                             <th>Reported On</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var report in Model)
                         {
                             <tr>
-                                <td>@report.ReportId</td>
+                                <td class="fw-semibold">@report.ReportId</td>
                                 <td>@report.ReportType</td>
                                 <td>@(report.User?.FullName ?? "N/A")</td>
                                 <td>@report.Location</td>
-                                <td><span class="badge @GetStatusBadgeClass(report.Status)">@report.Status.ToString()</span></td>
-                                <td>@report.ReportDate.ToString("g")</td>
                                 <td>
-                                    <a href="@Url.Action("ViewReport", "Admin", new { id = report.ReportId })" class="btn btn-info btn-sm" title="View Details">
-                                        <i class="fas fa-eye"></i>
+                                    <span class="badge rounded-pill @GetStatusBadgeClass(report.Status)">
+                                        @report.Status.ToString()
+                                    </span>
+                                </td>
+                                <td>@report.ReportDate.ToString("g")</td>
+                                <td class="text-center">
+                                    <a href="@Url.Action("ViewReport", "Admin", new { id = report.ReportId })"
+                                       class="btn btn-outline-info btn-action me-2" title="View Details">
+                                        <i class="fas fa-eye"></i> View
                                     </a>
-                                    @if (report.Status != ReportStatus.Completed && report.Status != ReportStatus.Rejected)
-                                    {
-                                        <a href="@Url.Action("UpdateReportStatus", new { reportId = report.ReportId, status = ReportStatus.Completed })"
-                                           class="btn btn-success btn-sm" title="Mark as Complete"
-                                           onclick="return confirm('Are you sure you want to mark this report as completed?')">
-                                            <i class="fas fa-check"></i>
-                                        </a>
-                                    }
                                 </td>
                             </tr>
                         }
@@ -80,6 +78,41 @@
 
 @section Styles {
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+
+    <style>
+        /* Improve spacing and readability */
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .btn-sm {
+            border-radius: 8px;
+            padding: 4px 10px;
+        }
+
+        .badge {
+            font-size: 0.8rem;
+            padding: 0.5em 0.8em;
+        }
+
+        <style >
+        /* Bigger and consistent action buttons */
+        .btn-action {
+            padding: 6px 14px;
+            font-size: 0.9rem;
+            border-radius: 10px;
+        }
+
+        .btn-action i {
+            margin-right: 5px;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+    </style>
+
+    </style>
 }
 
 @section Scripts {
@@ -90,9 +123,9 @@
         $(document).ready(function() {
             $('#dataTable').DataTable({
                 responsive: true,
-                order: [[0, 'desc']], // Sort by report ID descending
+                order: [[0, 'desc']],
                 columnDefs: [
-                    { orderable: false, targets: -1 } // Disable sorting on actions column
+                    { orderable: false, targets: -1 }
                 ]
             });
         });
@@ -104,12 +137,12 @@
     {
         return status switch
         {
-            ReportStatus.Pending => "badge-warning",
-            ReportStatus.InReview => "badge-info",
-            ReportStatus.Approved => "badge-primary",
-            ReportStatus.Rejected => "badge-danger",
-            ReportStatus.Completed => "badge-success",
-            _ => "badge-secondary"
+            ReportStatus.Pending => "bg-warning text-dark",
+            ReportStatus.InReview => "bg-info text-dark",
+            ReportStatus.Approved => "bg-primary",
+            ReportStatus.Rejected => "bg-danger",
+            ReportStatus.Completed => "bg-success",
+            _ => "bg-secondary"
         };
     }
 }
