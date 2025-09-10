@@ -11,6 +11,7 @@ namespace Municiple_Project_st10259527.ViewModels
         public List<ReportModel> InProgressReports { get; set; } = new List<ReportModel>();
         public List<ReportModel> CompletedReports { get; set; } = new List<ReportModel>();
         public List<ReportModel> ApprovedReports { get; set; } = new List<ReportModel>();
+        public List<ReportModel> RejectedReports { get; set; } = new List<ReportModel>();
         public List<ReportModel> RecentReports { get; set; } = new List<ReportModel>();
 
         // Counts
@@ -18,10 +19,11 @@ namespace Municiple_Project_st10259527.ViewModels
         public int TotalUsers { get; set; }
 
         // Computed Properties
-        public int PendingCount => PendingReports.Count;
-        public int InProgressCount => InProgressReports.Count;
-        public int CompletedCount => CompletedReports.Count;
-        public int ApprovedCount => ApprovedReports.Count;
+        public int PendingCount => PendingReports?.Count ?? 0;
+        public int InProgressCount => InProgressReports?.Count ?? 0;
+        public int CompletedCount => CompletedReports?.Count ?? 0;
+        public int ApprovedCount => ApprovedReports?.Count ?? 0;
+        public int RejectedCount => RejectedReports?.Count ?? 0;
 
         // Statistics
         public int NewReportsToday { get; set; }

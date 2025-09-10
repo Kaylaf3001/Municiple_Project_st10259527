@@ -9,10 +9,11 @@
     <div class="col-12">
         <div class="card mb-4">
             <div class="card-header pb-0">
-                <h6>Dashboard Overview</h6>
+                <h6>Report Statistics</h6>
             </div>
             <div class="card-body p-3">
                 <div class="row g-4">
+                    <!-- Total Reports Card -->
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body">
@@ -20,29 +21,47 @@
                                     <div class="bg-primary bg-opacity-10 p-2 rounded">
                                         <i class="bi bi-flag text-primary"></i>
                                     </div>
-                                    <span class="badge bg-primary">@Model.TotalReports Total</span>
+                                    <span class="badge bg-primary">@Model.TotalReports</span>
                                 </div>
                                 <h5 class="mb-1">Total Reports</h5>
-                                <p class="text-muted mb-0">All time reports submitted</p>
+                                <p class="text-muted mb-0">All reports in the system</p>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- Approved Reports Card -->
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <div class="bg-warning bg-opacity-10 p-2 rounded">
-                                        <i class="bi bi-hourglass-split text-warning"></i>
+                                    <div class="bg-success bg-opacity-10 p-2 rounded">
+                                        <i class="bi bi-check-circle text-success"></i>
                                     </div>
-                                    <span class="badge bg-warning text-dark">@Model.PendingCount Pending</span>
+                                    <span class="badge bg-success">@Model.ApprovedCount</span>
                                 </div>
-                                <h5 class="mb-1">Pending Review</h5>
-                                <p class="text-muted mb-0">Awaiting initial review</p>
+                                <h5 class="mb-1">Approved</h5>
+                                <p class="text-muted mb-0">Reports that have been approved</p>
                             </div>
                         </div>
                     </div>
                     
+                    <!-- Rejected Reports Card -->
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="card border-0 shadow-sm h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="bg-danger bg-opacity-10 p-2 rounded">
+                                        <i class="bi bi-x-circle text-danger"></i>
+                                    </div>
+                                    <span class="badge bg-danger">@Model.RejectedCount</span>
+                                </div>
+                                <h5 class="mb-1">Rejected</h5>
+                                <p class="text-muted mb-0">Reports that have been rejected</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- In Progress Reports Card -->
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body">
@@ -50,16 +69,40 @@
                                     <div class="bg-info bg-opacity-10 p-2 rounded">
                                         <i class="bi bi-arrow-repeat text-info"></i>
                                     </div>
-                                    <span class="badge bg-info text-dark">@Model.InProgressCount In Progress</span>
+                                    <span class="badge bg-info">@Model.InProgressCount</span>
                                 </div>
                                 <h5 class="mb-1">In Progress</h5>
-                                <p class="text-muted mb-0">Currently being addressed</p>
+                                <p class="text-muted mb-0">Reports currently being reviewed</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="card border-0 shadow-sm h-100">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Reports Section -->
+<div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header pb-0">
+                <h6>Pending Review</h6>
+            </div>
+            <div class="card-body p-3">
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="alert alert-warning" role="alert">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <div>
+                                    <h5 class="alert-heading mb-1">@Model.PendingCount Reports Awaiting Review</h5>
+                                    <p class="mb-0">These reports are pending initial review and assignment.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <div class="bg-success bg-opacity-10 p-2 rounded">

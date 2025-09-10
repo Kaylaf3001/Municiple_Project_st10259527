@@ -187,66 +187,63 @@
             </div>
         </div>
 
-        <div class="container recent-activity mt-5">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="mb-0 fw-bold text-dark">Recent Activity</h3>
-                <a href="@Url.Action("MyReports", "Home")" class="btn btn-outline-primary btn-sm">
-                    <i class="fas fa-list"></i> View All Reports
-                </a>
-            </div>
-
-            <!-- User Reports Card -->
-            <div class="card shadow-lg border-0 rounded-3">
-                <div class="card-header bg-light">
-                    <h6 class="m-0 fw-bold text-primary">Your Reports</h6>
-                </div>
-
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle" id="userReportsTable" width="100%">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Location</th>
-                                    <th>Type</th>
-                                    <th>Description</th>
-                                    <th class="text-center">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{
-                                    var hasReports = ViewBag.HasRecentReports != null && (bool)ViewBag.HasRecentReports;
-                                    var reports = ViewBag.RecentReports as IEnumerable<ReportModel>;
-                                }
-                                @if (hasReports && reports != null)
-                                {
-                                    foreach (var report in reports)
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold text-dark mb-0">Recent Activity</h6>
+                        <a href="@Url.Action("MyReports", "Home")" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-list-ul"></i> View All Reports
+                        </a>
+                    </div>
+                    <div class="card-body px-3 pt-3">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Location</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th class="text-center">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        var hasReports = ViewBag.HasRecentReports != null && (bool)ViewBag.HasRecentReports;
+                                        var reports = ViewBag.RecentReports as IEnumerable<ReportModel>;
+                                    }
+                                    @if (hasReports && reports != null)
+                                    {
+                                        foreach (var report in reports)
+                                        {
+                                            <tr>
+                                                <td>@report.ReportDate.ToString("yyyy/MM/dd")</td>
+                                                <td>@(string.IsNullOrEmpty(report.Location) ? "N/A" : report.Location)</td>
+                                                <td>@(string.IsNullOrEmpty(report.ReportType) ? "N/A" : report.ReportType)</td>
+                                                <td>@(string.IsNullOrEmpty(report.Description) ? "No description provided" : report.Description)</td>
+                                                <td class="text-center">
+                                                    <span class="badge rounded-pill @GetStatusBadgeClass(report.Status)">
+                                                        @(report.Status == default ? "Pending" : report.Status.ToString())
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
                                     {
                                         <tr>
-                                            <td>@report.ReportDate.ToString("dd/MM/yyyy")</td>
-                                            <td>@(string.IsNullOrEmpty(report.Location) ? "N/A" : report.Location)</td>
-                                            <td>@(string.IsNullOrEmpty(report.ReportType) ? "N/A" : report.ReportType)</td>
-                                            <td>@(string.IsNullOrEmpty(report.Description) ? "No description provided" : report.Description)</td>
-                                            <td class="text-center">
-                                                <span class="badge rounded-pill @GetStatusBadgeClass(report.Status)">
-                                                    @(report.Status == default ? "Pending" : report.Status.ToString())
-                                                </span>
-                                            </td>
+                                            <td colspan="5" class="text-center text-muted">No recent reports found.</td>
                                         </tr>
                                     }
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted">No recent reports found.</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
 
         @section Scripts {
             <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>

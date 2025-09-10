@@ -36,11 +36,19 @@ namespace Municiple_Project_st10259527.Repository
                 .ToList();
 
             var inProgressReports = allReports
-                .Where(r => r.Status == ReportStatus.InReview || r.Status == ReportStatus.Approved)
+                .Where(r => r.Status == ReportStatus.InReview)
                 .ToList();
 
             var completedReports = allReports
                 .Where(r => r.Status == ReportStatus.Completed)
+                .ToList();
+                
+            var approvedReports = allReports
+                .Where(r => r.Status == ReportStatus.Approved)
+                .ToList();
+                
+            var rejectedReports = allReports
+                .Where(r => r.Status == ReportStatus.Rejected)
                 .ToList();
 
             // Get recent reports (all statuses, limited to 10)
@@ -80,6 +88,8 @@ namespace Municiple_Project_st10259527.Repository
                 PendingReports = pendingReports,
                 InProgressReports = inProgressReports,
                 CompletedReports = completedReports,
+                ApprovedReports = approvedReports,
+                RejectedReports = rejectedReports,
                 RecentReports = recentReports,
                 TotalReports = allReports.Count,
                 TotalUsers = await _context.Users.CountAsync(),
