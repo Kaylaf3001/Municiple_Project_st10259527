@@ -251,39 +251,55 @@
         <ul class="sidebar-menu">
             <li class="menu-header">Main</li>
             <li class="menu-item">
-                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "Dashboard" ? "active" : "")" 
+                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "Dashboard" ? "active" : "")"
                    asp-controller="Admin" asp-action="Dashboard">
                     <i class="bi bi-speedometer2 menu-icon"></i>
                     <span class="menu-text">Dashboard</span>
                 </a>
             </li>
-            
+
             <li class="menu-header">Reports</li>
             <li class="menu-item">
-                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "AllReports" ? "active" : "")" 
+                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "AllReports" ? "active" : "")"
                    asp-controller="Admin" asp-action="AllReports">
                     <i class="bi bi-list-check menu-icon"></i>
                     <span class="menu-text">All Reports</span>
                     <span class="badge bg-primary rounded-pill ms-auto">@ViewBag.TotalReports</span>
                 </a>
             </li>
+
+            <!-- New Local Events & Announcements Section -->
+            <li class="menu-header">Local Events & Announcements</li>
             <li class="menu-item">
-                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "PendingReports" ? "active" : "")" 
-                   asp-controller="Admin" asp-action="PendingReports">
-                    <i class="bi bi-hourglass-split menu-icon"></i>
-                    <span class="menu-text">Pending Reports</span>
-                    <span class="badge bg-warning text-dark rounded-pill ms-auto">@ViewBag.PendingCount</span>
+                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "CreateEvent" ? "active" : "")"
+                   asp-controller="Admin" asp-action="CreateEvent">
+                    <i class="bi bi-calendar-plus menu-icon"></i>
+                    <span class="menu-text">Create Event</span>
                 </a>
             </li>
             <li class="menu-item">
-                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "ApprovedReports" ? "active" : "")" 
-                   asp-controller="Admin" asp-action="ApprovedReports">
-                    <i class="bi bi-check-circle menu-icon"></i>
-                    <span class="menu-text">Approved Reports</span>
-                    <span class="badge bg-success rounded-pill ms-auto">@ViewBag.ApprovedCount</span>
+                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "CreateAnnouncement" ? "active" : "")"
+                   asp-controller="Admin" asp-action="CreateAnnouncement">
+                    <i class="bi bi-megaphone menu-icon"></i>
+                    <span class="menu-text">Create Announcement</span>
                 </a>
             </li>
-            
+            <li class="menu-item">
+                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "ManageEvents" ? "active" : "")"
+                   asp-controller="Admin" asp-action="ManageEvents">
+                    <i class="bi bi-calendar-event menu-icon"></i>
+                    <span class="menu-text">Manage Events</span>
+                </a>
+            </li>
+            <li class="menu-item">
+                <a class="menu-link @(ViewContext.RouteData.Values["Action"].ToString() == "ManageAnnouncements" ? "active" : "")"
+                   asp-controller="Admin" asp-action="ManageAnnouncements">
+                    <i class="bi bi-megaphone-fill menu-icon"></i>
+                    <span class="menu-text">Manage Announcements</span>
+                </a>
+            </li>
+
+            <!-- other report items ... -->
             <li class="menu-header">Management</li>
             <li class="menu-item">
                 <a class="menu-link" href="#">
@@ -305,6 +321,7 @@
             </li>
         </ul>
     </aside>
+
     
     <!-- Main Content -->
     <main class="main-content" id="mainContent">

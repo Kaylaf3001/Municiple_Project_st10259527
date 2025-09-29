@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Create Announcement";
+    Layout = "_AdminLayout";
+}
+
+<h2>Create Announcement</h2>
+
+<form asp-controller="Admin" asp-action="CreateAnnouncement" method="post">
+    <div class="mb-3">
+        <label class="form-label">Announcement Title</label>
+        <input type="text" class="form-control" name="Title" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select class="form-select" name="Category">
+            <option value="Community">Community</option>
+            <option value="Safety">Safety</option>
+            <option value="Infrastructure">Infrastructure</option>
+            <option value="Culture">Culture</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" name="Description" rows="4" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Announcement</button>
+</form>

@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "Manage Events";
+    Layout = "_AdminLayout";
+}
+
+<h2>Manage Events</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Event Name</th>
+            <th>Location</th>
+            <th>Date & Time</th>
+            <th>Category</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @* Example row, replace with your model *@
+        <tr>
+            <td>Community Clean-Up Day</td>
+            <td>Cape Town, Athlone</td>
+            <td>2025-10-05, 14:00</td>
+            <td>Community</td>
+            <td>
+                <a class="btn btn-sm btn-warning" asp-action="EditEvent" asp-route-id="1">Edit</a>
+                <a class="btn btn-sm btn-danger" asp-action="DeleteEvent" asp-route-id="1">Delete</a>
+            </td>
+        </tr>
+    </tbody>
+</table>

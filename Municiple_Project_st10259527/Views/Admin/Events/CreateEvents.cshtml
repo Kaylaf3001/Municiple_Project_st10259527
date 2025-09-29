@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Create Event";
+    Layout = "_AdminLayout";
+}
+
+<h2>Create Event</h2>
+
+<form asp-controller="Admin" asp-action="CreateEvent" method="post">
+    <div class="mb-3">
+        <label class="form-label">Event Name</label>
+        <input type="text" class="form-control" name="EventName" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Location</label>
+        <input type="text" class="form-control" name="Location" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Date & Time</label>
+        <input type="datetime-local" class="form-control" name="EventDate" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Category</label>
+        <select class="form-select" name="Category">
+            <option value="Community">Community</option>
+            <option value="Safety">Safety</option>
+            <option value="Infrastructure">Infrastructure</option>
+            <option value="Culture">Culture</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea class="form-control" name="Description" rows="4" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Event</button>
+</form>

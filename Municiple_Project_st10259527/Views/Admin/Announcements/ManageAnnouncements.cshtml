@@ -1,0 +1,29 @@
+﻿@{
+    ViewData["Title"] = "Manage Announcements";
+    Layout = "_AdminLayout";
+}
+
+<h2>Manage Announcements</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @* Example row, replace with your model *@
+        <tr>
+            <td>Road Closure Notice</td>
+            <td>Safety</td>
+            <td>Main road will be closed due to repairs.</td>
+            <td>
+                <a class="btn btn-sm btn-warning" asp-action="EditAnnouncement" asp-route-id="1">Edit</a>
+                <a class="btn btn-sm btn-danger" asp-action="DeleteAnnouncement" asp-route-id="1">Delete</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
