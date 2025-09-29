@@ -171,13 +171,14 @@
                 </a>
             </div>
             <div class="col-md-4">
-                <div class="action-card" style="cursor:pointer;" onclick="alert('Work in progress')">
-                    <i class="bi bi-megaphone"></i>
-                    <h6>Local Events & Announcements</h6>
-                    <p>Find out what’s happening in your area</p>
-                </div>
+                <a href="@Url.Action("EventsDashboard", "EventsAndAnnouncements")" style="text-decoration: none; color: inherit;">
+                    <div class="action-card">
+                        <i class="bi bi-megaphone"></i>
+                        <h6>Local Events & Announcements</h6>
+                        <p>Find out what’s happening in your area</p>
+                    </div>
+                </a>
             </div>
-
             <div class="col-md-4">
                 <div class="action-card" style="cursor:pointer;" onclick="alert('Work in progress')">
                     <i class="bi bi-gear"></i>
