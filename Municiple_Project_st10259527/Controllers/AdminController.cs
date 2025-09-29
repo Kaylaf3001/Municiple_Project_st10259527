@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Repository;
 using Municiple_Project_st10259527.ViewModels;
@@ -207,6 +208,11 @@ namespace Municiple_Project_st10259527.Controllers
         {
             return View("Events/ManageEvents");
         }
+
+        public IActionResult EditEvent()
+        {
+            return View("Events/EditEvent");
+        }
         //===============================================================================================
 
         //==============================================================================================
@@ -219,6 +225,11 @@ namespace Municiple_Project_st10259527.Controllers
         public IActionResult CreateAnnouncement()
         {
             return View("Announcements/CreateAnnouncements");
+        }
+
+        public IActionResult EditAnnouncement()
+        {
+            return View("Announcements/EditAnnouncement");
         }
         //==============================================================================================
     }

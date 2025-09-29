@@ -1,0 +1,37 @@
+﻿@model Municiple_Project_st10259527.Models.AnnouncementModel
+
+@{
+    ViewData["Title"] = "Edit Announcement";
+}
+
+<h2>Edit Announcement</h2>
+
+<form asp-action="EditAnnouncement" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label">Title</label>
+        <input asp-for="Title" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Date" class="form-label">Date</label>
+        <input asp-for="Date" type="date" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select asp-for="Status" class="form-select">
+            <option value="Announced">Announced</option>
+            <option value="Cancelled">Cancelled</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Announcement</button>
+    <a asp-action="ManageAnnouncements" class="btn btn-secondary">Cancel</a>
+</form>
