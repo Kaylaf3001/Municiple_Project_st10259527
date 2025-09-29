@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Repository;
@@ -18,10 +19,14 @@ namespace Municiple_Project_st10259527.Controllers
         #region
         private readonly IAdminRepository _adminRepository;
         private const int PageSize = 10;
+        private readonly IEventsRepository _eventsRepository;
+        private readonly IAnnouncementsRepository _announcementsRepository;
 
-        public AdminController(IAdminRepository adminRepository)
+        public AdminController(IAdminRepository adminRepository, IEventsRepository eventsRepository, IAnnouncementsRepository announcementsRepository)
         {
             _adminRepository = adminRepository;
+            _eventsRepository = eventsRepository;
+            _announcementsRepository = announcementsRepository;
         }
         #endregion
         //===============================================================================================
@@ -198,13 +203,27 @@ namespace Municiple_Project_st10259527.Controllers
         //===============================================================================================
 
         //===============================================================================================
-        // Events
+        [HttpPost]
+        public IActionResult AddEvent(Models.EventModel eventModel)
+        {
+            if (ModelState.IsValid)
+            {
+                _eventsRepository.AddEvent(eventModel);
+                return RedirectToAction("Events/ManageEvents");
+            }
+            return View("Events/ManageEvents", eventModel);
+        }
         public IActionResult CreateEvent()
         {
             return View("Events/CreateEvents");
-        }   
+        }
+        public async Task<IActionResult> ManageEvents()
+        {
+            var events = await _eventsRepository.GetAllEventsAsync();
+            return View("Events/ManageEvents", events);
+        }
 
-        public IActionResult ManageEvents()
+        public IActionResult ManageEvent()
         {
             return View("Events/ManageEvents");
         }
@@ -221,10 +240,6 @@ namespace Municiple_Project_st10259527.Controllers
         public IActionResult ManageAnnouncements()
         {
             return View("Announcements/ManageAnnouncements");
-        }
-        public IActionResult CreateAnnouncement()
-        {
-            return View("Announcements/CreateAnnouncements");
         }
 
         public IActionResult EditAnnouncement()

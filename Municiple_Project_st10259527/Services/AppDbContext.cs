@@ -14,6 +14,8 @@ namespace Municiple_Project_st10259527.Services
 
         public DbSet<UserModel> Users { get; set; }
         public DbSet<ReportModel> Reports { get; set; }
+        public DbSet<EventModel> Events { get; set; }
+        public DbSet<AnnouncementModel> Announcements { get; set; }
         //===================================================================================
 
         //===================================================================================
@@ -35,6 +37,20 @@ namespace Municiple_Project_st10259527.Services
                 .HasOne(r => r.AssignedAdmin)
                 .WithMany(a => a.AssignedReports)
                 .HasForeignKey(r => r.AssignedAdminId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Events ↔ Admin
+            modelBuilder.Entity<EventModel>()
+                .HasOne(e => e.Admin)
+                .WithMany()
+                .HasForeignKey(e => e.AdminId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Announcements ↔ Admin
+            modelBuilder.Entity<AnnouncementModel>()
+                .HasOne(a => a.Admin)
+                .WithMany()
+                .HasForeignKey(a => a.AdminId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ✅ Seed a default admin user

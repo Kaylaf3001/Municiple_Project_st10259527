@@ -7,7 +7,7 @@ namespace Municiple_Project_st10259527.Models
     public class EventModel
     {
         [Key]
-        public int Id { get; set; }
+        public int EventId { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -34,6 +34,9 @@ namespace Municiple_Project_st10259527.Models
 
         // Foreign Key for Admin
         [ForeignKey("Admin")]
-        public string AdminId { get; set; }  // assuming you use string for Identity user ID
+        public int AdminId { get; set; }  // assuming you use string for Identity user ID
+
+        // Navigation property for Admin
+        public UserModel Admin { get; set; }
     }
 }

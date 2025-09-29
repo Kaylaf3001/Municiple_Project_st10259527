@@ -7,7 +7,7 @@ namespace Municiple_Project_st10259527.Models
     public class AnnouncementModel
     {
         [Key]
-        public int Id { get; set; }
+        public int AnnouncementId { get; set; }
 
         [Required]
         [StringLength(100)]
@@ -26,7 +26,10 @@ namespace Municiple_Project_st10259527.Models
 
         // Foreign Key for Admin
         [ForeignKey("Admin")]
-        public string AdminId { get; set; }
+        public int AdminId { get; set; }
+
+        // Navigation property for Admin
+        public UserModel Admin { get; set; }
 
     }
 }

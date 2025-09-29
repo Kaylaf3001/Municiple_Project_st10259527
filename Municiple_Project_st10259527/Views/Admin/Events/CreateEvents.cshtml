@@ -5,10 +5,10 @@
 
 <h2>Create Event</h2>
 
-<form asp-controller="Admin" asp-action="CreateEvent" method="post">
+<form asp-controller="Admin" asp-action="AddEvent" method="post">
     <div class="mb-3">
         <label class="form-label">Event Name</label>
-        <input type="text" class="form-control" name="EventName" required>
+        <input type="text" class="form-control" name="Title" required>
     </div>
     <div class="mb-3">
         <label class="form-label">Location</label>
@@ -16,7 +16,7 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Date & Time</label>
-        <input type="datetime-local" class="form-control" name="EventDate" required>
+        <input type="datetime-local" class="form-control" name="Date" required>
     </div>
     <div class="mb-3">
         <label class="form-label">Category</label>

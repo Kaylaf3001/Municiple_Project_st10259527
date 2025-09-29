@@ -20,6 +20,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAnnouncementsRepository, AnnouncementsRepository>();
+builder.Services.AddScoped<IEventsRepository, EventsRepository>();
 
 
 // ? Add session
