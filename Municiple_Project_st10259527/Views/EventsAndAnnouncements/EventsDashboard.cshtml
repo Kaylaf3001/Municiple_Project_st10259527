@@ -1,7 +1,8 @@
-﻿@model IEnumerable<Municiple_Project_st10259527.Models.EventModel>
+﻿@model Municiple_Project_st10259527.ViewModels.EventsAndAnnouncementsViewModel
+
 @{
     ViewData["Title"] = "Events Dashboard";
-    Layout = "_Layout"; // or your layout file
+    Layout = "_Layout";
 }
 
 <style>
@@ -192,26 +193,41 @@
     </section>
 
     <!-- Announcements Section -->
-    <h2 class="section-title">Announcements</h2>
-    <section class="events">
-        <div class="event-card">
-            <h2>Road Closure Notice</h2>
-            <p><strong>Location:</strong> Stellenbosch, 7600</p>
-            <p><strong>Date & Time:</strong> 2025-10-03</p>
-            <p><strong>Category:</strong> Safety</p>
-            <p class="description">Main road will be closed due to repairs. Please use alternative routes.</p>
-            <span class="status announced">Announced</span>
-            <button class="view-btn">View Details</button>
-        </div>
-    </section>
+    <!-- Announcements Section -->
+    <div class="events-section">
+        <h2 class="section-title">Announcements</h2>
+
+        @if (Model.Announcements != null && Model.Announcements.Any())
+        {
+            <section class="events">
+                @foreach (var announcement in Model.Announcements)
+                {
+                    <div class="event-card">
+                        <h2>@announcement.Title</h2>
+                        <p class="description"><strong>Description:</strong> @announcement.Description</p>
+                        <p class="location"><strong>Location:</strong> @announcement.Location</p>
+                        <p><strong>Posted:</strong> @announcement.Date.ToString("yyyy-MM-dd, HH:mm")</p>
+                        <span class="status @(announcement.Status?.ToLower() ?? "normal")">@(announcement.Status ?? "Normal")</span>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                }
+            </section>
+        }
+        else
+        {
+            <div class="no-events">
+                <p>No announcements found.</p>
+            </div>
+        }
+    </div>
 
     <div class="events-section">
         <h2 class="section-title">Events</h2>
 
-        @if (Model != null && Model.Any())
+        @if (Model.Events != null && Model.Events.Any())
         {
             <section class="events">
-                @foreach (var evt in Model)
+                @foreach (var evt in Model.Events)
                 {
                     <div class="event-card">
                         <h2>@evt.Title</h2>
@@ -231,5 +247,5 @@
                 <p>No upcoming events found. Check back later for updates!</p>
             </div>
         }
-        </div>
+    </div>
 </main>

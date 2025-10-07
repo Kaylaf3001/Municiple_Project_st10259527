@@ -11,7 +11,7 @@ using Municiple_Project_st10259527.Services;
 namespace Municiple_Project_st10259527.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251007122124_InitialCreate")]
+    [Migration("20251007155852_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -26,13 +26,15 @@ namespace Municiple_Project_st10259527.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AdminId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Location")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
@@ -47,9 +49,12 @@ namespace Municiple_Project_st10259527.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("AnnouncementId");
 
-                    b.HasIndex("AdminId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Announcements");
                 });
@@ -189,13 +194,13 @@ namespace Municiple_Project_st10259527.Migrations
 
             modelBuilder.Entity("Municiple_Project_st10259527.Models.AnnouncementModel", b =>
                 {
-                    b.HasOne("Municiple_Project_st10259527.Models.UserModel", "Admin")
+                    b.HasOne("Municiple_Project_st10259527.Models.UserModel", "User")
                         .WithMany()
-                        .HasForeignKey("AdminId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Admin");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Municiple_Project_st10259527.Models.EventModel", b =>

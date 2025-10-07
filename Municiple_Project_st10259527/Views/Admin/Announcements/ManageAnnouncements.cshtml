@@ -1,29 +1,44 @@
-﻿@{
+﻿@model IEnumerable<Municiple_Project_st10259527.Models.AnnouncementModel>
+@{
     ViewData["Title"] = "Manage Announcements";
     Layout = "_AdminLayout";
 }
 
 <h2>Manage Announcements</h2>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Category</th>
-            <th>Description</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @* Example row, replace with your model *@
-        <tr>
-            <td>Road Closure Notice</td>
-            <td>Safety</td>
-            <td>Main road will be closed due to repairs.</td>
-            <td>
-                <a class="btn btn-sm btn-warning" asp-action="EditAnnouncement" asp-route-id="1">Edit</a>
-                <a class="btn btn-sm btn-danger" asp-action="DeleteAnnouncement" asp-route-id="1">Delete</a>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div class="mb-3">
+    <a asp-action="CreateAnnouncement" class="btn btn-primary">Create New Announcement</a>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Title)</th>
+                <th>@Html.DisplayNameFor(model => model.Date)</th>
+                <th>@Html.DisplayNameFor(model => model.Status)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                    <td>@item.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                    <td>
+                        <a class="btn btn-sm btn-warning" asp-action="EditAnnouncement" asp-route-id="@item.AnnouncementId">Edit</a>
+                        <a class="btn btn-sm btn-danger" asp-action="DeleteAnnouncement" asp-route-id="@item.AnnouncementId"
+                           onclick="return confirm('Are you sure you want to delete this event?')">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">No Announcement found. Click "Create New Announcement" to add one.</div>
+}

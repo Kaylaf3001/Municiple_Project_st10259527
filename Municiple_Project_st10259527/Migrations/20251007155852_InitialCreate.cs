@@ -37,15 +37,16 @@ namespace Municiple_Project_st10259527.Migrations
                     Title = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Date = table.Column<DateTime>(type: "TEXT", nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
+                    Location = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
                     Status = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    AdminId = table.Column<int>(type: "INTEGER", nullable: false)
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Announcements", x => x.AnnouncementId);
                     table.ForeignKey(
-                        name: "FK_Announcements_Users_AdminId",
-                        column: x => x.AdminId,
+                        name: "FK_Announcements_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
@@ -116,9 +117,9 @@ namespace Municiple_Project_st10259527.Migrations
                 values: new object[] { 1, "admin@example.com", "System", true, "Admin", "Admin@123" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Announcements_AdminId",
+                name: "IX_Announcements_UserId",
                 table: "Announcements",
-                column: "AdminId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_UserId",

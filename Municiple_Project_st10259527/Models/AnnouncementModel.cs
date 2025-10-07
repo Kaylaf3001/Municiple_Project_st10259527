@@ -21,6 +21,10 @@ namespace Municiple_Project_st10259527.Models
         public string Description { get; set; }
 
         [Required]
+        [StringLength(500)]
+        public string Location { get; set; }
+
+        [Required]
         [StringLength(20)]
         public string Status { get; set; } // Announced, Cancelled, etc.
 

@@ -1,24 +1,23 @@
 ﻿@{
-    ViewData["Title"] = "Create Announcement";
+    ViewData["Title"] = "Adds Announcement";
     Layout = "_AdminLayout";
 }
 
 <h2>Create Announcement</h2>
 
-<form asp-controller="EventsAndAnnouncements" asp-action="CreateAnnouncement" method="post">
+<form asp-controller="Admin" asp-action="AddAnnouncement" method="post">
+    <input type="hidden" name="Status" value="Normal" />
+    <input type="hidden" name="Date" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
     <div class="mb-3">
         <label class="form-label">Announcement Title</label>
         <input type="text" class="form-control" name="Title" required>
     </div>
+
     <div class="mb-3">
-        <label class="form-label">Category</label>
-        <select class="form-select" name="Category">
-            <option value="Community">Community</option>
-            <option value="Safety">Safety</option>
-            <option value="Infrastructure">Infrastructure</option>
-            <option value="Culture">Culture</option>
-        </select>
+        <label class="form-label">Location</label>
+        <textarea class="form-control" name="Location" rows="4" required></textarea>
     </div>
+
     <div class="mb-3">
         <label class="form-label">Description</label>
         <textarea class="form-control" name="Description" rows="4" required></textarea>

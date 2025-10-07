@@ -293,9 +293,9 @@ namespace Municiple_Project_st10259527.Controllers
         //==============================================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddAnnouncements(Models.AnnouncementModel announcementModel)
+        public async Task<IActionResult> AddAnnouncement(Models.AnnouncementModel announcementModel)
         {
-            // Get AdminId from session
+            // Get UserId from session
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId.HasValue && userId.Value > 0)
             {
@@ -311,6 +311,9 @@ namespace Municiple_Project_st10259527.Controllers
             {
                 announcementModel.Status = "Normal";
             }
+
+            // Set the creation date to current date/time
+            announcementModel.Date = DateTime.Now;
 
             if (!ModelState.IsValid)
             {
@@ -344,6 +347,7 @@ namespace Municiple_Project_st10259527.Controllers
                 return StatusCode(500, "An error occurred while loading events.");
             }
         }
+        //==============================================================================================
 
         [HttpPost]
         public async Task<IActionResult> ManageAnnouncements()
@@ -360,6 +364,12 @@ namespace Municiple_Project_st10259527.Controllers
         {
             
             return View("Announcements/EditAnnouncement");
+        }
+        //==============================================================================================
+
+        public IActionResult CreateAnnouncement()
+        {
+            return View("Announcements/CreateAnnouncements");
         }
         //==============================================================================================
     }

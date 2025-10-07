@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Municiple_Project_st10259527.Services;
 using Municiple_Project_st10259527.Repository;
+using Municiple_Project_st10259527.Services;
+using Municiple_Project_st10259527.ViewModels;
 
 namespace Municiple_Project_st10259527.Controllers
 {
@@ -29,14 +30,23 @@ namespace Municiple_Project_st10259527.Controllers
         {
             try
             {
-                //Goes to the repository to get all events from the database
+                // Get both events and announcements
                 var events = await _eventsRepository.GetAllEventsAsync();
-                return View(events);
+                var announcements = await _announcementsRepository.GetAllAnnouncementsAsync();
+
+                // Create and populate the ViewModel
+                var viewModel = new EventsAndAnnouncementsViewModel
+                {
+                    Events = events,
+                    Announcements = announcements
+                };
+
+                return View(viewModel); // Pass the ViewModel to the view
             }
             catch (Exception ex)
             {
-                // Loging any errors
-                return StatusCode(500, "An error occurred while loading events.");
+                // Log the exception
+                return StatusCode(500, "An error occurred while loading the dashboard.");
             }
         }
         //===============================================================================================
