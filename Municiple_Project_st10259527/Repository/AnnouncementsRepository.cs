@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Municiple_Project_st10259527.Services;
+using Microsoft.EntityFrameworkCore;
 using Municiple_Project_st10259527.Models;
+using Municiple_Project_st10259527.Services;
 
 namespace Municiple_Project_st10259527.Repository
 {
@@ -19,9 +20,9 @@ namespace Municiple_Project_st10259527.Repository
             await _context.SaveChangesAsync();
         }
 
-        public IEnumerable<AnnouncementModel> GetAllAnnouncements()
+        public async Task<IEnumerable<AnnouncementModel>> GetAllAnnouncementsAsync()
         {
-            return _context.Announcements.ToList();
+            return await _context.Announcements.ToListAsync();
         }
     }
 }

@@ -319,22 +319,42 @@ namespace Municiple_Project_st10259527.Controllers
                 {
                     Console.WriteLine($"- {error.ErrorMessage}");
                 }
-                return View("Events/ManageEvents", announcementModel);
+                return View("Announcements/ManageAnnouncements", announcementModel);
             }
 
             await _announcementsRepository.AddAnnouncementAsync(announcementModel);
-            return RedirectToAction(nameof(ManageEvents));
+            return RedirectToAction(nameof(ManageAnnouncements));
         }
         //==============================================================================================
 
         //==============================================================================================
         // Manage Announcements, get all announcements
         //==============================================================================================
-        public IActionResult ManageAnnouncements()
+        [HttpGet]
+        public async Task<IActionResult> ManageAnnouncements(Models.EventModel eventModel)
         {
-            //display all 
-            return View("Announcements/ManageAnnouncements");
+            try
+            {
+                var announcements = await _announcementsRepository.GetAllAnnouncementsAsync();
+                return View("Announcements/ManageAnnouncements", announcements);
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return StatusCode(500, "An error occurred while loading events.");
+            }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ManageAnnouncements()
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("Announcements/ManageAnnouncements");
+            }
+            return RedirectToAction(nameof(ManageAnnouncements));
+        }
+        //==============================================================================================
 
         public IActionResult EditAnnouncement()
         {

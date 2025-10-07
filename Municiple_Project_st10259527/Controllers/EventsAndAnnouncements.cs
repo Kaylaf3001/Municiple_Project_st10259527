@@ -40,22 +40,6 @@ namespace Municiple_Project_st10259527.Controllers
             }
         }
         //===============================================================================================
-
-        //===============================================================================================
-        // POST: EventsAndAnnouncements/AddEvent
-        //===============================================================================================
-        [HttpPost]
-        public IActionResult AddAnnouncement(Models.AnnouncementModel announcement)
-        {
-            if (ModelState.IsValid)
-            {
-                // Add the announcement to the database
-                _announcementsRepository.AddAnnouncementAsync(announcement);
-                return RedirectToAction("Announcements/ManageAnnouncements");
-            }
-            return View("Announcements/ManageAnnouncements", announcement);
-        }
-        //===============================================================================================
     }
 }
 //================================End==Of==File===========================================================
