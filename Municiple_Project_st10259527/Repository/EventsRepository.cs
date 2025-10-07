@@ -25,5 +25,27 @@ namespace Municiple_Project_st10259527.Repository
             return await _context.Events.ToListAsync();
         }
 
+        public Queue<EventModel> GetUpcomingEventsQueue()
+        {
+            var currentDate = DateTime.Now;
+
+            // Step 1: Fetch the upcoming events from the database
+            var upcomingEvents = _context.Events
+                .Where(e => e.Date >= currentDate)
+                .OrderBy(e => e.Date)
+                .ToList();
+
+            // Step 2: Create a queue and enqueue each event
+            Queue<EventModel> eventQueue = new Queue<EventModel>();
+
+            foreach (var ev in upcomingEvents)
+            {
+                eventQueue.Enqueue(ev);
+            }
+
+            return eventQueue;
+        }
+
+
     }
 }
