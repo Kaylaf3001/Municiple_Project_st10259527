@@ -16,12 +16,21 @@ namespace Municiple_Project_st10259527.Controllers
             _announcementsRepository = announcementsRepository;
         }
 
-        public IActionResult EventsDashboard()
+        public async Task<IActionResult> EventsDashboard()
         {
-            return View();
+            try
+            {
+                var events = await _eventsRepository.GetAllEventsAsync();
+                return View(events);
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return StatusCode(500, "An error occurred while loading events.");
+            }
         }
 
-        
+
 
         [HttpPost]
         public IActionResult AddAnnouncement(Models.AnnouncementModel announcement)

@@ -41,9 +41,9 @@ namespace Municiple_Project_st10259527.Services
 
             // Events ↔ Admin
             modelBuilder.Entity<EventModel>()
-                .HasOne(e => e.Admin)
+                .HasOne(e => e.User)
                 .WithMany()
-                .HasForeignKey(e => e.AdminId)
+                .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // Announcements ↔ Admin

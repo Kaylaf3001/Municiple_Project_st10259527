@@ -1,4 +1,10 @@
-﻿<style>
+﻿@model IEnumerable<Municiple_Project_st10259527.Models.EventModel>
+@{
+    ViewData["Title"] = "Events Dashboard";
+    Layout = "_Layout"; // or your layout file
+}
+
+<style>
     /* General Page Layout */
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -136,6 +142,12 @@
             color: #991b1b;
         }
 
+        .status.normal {
+            background: #d1fae5;
+            color: #4caf50; /* Green for normal */
+        }
+
+
     /* Buttons */
     .view-btn {
         margin-top: 15px;
@@ -193,27 +205,31 @@
         </div>
     </section>
 
-    <!-- Events Section -->
-    <h2 class="section-title">Events</h2>
-    <section class="events">
-        <div class="event-card">
-            <h2>Community Clean-Up Day</h2>
-            <p><strong>Location:</strong> Cape Town, Athlone, 7764</p>
-            <p><strong>Date & Time:</strong> 2025-10-05, 14:00</p>
-            <p><strong>Category:</strong> Community</p>
-            <p class="description">Join us for a community clean-up event to keep our neighborhood safe and clean.</p>
-            <span class="status upcoming">Upcoming</span>
-            <button class="view-btn">View Details</button>
-        </div>
+    <div class="events-section">
+        <h2 class="section-title">Events</h2>
 
-        <div class="event-card">
-            <h2>Power Maintenance</h2>
-            <p><strong>Location:</strong> Ceres, 6835</p>
-            <p><strong>Date & Time:</strong> 2025-09-30</p>
-            <p><strong>Category:</strong> Infrastructure</p>
-            <p class="description">Scheduled power maintenance will affect households between 10am - 2pm.</p>
-            <span class="status cancelled">Cancelled</span>
-            <button class="view-btn">View Details</button>
+        @if (Model != null && Model.Any())
+        {
+            <section class="events">
+                @foreach (var evt in Model)
+                {
+                    <div class="event-card">
+                        <h2>@evt.Title</h2>
+                        <p><strong>Location:</strong> @evt.Location</p>
+                        <p><strong>Date & Time:</strong> @evt.Date.ToString("yyyy-MM-dd, HH:mm")</p>
+                        <p><strong>Category:</strong> @evt.Category</p>
+                        <p class="description">@evt.Description</p>
+                        <span class="status @(evt.Status?.ToLower() ?? "upcoming")">@(evt.Status ?? "Upcoming")</span>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                }
+            </section>
+        }
+        else
+        {
+            <div class="no-events">
+                <p>No upcoming events found. Check back later for updates!</p>
+            </div>
+        }
         </div>
-    </section>
 </main>

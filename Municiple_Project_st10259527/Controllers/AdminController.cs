@@ -203,31 +203,85 @@ namespace Municiple_Project_st10259527.Controllers
         //===============================================================================================
 
         //===============================================================================================
+        // POST: Admin/AddEvent
+        //===============================================================================================
         [HttpPost]
-        public IActionResult AddEvent(Models.EventModel eventModel)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddEvent(Models.EventModel eventModel)
         {
-            if (ModelState.IsValid)
+            // Get AdminId from session
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId.HasValue && userId.Value > 0)
             {
-                _eventsRepository.AddEvent(eventModel);
-                return RedirectToAction("Events/ManageEvents");
+                eventModel.UserId = userId.Value;
             }
-            return View("Events/ManageEvents", eventModel);
+            else
+            {
+                eventModel.UserId = 1; // fallback
+            }
+
+            // Set Status
+            if (string.IsNullOrWhiteSpace(eventModel.Status))
+            {
+                eventModel.Status = "Normal";
+            }
+
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("ModelState is invalid:");
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"- {error.ErrorMessage}");
+                }
+                return View("Events/ManageEvents", eventModel);
+            }
+
+            await _eventsRepository.AddEventAsync(eventModel);
+            return RedirectToAction(nameof(ManageEvents));
+
         }
+        //===============================================================================================
+
+        //===============================================================================================
+        // Create Events
+        //===============================================================================================
         public IActionResult CreateEvent()
         {
             return View("Events/CreateEvents");
         }
+        //===============================================================================================
+
+        //===============================================================================================
+        // Manage Events, get all events
+        //===============================================================================================
+        [HttpGet]
+        public async Task<IActionResult> ManageEvents(Models.EventModel eventModel)
+        {
+            try
+            {
+                var events = await _eventsRepository.GetAllEventsAsync();
+                return View("Events/ManageEvents", events);
+            }
+            catch (Exception ex)
+            {
+                // Log the error
+                return StatusCode(500, "An error occurred while loading events.");
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> ManageEvents()
         {
-            var events = await _eventsRepository.GetAllEventsAsync();
-            return View("Events/ManageEvents", events);
+            if (!ModelState.IsValid)
+            {
+                return View("Events/ManageEvents");
+            }
+            return RedirectToAction(nameof(ManageEvents));
         }
 
-        public IActionResult ManageEvent()
-        {
-            return View("Events/ManageEvents");
-        }
-
+        //===============================================================================================
+        // Edit Event
+        //===============================================================================================
         public IActionResult EditEvent()
         {
             return View("Events/EditEvent");
@@ -239,11 +293,13 @@ namespace Municiple_Project_st10259527.Controllers
         //==============================================================================================
         public IActionResult ManageAnnouncements()
         {
+            //display all 
             return View("Announcements/ManageAnnouncements");
         }
 
         public IActionResult EditAnnouncement()
         {
+            
             return View("Announcements/EditAnnouncement");
         }
         //==============================================================================================

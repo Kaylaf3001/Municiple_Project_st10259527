@@ -11,7 +11,7 @@ using Municiple_Project_st10259527.Services;
 namespace Municiple_Project_st10259527.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250929142310_InitialCreate")]
+    [Migration("20251007122124_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -60,9 +60,6 @@ namespace Municiple_Project_st10259527.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AdminId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Category")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -91,9 +88,12 @@ namespace Municiple_Project_st10259527.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("EventId");
 
-                    b.HasIndex("AdminId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Events");
                 });
@@ -200,13 +200,13 @@ namespace Municiple_Project_st10259527.Migrations
 
             modelBuilder.Entity("Municiple_Project_st10259527.Models.EventModel", b =>
                 {
-                    b.HasOne("Municiple_Project_st10259527.Models.UserModel", "Admin")
+                    b.HasOne("Municiple_Project_st10259527.Models.UserModel", "User")
                         .WithMany()
-                        .HasForeignKey("AdminId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Admin");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Municiple_Project_st10259527.Models.ReportModel", b =>

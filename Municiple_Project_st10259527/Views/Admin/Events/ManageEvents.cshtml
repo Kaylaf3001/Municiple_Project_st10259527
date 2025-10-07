@@ -1,31 +1,48 @@
-﻿@{
+﻿@model IEnumerable<Municiple_Project_st10259527.Models.EventModel>
+@{
     ViewData["Title"] = "Manage Events";
     Layout = "_AdminLayout";
 }
 
 <h2>Manage Events</h2>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Event Name</th>
-            <th>Location</th>
-            <th>Date & Time</th>
-            <th>Category</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @* Example row, replace with your model *@
-        <tr>
-            <td>Community Clean-Up Day</td>
-            <td>Cape Town, Athlone</td>
-            <td>2025-10-05, 14:00</td>
-            <td>Community</td>
-            <td>
-                <a class="btn btn-sm btn-warning" asp-action="EditEvent" asp-route-id="1">Edit</a>
-                <a class="btn btn-sm btn-danger" asp-action="DeleteEvent" asp-route-id="1">Delete</a>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<div class="mb-3">
+    <a asp-action="CreateEvent" class="btn btn-primary">Create New Event</a>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Title)</th>
+                <th>@Html.DisplayNameFor(model => model.Location)</th>
+                <th>@Html.DisplayNameFor(model => model.Date)</th>
+                <th>@Html.DisplayNameFor(model => model.Category)</th>
+                <th>@Html.DisplayNameFor(model => model.Status)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Location)</td>
+                    <td>@item.Date.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@Html.DisplayFor(modelItem => item.Category)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                    <td>
+                        <a class="btn btn-sm btn-warning" asp-action="EditEvent" asp-route-id="@item.EventId">Edit</a>
+                        <a class="btn btn-sm btn-danger" asp-action="DeleteEvent" asp-route-id="@item.EventId"
+                           onclick="return confirm('Are you sure you want to delete this event?')">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">No events found. Click "Create New Event" to add one.</div>
+}

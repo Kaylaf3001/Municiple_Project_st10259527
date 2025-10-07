@@ -63,14 +63,14 @@ namespace Municiple_Project_st10259527.Migrations
                     Category = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
                     Status = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
-                    AdminId = table.Column<int>(type: "INTEGER", nullable: false)
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Events", x => x.EventId);
                     table.ForeignKey(
-                        name: "FK_Events_Users_AdminId",
-                        column: x => x.AdminId,
+                        name: "FK_Events_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Restrict);
@@ -121,9 +121,9 @@ namespace Municiple_Project_st10259527.Migrations
                 column: "AdminId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Events_AdminId",
+                name: "IX_Events_UserId",
                 table: "Events",
-                column: "AdminId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reports_AssignedAdminId",

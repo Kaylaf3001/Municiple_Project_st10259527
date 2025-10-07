@@ -6,6 +6,7 @@
 <h2>Create Event</h2>
 
 <form asp-controller="Admin" asp-action="AddEvent" method="post">
+    <input type="hidden" name="Status" value="Normal" />
     <div class="mb-3">
         <label class="form-label">Event Name</label>
         <input type="text" class="form-control" name="Title" required>

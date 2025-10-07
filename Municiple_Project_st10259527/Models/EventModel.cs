@@ -32,11 +32,11 @@ namespace Municiple_Project_st10259527.Models
         [StringLength(20)]
         public string Status { get; set; } // Upcoming, Cancelled, etc.
 
-        // Foreign Key for Admin
-        [ForeignKey("Admin")]
-        public int AdminId { get; set; }  // assuming you use string for Identity user ID
+        // In EventModel.cs
+        [ForeignKey("User")]
+        public int UserId { get; set; }  // Changed from AdminId to UserId
 
-        // Navigation property for Admin
-        public UserModel Admin { get; set; }
+        // Navigation property for User (who created the event)
+        public UserModel? User { get; set; }  // Changed from Admin to User
     }
 }

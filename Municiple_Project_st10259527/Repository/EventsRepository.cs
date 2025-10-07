@@ -14,10 +14,10 @@ namespace Municiple_Project_st10259527.Repository
             _context = context;
         }
 
-        public void AddEvent(EventModel eventModel)
+        public async Task AddEventAsync(EventModel eventModel)
         {
-            _context.Events.Add(eventModel);
-            _context.SaveChanges();
+            await _context.Events.AddAsync(eventModel);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<EventModel>> GetAllEventsAsync()
