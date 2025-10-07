@@ -26,10 +26,10 @@ namespace Municiple_Project_st10259527.Models
 
         // Foreign Key for Admin
         [ForeignKey("Admin")]
-        public int AdminId { get; set; }
+        public int UserId { get; set; }
 
         // Navigation property for Admin
-        public UserModel Admin { get; set; }
+        public UserModel? User{ get; set; }
 
     }
 }

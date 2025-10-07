@@ -13,10 +13,10 @@ namespace Municiple_Project_st10259527.Repository
             _context = context;
         }
 
-        public void AddAnnouncement(AnnouncementModel announcement)
+        public async Task AddAnnouncementAsync(AnnouncementModel announcement)
         {
-            _context.Announcements.Add(announcement);
-            _context.SaveChanges();
+            await _context.Announcements.AddAsync(announcement);
+            await _context.SaveChangesAsync();
         }
 
         public IEnumerable<AnnouncementModel> GetAllAnnouncements()

@@ -291,6 +291,45 @@ namespace Municiple_Project_st10259527.Controllers
         //==============================================================================================
         // Announcements
         //==============================================================================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddAnnouncements(Models.AnnouncementModel announcementModel)
+        {
+            // Get AdminId from session
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId.HasValue && userId.Value > 0)
+            {
+                announcementModel.UserId = userId.Value;
+            }
+            else
+            {
+                announcementModel.UserId = 1; // fallback
+            }
+
+            // Set Status
+            if (string.IsNullOrWhiteSpace(announcementModel.Status))
+            {
+                announcementModel.Status = "Normal";
+            }
+
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("ModelState is invalid:");
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"- {error.ErrorMessage}");
+                }
+                return View("Events/ManageEvents", announcementModel);
+            }
+
+            await _announcementsRepository.AddAnnouncementAsync(announcementModel);
+            return RedirectToAction(nameof(ManageEvents));
+        }
+        //==============================================================================================
+
+        //==============================================================================================
+        // Manage Announcements, get all announcements
+        //==============================================================================================
         public IActionResult ManageAnnouncements()
         {
             //display all 

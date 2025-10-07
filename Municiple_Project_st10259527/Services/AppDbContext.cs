@@ -39,18 +39,18 @@ namespace Municiple_Project_st10259527.Services
                 .HasForeignKey(r => r.AssignedAdminId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Events ↔ Admin
+            // Events ↔ User
             modelBuilder.Entity<EventModel>()
                 .HasOne(e => e.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Announcements ↔ Admin
+            // Announcements ↔ User
             modelBuilder.Entity<AnnouncementModel>()
-                .HasOne(a => a.Admin)
+                .HasOne(a => a.User)
                 .WithMany()
-                .HasForeignKey(a => a.AdminId)
+                .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // ✅ Seed a default admin user

@@ -6,7 +6,7 @@ namespace Municiple_Project_st10259527.Repository
 {
     public interface IAnnouncementsRepository
     {
-        void AddAnnouncement(AnnouncementModel announcement);
+        Task AddAnnouncementAsync(AnnouncementModel announcement);
         IEnumerable<AnnouncementModel> GetAllAnnouncements();
     }
 }
