@@ -6,6 +6,15 @@
 
 <h2>Manage Events</h2>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
 <div class="mb-3">
     <a asp-action="CreateEvent" class="btn btn-primary">Create New Event</a>
 </div>
@@ -34,8 +43,14 @@
                     <td>@Html.DisplayFor(modelItem => item.Status)</td>
                     <td>
                         <a class="btn btn-sm btn-warning" asp-action="EditEvent" asp-route-id="@item.EventId">Edit</a>
-                        <a class="btn btn-sm btn-danger" asp-action="DeleteEvent" asp-route-id="@item.EventId"
-                           onclick="return confirm('Are you sure you want to delete this event?')">Delete</a>
+                        <form asp-controller="EventsAndAnnouncements" asp-action="DeleteEventConfirmed" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@item.EventId" />
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Are you sure you want to delete this event?')">
+                                Delete
+                            </button>
+                        </form>
                     </td>
                 </tr>
             }

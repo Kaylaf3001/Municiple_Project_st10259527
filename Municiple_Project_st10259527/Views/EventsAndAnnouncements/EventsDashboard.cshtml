@@ -168,6 +168,24 @@
             background: #163074;
             transform: translateY(-2px);
         }
+
+    .queue-visualization {
+        border-left: 4px solid #007bff;
+        padding-left: 15px;
+    }
+
+    .queue-item {
+        transition: all 0.3s ease;
+    }
+
+        .queue-item:hover {
+            transform: translateX(10px);
+        }
+
+    .badge {
+        font-size: 1rem;
+        padding: 0.5em 0.8em;
+    }
 </style>
 
 <main>
@@ -192,60 +210,74 @@
         </select>
     </section>
 
-    <!-- Announcements Section -->
-    <!-- Announcements Section -->
-    <div class="events-section">
-        <h2 class="section-title">Announcements</h2>
+    <div class="container mt-4">
+        <h2>Upcoming Events Queue</h2>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="queue-container">
+                    @if (Model.UpcomingEventsQueue != null && Model.UpcomingEventsQueue.Count > 0)
+                    {
+                        <div class="queue-visualization mb-4">
+                            @{
+                                int position = 1;
+                                foreach (var ev in Model.UpcomingEventsQueue)
+                                {
+                                    <div class="card mb-2">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h5 class="card-title">@position. @ev.Title</h5>
+                                                    <p class="card-text">
+                                                        <i class="far fa-calendar-alt"></i> @ev.Date.ToString("f")<br>
+                                                        <i class="fas fa-map-marker-alt"></i> @ev.Location
+                                                    </p>
+                                                </div>
+                                                <span class="badge bg-primary">#@position</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    position++;
+                                }
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">No upcoming events in the queue.</div>
+                    }
+                </div>
+            </div>
+        </div>
 
-        @if (Model.Announcements != null && Model.Announcements.Any())
-        {
-            <section class="events">
+        <!-- Rest of your existing view content -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <h2>All Events</h2>
+                @foreach (var ev in Model.Events)
+                {
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">@ev.Title</h5>
+                            <p class="card-text">@ev.Description</p>
+                            <p class="card-text"><small class="text-muted">@ev.Date.ToString("f") - @ev.Location</small></p>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-md-6">
+                <h2>Announcements</h2>
                 @foreach (var announcement in Model.Announcements)
                 {
-                    <div class="event-card">
-                        <h2>@announcement.Title</h2>
-                        <p class="description"><strong>Description:</strong> @announcement.Description</p>
-                        <p class="location"><strong>Location:</strong> @announcement.Location</p>
-                        <p><strong>Posted:</strong> @announcement.Date.ToString("yyyy-MM-dd, HH:mm")</p>
-                        <span class="status @(announcement.Status?.ToLower() ?? "normal")">@(announcement.Status ?? "Normal")</span>
-                        <button class="view-btn">View Details</button>
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">@announcement.Title</h5>
+                            <p class="card-text">@announcement.Description</p>
+                            <p class="card-text"><small class="text-muted">@announcement.Date.ToString("f")</small></p>
+                        </div>
                     </div>
                 }
-            </section>
-        }
-        else
-        {
-            <div class="no-events">
-                <p>No announcements found.</p>
             </div>
-        }
+        </div>
     </div>
 
-    <div class="events-section">
-        <h2 class="section-title">Events</h2>
-
-        @if (Model.Events != null && Model.Events.Any())
-        {
-            <section class="events">
-                @foreach (var evt in Model.Events)
-                {
-                    <div class="event-card">
-                        <h2>@evt.Title</h2>
-                        <p><strong>Location:</strong> @evt.Location</p>
-                        <p><strong>Date & Time:</strong> @evt.Date.ToString("yyyy-MM-dd, HH:mm")</p>
-                        <p><strong>Category:</strong> @evt.Category</p>
-                        <p class="description">@evt.Description</p>
-                        <span class="status @(evt.Status?.ToLower() ?? "upcoming")">@(evt.Status ?? "Upcoming")</span>
-                        <button class="view-btn">View Details</button>
-                    </div>
-                }
-            </section>
-        }
-        else
-        {
-            <div class="no-events">
-                <p>No upcoming events found. Check back later for updates!</p>
-            </div>
-        }
-    </div>
-</main>
+    </main>
