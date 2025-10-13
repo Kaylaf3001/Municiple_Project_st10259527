@@ -1,4 +1,5 @@
-﻿@model Municiple_Project_st10259527.ViewModels.EventsAndAnnouncementsViewModel
+@using System.Net
+@model Municiple_Project_st10259527.ViewModels.EventsAndAnnouncementsViewModel
 
 @{
     ViewData["Title"] = "Events Dashboard";
@@ -186,127 +187,501 @@
         font-size: 1rem;
         padding: 0.5em 0.8em;
     }
+
+    /* Active Filters */
+    .active-filters {
+        background: #f8f9fa;
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+    .active-filters .badge {
+        font-size: 0.875rem;
+        padding: 0.4em 0.8em;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .active-filters a {
+        opacity: 0.7;
+        transition: opacity 0.2s;
+    }
+
+    .active-filters a:hover {
+        opacity: 1;
+        text-decoration: none;
+    }
 </style>
 
 <main>
-    <!-- Page Heading -->
-    <h1 class="page-title">Local Announcements & Events</h1>
+<!-- Page Heading -->
+<h1 class="page-title">Local Announcements & Events</h1>
 
-    <!-- Filter Form -->
-    <form method="get" asp-controller="EventsAndAnnouncements" asp-action="EventsDashboard" class="mb-4">
-        <div class="row g-3">
-            <!-- Date Range -->
-            <div class="col-md-3">
-                <label class="form-label">From Date</label>
-                <input type="date" class="form-control" name="startDate"
-                       value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" />
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">To Date</label>
-                <input type="date" class="form-control" name="endDate"
-                       value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" />
-            </div>
-
-            <!-- Category Dropdown -->
-            <div class="col-md-3">
-                <label class="form-label">Category</label>
-                <select name="selectedCategory" class="form-select">
-                    <option value="">All Categories</option>
-                    @foreach (var category in Model.Categories)
-                    {
-                        <option value="@category"
-                                selected="@(category == Model.SelectedCategory ? "selected" : null)">
-                            @category
-                        </option>
-                    }
-                </select>
-            </div>
-
-            <!-- Search Box -->
-            <div class="col-md-3">
-                <label class="form-label">Search</label>
-                <div class="input-group">
-                    <input type="text" class="form-control" name="searchTerm"
-                           value="@Model.SearchTerm" placeholder="Search events..." />
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search"></i> Filter
-                    </button>
-                </div>
-            </div>
+<!-- Filter Form -->
+<form method="get" asp-controller="EventsAndAnnouncements" asp-action="EventsDashboard" class="mb-4">
+    <div class="row g-3">
+        <!-- Date Range -->
+        <div class="col-md-3">
+            <label class="form-label">From Date</label>
+            <input type="date" class="form-control" name="startDate"
+                   value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">To Date</label>
+            <input type="date" class="form-control" name="endDate"
+                   value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" />
         </div>
 
-        <!-- Active Filters -->
-        @{
-            bool hasActiveFilters = !string.IsNullOrEmpty(Model.SelectedCategory) ||
-            Model.StartDate.HasValue ||
-            Model.EndDate.HasValue ||
-            !string.IsNullOrEmpty(Model.SearchTerm);
-        }
-
-        @if (hasActiveFilters)
-        {
-            <div class="mt-2">
-                <small class="text-muted">
-                    Active filters:
-                    @if (!string.IsNullOrEmpty(Model.SelectedCategory))
-                    {
-                        <span class="badge bg-primary me-1">Category: @Model.SelectedCategory</span>
-                    }
-                    @if (Model.StartDate.HasValue)
-                    {
-                        <span class="badge bg-info me-1">From: @Model.StartDate.Value.ToShortDateString()</span>
-                    }
-                    @if (Model.EndDate.HasValue)
-                    {
-                        <span class="badge bg-info me-1">To: @Model.EndDate.Value.ToShortDateString()</span>
-                    }
-                    @if (!string.IsNullOrEmpty(Model.SearchTerm))
-                    {
-                        <span class="badge bg-secondary me-1">Search: @Model.SearchTerm</span>
-                    }
-                    <a href="@Url.Action("EventsDashboard")" class="text-danger small ms-2">Clear all</a>
-                </small>
-            </div>
-        }
-    </form>
-
-    <div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Events & Announcements</h2>
-            <a href="/User/UserDashboard" class="btn btn-outline-primary">
-                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
-            </a>
+        <!-- Category Dropdown -->
+        <div class="col-md-3">
+            <label class="form-label">Category</label>
+            <select name="selectedCategory" class="form-select">
+                <option value="">All Categories</option>
+                @foreach (var category in Model.UniqueCategories.OrderBy(c => c))
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
         </div>
 
-        <!-- Rest of your existing view content -->
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <h2>All Events</h2>
-                @foreach (var ev in Model.Events)
-                {
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">@ev.Title</h5>
-                            <p class="card-text">@ev.Description</p>
-                            <p class="card-text"><small class="text-muted">@ev.Date.ToString("f") - @ev.Location</small></p>
-                        </div>
-                    </div>
-                }
-            </div>
-            <div class="col-md-6">
-                <h2>Announcements</h2>
-                @foreach (var announcement in Model.Announcements)
-                {
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">@announcement.Title</h5>
-                            <p class="card-text">@announcement.Description</p>
-                            <p class="card-text"><small class="text-muted">@announcement.Date.ToString("f")</small></p>
-                        </div>
-                    </div>
-                }
+        <!-- Search Box -->
+        <div class="col-md-3">
+            <label class="form-label">Search</label>
+            <div class="input-group">
+                <input type="text" class="form-control" name="searchTerm"
+                       value="@Model.SearchTerm" placeholder="Search events..." />
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i> Filter
+                </button>
             </div>
         </div>
     </div>
+</form>
 
-    </main>
+<!-- Active Filters -->
+@{
+    bool hasActiveFilters = 
+        !string.IsNullOrEmpty(Model.SearchTerm) || 
+        Model.StartDate.HasValue || 
+        Model.EndDate.HasValue ||
+        !string.IsNullOrEmpty(ViewContext.HttpContext.Request.Query["selectedCategory"]);
+}
+
+@if (hasActiveFilters)
+{
+    <div class="active-filters mb-4">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="me-2">Active filters:</span>
+            
+            @if (!string.IsNullOrEmpty(Model.SearchTerm))
+            {
+                <span class="badge bg-primary d-flex align-items-center">
+                    Search: @Model.SearchTerm
+                    <a href="@Url.Action("EventsDashboard", new { 
+                        startDate = Model.StartDate, 
+                        endDate = Model.EndDate,
+                        selectedCategory = ViewContext.HttpContext.Request.Query["selectedCategory"]
+                    })" class="text-white ms-2" style="text-decoration: none;">
+                        &times;
+                    </a>
+                </span>
+            }
+            
+            @if (!string.IsNullOrEmpty(ViewContext.HttpContext.Request.Query["selectedCategory"]))
+            {
+                var selectedCategory = ViewContext.HttpContext.Request.Query["selectedCategory"].ToString();
+                <span class="badge bg-success d-flex align-items-center">
+                    Category: @selectedCategory
+                    <a href="@Url.Action("EventsDashboard", new { 
+                        searchTerm = Model.SearchTerm,
+                        startDate = Model.StartDate, 
+                        endDate = Model.EndDate
+                    })" class="text-white ms-2" style="text-decoration: none;">
+                        &times;
+                    </a>
+                </span>
+            }
+            
+            @if (Model.StartDate.HasValue)
+            {
+                <span class="badge bg-info d-flex align-items-center">
+                    From: @Model.StartDate.Value.ToShortDateString()
+                    <a href="@Url.Action("EventsDashboard", new { 
+                        searchTerm = Model.SearchTerm,
+                        endDate = Model.EndDate,
+                        selectedCategory = ViewContext.HttpContext.Request.Query["selectedCategory"]
+                    })" class="text-white ms-2" style="text-decoration: none;">
+                        &times;
+                    </a>
+                </span>
+            }
+            
+            @if (Model.EndDate.HasValue)
+            {
+                <span class="badge bg-info d-flex align-items-center">
+                    To: @Model.EndDate.Value.ToShortDateString()
+                    <a href="@Url.Action("EventsDashboard", new { 
+                        searchTerm = Model.SearchTerm,
+                        startDate = Model.StartDate,
+                        selectedCategory = ViewContext.HttpContext.Request.Query["selectedCategory"]
+                    })" class="text-white ms-2" style="text-decoration: none;">
+                        &times;
+                    </a>
+                </span>
+            }
+            
+            @if (hasActiveFilters)
+            {
+                <a href="@Url.Action("EventsDashboard")" class="btn btn-sm btn-outline-danger ms-2">
+                    Clear all filters
+                </a>
+            }
+        </div>
+    </div>
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <a href="/User/UserDashboard" class="btn btn-outline-primary me-3">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+            <h2 class="mb-0">Upcoming Events</h2>
+        </div>
+    </div>
+
+   
+
+    <!-- Events by Date -->
+    <div class="row" id="all-events">
+        <div class="col-md-8">
+            @if (Model.EventsByDate.Any())
+            {
+                foreach (var dateGroup in Model.EventsByDate.OrderBy(d => d.Key))
+                {
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4>@dateGroup.Key.ToString("dddd, MMMM d, yyyy")</h4>
+                        </div>
+                        <div class="card-body">
+                            @foreach (var evt in dateGroup.Value)
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <h5 class="card-title">@evt.Title</h5>
+                                            <span class="badge bg-info">@evt.Category</span>
+                                        </div>
+                                        <p class="card-text">@evt.Description</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">
+                                                <i class="fas fa-map-marker-alt me-1"></i> @evt.Location
+                                                <i class="fas fa-clock ms-3 me-1"></i> @evt.Date.ToString("h:mm tt")
+                                            </small>
+                                            <button type="button" class="btn btn-sm btn-outline-primary view-details-btn"
+                                                    data-eventid="@evt.EventId"
+                                                    data-title="@WebUtility.HtmlEncode(evt.Title)"
+                                                    data-description="@WebUtility.HtmlEncode(evt.Description)"
+                                                    data-location="@WebUtility.HtmlEncode(evt.Location)"
+                                                    data-date="@evt.Date.ToString("dddd, MMMM d, yyyy h:mm tt")"
+                                                    data-category="@WebUtility.HtmlEncode(evt.Category)">View Details</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="alert alert-info">No events found matching your criteria.</div>
+            }
+        </div>
+
+        <!-- Sidebar with Categories and Announcements -->
+        <div class="col-md-4">
+            <!-- Recently Viewed (from session-backed stack) -->
+            <div class="card mb-4" id="recently-viewed-card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Recently Viewed</h5>
+                </div>
+                <div class="list-group list-group-flush" id="recently-viewed-list">
+                    @foreach (var rv in Model.RecentlyViewedEvents)
+                    {
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-semibold">@rv.Title</div>
+                                <small class="text-muted">@rv.Date.ToString("MMM d, yyyy") • @rv.Location</small>
+                            </div>
+                            <span class="badge bg-secondary">@rv.Category</span>
+                        </div>
+                    }
+                </div>
+            </div>
+            <!-- Categories -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    @foreach (var category in Model.UniqueCategories.OrderBy(c => c))
+                    {
+                        <a href="?selectedCategory=@category"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            @category
+                            <span class="badge bg-primary rounded-pill">
+                                @(Model.EventsByCategory.ContainsKey(category) ?
+                                                            Model.EventsByCategory[category].Count : 0)
+                        </span>
+                    </a>
+                                        }
+                </div>
+            </div>
+
+            <!-- Announcements -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Latest Announcements</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    @foreach (var announcement in Model.Announcements.OrderByDescending(a => a.Date).Take(5))
+                    {
+                        <div class="list-group-item">
+                            <h6 class="mb-1">@announcement.Title</h6>
+                            <p class="mb-1 small">@announcement.Description</p>
+                            <small class="text-muted">@announcement.Date.ToString("MMM d, yyyy")</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+ <!-- Recommended Events Section -->
+    @if (Model.HasRecommendedEvents)
+    {
+        <div class="mb-5">
+            <h3 class="mb-3">
+                <i class="fas fa-star text-warning me-2"></i>Recommended For You
+                <small class="text-muted">Based on your search history</small>
+            </h3>
+            <div class="row g-4">
+                @foreach (var evt in Model.RecommendedEvents.Take(3))
+                {
+                    <div class="col-md-4">
+                        <div class="card h-100 border-warning">
+                            <div class="card-header bg-warning bg-opacity-10">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">@evt.Title</h5>
+                                    <span class="badge bg-warning text-dark">Recommended</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">@(evt.Description.Length > 100 ? evt.Description.Substring(0, 100) + "..." : evt.Description)</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="badge bg-info">@evt.Category</span>
+                                    <small class="text-muted">
+                                        <i class="far fa-calendar-alt me-1"></i>@evt.Date.ToString("MMM d, yyyy")
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-map-marker-alt me-1"></i> @evt.Location
+                                    </small>
+                                    <button type="button" class="btn btn-sm btn-outline-primary view-details-btn"
+                                            data-eventid="@evt.EventId"
+                                            data-title="@WebUtility.HtmlEncode(evt.Title)"
+                                            data-description="@WebUtility.HtmlEncode(evt.Description)"
+                                            data-location="@WebUtility.HtmlEncode(evt.Location)"
+                                            data-date="@evt.Date.ToString("dddd, MMMM d, yyyy h:mm tt")"
+                                            data-category="@WebUtility.HtmlEncode(evt.Category)">View Details</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+         
+        </div>
+        <hr class="my-4" />
+    }
+</main>
+
+<div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eventTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="eventDescription"></p>
+        <div class="d-flex justify-content-between">
+          <span class="badge bg-info" id="eventCategory"></span>
+          <small class="text-muted" id="eventDate"></small>
+        </div>
+        <div class="mt-2">
+          <i class="fas fa-map-marker-alt me-1"></i><span id="eventLocation"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+   var modalEl = document.getElementById('eventDetailsModal');
+   var modal = new bootstrap.Modal(modalEl);
+   
+   document.querySelectorAll('.view-details-btn').forEach(function(btn) {
+     btn.addEventListener('click', function() {
+       // Store references to the current button's data
+       var eventData = {
+           title: this.dataset.title || '',
+           description: this.dataset.description || '',
+           location: this.dataset.location || '',
+           date: this.dataset.date || '',
+           category: this.dataset.category || ''
+       };
+
+       // Update modal content
+       document.getElementById('eventTitle').textContent = eventData.title;
+       document.getElementById('eventDescription').textContent = eventData.description;
+       document.getElementById('eventLocation').textContent = eventData.location;
+       document.getElementById('eventDate').textContent = eventData.date;
+       document.getElementById('eventCategory').textContent = eventData.category;
+       
+       // Show the modal immediately for better UX
+       modal.show();
+
+       // Log the view and update the recently viewed list
+       var id = this.dataset.eventid;
+       fetch('@Url.Action("LogView","EventsAndAnnouncements")?id=' + id, { 
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json',
+               'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+           }
+       })
+       .then(response => {
+           if (!response.ok) throw new Error('Network response was not ok');
+           return response.json();
+       })
+       .then(data => {
+           if (data.success && data.recentEvents) {
+               updateRecentlyViewedList(data.recentEvents);
+           } else {
+               updateSingleEventInList(eventData);
+           }
+       })
+       .catch(error => {
+           console.error('Error:', error);
+           updateSingleEventInList(eventData);
+       });
+     });
+   });
+
+   // Function to update the recently viewed list with data from server
+   function updateRecentlyViewedList(events) {
+       var listContainer = document.getElementById('recently-viewed-list');
+       if (!listContainer) return;
+
+       // Clear existing items
+       listContainer.innerHTML = '';
+
+       // Add each event to the list
+       events.forEach(eventData => {
+           if (!eventData) return;
+           
+           var item = document.createElement('div');
+           item.className = 'list-group-item d-flex justify-content-between align-items-center';
+           
+           var left = document.createElement('div');
+           var titleDiv = document.createElement('div');
+           titleDiv.className = 'fw-semibold';
+           titleDiv.textContent = eventData.title || '';
+           
+           var small = document.createElement('small');
+           small.className = 'text-muted';
+           small.textContent = (eventData.date ? new Date(eventData.date).toLocaleDateString('en-US', { 
+               month: 'short', 
+               day: 'numeric', 
+               year: 'numeric' 
+           }) : '') + (eventData.location ? ' • ' + eventData.location : '');
+           
+           left.appendChild(titleDiv);
+           left.appendChild(small);
+           
+           var badge = document.createElement('span');
+           badge.className = 'badge bg-secondary';
+           badge.textContent = eventData.category || '';
+           
+           item.appendChild(left);
+           item.appendChild(badge);
+           
+           // Add click handler to view details directly from the recently viewed list
+           item.style.cursor = 'pointer';
+           item.addEventListener('click', function() {
+               document.getElementById('eventTitle').textContent = eventData.title || '';
+               document.getElementById('eventDescription').textContent = eventData.description || '';
+               document.getElementById('eventLocation').textContent = eventData.location || '';
+               document.getElementById('eventDate').textContent = eventData.date || '';
+               document.getElementById('eventCategory').textContent = eventData.category || '';
+               modal.show();
+           });
+           
+           listContainer.appendChild(item);
+       });
+   }
+
+   // Fallback function to update a single event in the list
+   function updateSingleEventInList(eventData) {
+       var listContainer = document.getElementById('recently-viewed-list');
+       if (!listContainer) return;
+
+       // Remove any existing items with the same title
+       var existing = Array.from(listContainer.querySelectorAll('.list-group-item .fw-semibold'));
+       existing.forEach(function(titleElement) {
+           if (titleElement.textContent === eventData.title) {
+               titleElement.closest('.list-group-item').remove();
+           }
+       });
+
+       // Create new list item
+       var item = document.createElement('div');
+       item.className = 'list-group-item d-flex justify-content-between align-items-center';
+       
+       var left = document.createElement('div');
+       var titleDiv = document.createElement('div');
+       titleDiv.className = 'fw-semibold';
+       titleDiv.textContent = eventData.title || '';
+       
+       var small = document.createElement('small');
+       small.className = 'text-muted';
+       small.textContent = (eventData.date || '') + (eventData.location ? ' • ' + eventData.location : '');
+       
+       left.appendChild(titleDiv);
+       left.appendChild(small);
+       
+       var badge = document.createElement('span');
+       badge.className = 'badge bg-secondary';
+       badge.textContent = eventData.category || '';
+       
+       item.appendChild(left);
+       item.appendChild(badge);
+       
+       // Insert at the top
+       listContainer.insertBefore(item, listContainer.firstChild);
+       
+       // Trim to 5 items
+       var items = listContainer.querySelectorAll('.list-group-item');
+       for (var i = 5; i < items.length; i++) {
+           items[i].parentNode.removeChild(items[i]);
+       }
+   }
+});
+</script>

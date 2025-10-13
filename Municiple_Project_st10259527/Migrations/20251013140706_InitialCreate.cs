@@ -29,6 +29,22 @@ namespace Municiple_Project_st10259527.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UserSearchHistory",
+                columns: table => new
+                {
+                    SearchId = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    UserId = table.Column<int>(type: "INTEGER", nullable: false),
+                    SearchTerm = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
+                    Category = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    SearchDate = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserSearchHistory", x => x.SearchId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Announcements",
                 columns: table => new
                 {
@@ -148,6 +164,9 @@ namespace Municiple_Project_st10259527.Migrations
 
             migrationBuilder.DropTable(
                 name: "Reports");
+
+            migrationBuilder.DropTable(
+                name: "UserSearchHistory");
 
             migrationBuilder.DropTable(
                 name: "Users");

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Municiple_Project_st10259527.Models;
 using System.Collections.Generic;
@@ -16,6 +16,7 @@ namespace Municiple_Project_st10259527.Services
         public DbSet<ReportModel> Reports { get; set; }
         public DbSet<EventModel> Events { get; set; }
         public DbSet<AnnouncementModel> Announcements { get; set; }
+        public DbSet<UserSearchHistory> UserSearchHistory { get; set; }
         //===================================================================================
 
         //===================================================================================
@@ -24,6 +25,10 @@ namespace Municiple_Project_st10259527.Services
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Configure UserSearchHistory entity
+            modelBuilder.Entity<UserSearchHistory>()
+                .HasKey(us => us.SearchId);
 
             // Configure the relationship between Report and User (who created the report)
             modelBuilder.Entity<ReportModel>()

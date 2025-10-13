@@ -189,6 +189,33 @@ namespace Municiple_Project_st10259527.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Municiple_Project_st10259527.Models.UserSearchHistory", b =>
+                {
+                    b.Property<int>("SearchId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("SearchDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SearchTerm")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("SearchId");
+
+                    b.ToTable("UserSearchHistory");
+                });
+
             modelBuilder.Entity("Municiple_Project_st10259527.Models.AnnouncementModel", b =>
                 {
                     b.HasOne("Municiple_Project_st10259527.Models.UserModel", "User")

@@ -1,15 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using Municiple_Project_st10259527.Repository;
 using Municiple_Project_st10259527.Services;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//SqlLite
+// Sqlite with absolute path to avoid relative path issues
+var dataDir = Path.Combine(builder.Environment.ContentRootPath, "Data");
+Directory.CreateDirectory(dataDir);
+var dbPath = Path.Combine(dataDir, "municipal.db");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlite($"Data Source={dbPath}"));
 
 // ? Add distributed memory cache (required for session)
 builder.Services.AddDistributedMemoryCache();
@@ -23,6 +27,7 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAnnouncementsRepository, AnnouncementsRepository>();
 builder.Services.AddScoped<IEventsRepository, EventsRepository>();
 builder.Services.AddScoped<EventAnnouncementService>();
+builder.Services.AddScoped<RecommendationService>();
 
 
 // ? Add session
@@ -35,13 +40,15 @@ builder.Services.AddSession(options =>
 
 
 
+// Force development environment for detailed errors
 var app = builder.Build();
+app.UseDeveloperExceptionPage();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+// Ensure database is created and migrations are applied at startup
+using (var scope = app.Services.CreateScope())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
 }
 
 app.UseHttpsRedirection();
@@ -49,11 +56,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Enable session middleware BEFORE authorization and route mapping
+app.UseSession();
+
 // Add authorization middleware
 app.UseAuthorization();
-
-// Enable session middleware BEFORE mapping routes
-app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
