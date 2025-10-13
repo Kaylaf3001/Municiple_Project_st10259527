@@ -45,13 +45,13 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             padding: 0.5rem 0;
-            display: block !important; /* Force display */
-            position: absolute !important; /* Ensure proper positioning */
-            left: auto !important; /* Reset left positioning */
-            right: 0 !important; /* Align to right */
-            top: 100% !important; /* Position below the button */
-            opacity: 0; /* Start hidden */
-            visibility: hidden; /* Start hidden */
+            display: block !important;
+            position: absolute !important; 
+            left: auto !important; 
+            right: 0 !important;
+            top: 100% !important; 
+            opacity: 0; 
+            visibility: hidden;
             transition: all 0.3s ease;
         }
         
@@ -82,7 +82,6 @@
                 display: none !important;
             }
 
-        /* Ensure dropdown aligns nicely with burger button */
         .topbar .dropdown-menu {
             min-width: 180px;
             border-radius: 8px;
@@ -125,11 +124,11 @@
                                         <i class="bi bi-plus-circle me-2"></i> Create a Report
                                     </a>
                                 </li>
-                                <li>
-                                    <a class="dropdown-item" href="#">
-                                        <i class="bi bi-calendar-event me-2"></i> Local Events & Announcements
-                                    </a>
-                                </li>
+                            <li>
+                                <a class="dropdown-item" asp-controller="EventsAndAnnouncements" asp-action="EventsDashboard">
+                                    <i class="bi bi-calendar-event me-2"></i> Local Events & Announcements
+                                </a>
+                            </li>
                                 <li>
                                     <a class="dropdown-item" href="#">
                                         <i class="bi bi-tools me-2"></i> Request a Service
