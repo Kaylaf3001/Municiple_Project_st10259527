@@ -8,6 +8,8 @@ A comprehensive web application for managing municipal reports with user and adm
 - [Installation](#installation)
 - [Database Schema](#database-schema)
 - [Project Structure](#project-structure)
+- [Data Structures](#data-structures)
+- [Services](#services)
 - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
 - [Screenshots](#screenshots)
@@ -15,20 +17,26 @@ A comprehensive web application for managing municipal reports with user and adm
 
 ## Features
 
-### User Features
-- User registration and authentication
-- Submit new reports with details and location
+## Features
+
+### 🧍 User Features
+- Register and log in securely
+- Submit and manage municipal reports
 - View personal report history
-- Track report status
-- Update profile information
+- Track report statuses (Pending, In Review, Completed, etc.)
+- View and filter **events** by date, category, or keyword
+- View all **announcements**
+- Get personalized **recommended events** based on search history
+- Update personal profile information
 
-### Admin Features
-- Dashboard with report statistics
-- View all reports with filtering options
-- Review and update report status
-- Manage user accounts
-- Export report data
-
+### 🧑‍💼 Admin Features
+- Dashboard with visual report statistics
+- Manage and filter reports by type, status, and user
+- Create, edit, and delete **events** and **announcements**
+- Manage user accounts and roles
+- Export report or event data for analysis
+- View all submitted reports and activities through searchable tables
+  
 ## Technology Stack
 
 ### Backend
@@ -40,10 +48,21 @@ A comprehensive web application for managing municipal reports with user and adm
 ### Frontend
 - **UI Framework**: Bootstrap 5
 - **Client-side Scripting**: JavaScript, jQuery
-- **Charts**: Chart.js (for admin dashboard)
-- **Maps**: (If applicable, e.g., Google Maps API for location selection)
 
 ## Data Structure
+
+| Data Structure | Usage Description |
+|----------------|-------------------|
+| **Dictionary<TKey, TValue>** | Stores and retrieves reports, events, and announcements by ID or category for O(1) access. |
+| **HashSet<T>** | Maintains unique event IDs, categories, and search keywords to avoid duplicates. |
+| **Queue<T>** | Groups upcoming events by date in chronological order for dashboard display. |
+| **Stack<T>** | Tracks recently viewed events in LIFO order for the “Recently Viewed” section. |
+| **IQueryable<T>** | Used in filtering and LINQ queries for efficient, database-backed search operations. |
+| **IEnumerable<T>** | Supports enumeration for recommendations, filtered lists, and dashboard outputs. |
+| **SortedDictionary<TKey, TValue>** | Used in `RecommendationService` to rank recommended events by score and date. |
+
+---
+
 ### HashSet
 <img width="1004" height="534" alt="image" src="https://github.com/user-attachments/assets/e2e4a359-c5a1-49d5-ae7d-b576d2dca8ea" />
 
@@ -59,6 +78,28 @@ A comprehensive web application for managing municipal reports with user and adm
 ### IEnumerable
 <img width="446" height="120" alt="image" src="https://github.com/user-attachments/assets/12be66f9-8bf5-4117-a4fe-00328afd52a2" />
 <img width="1501" height="634" alt="image" src="https://github.com/user-attachments/assets/74a74470-82c8-4c08-9197-eda48b2a6047" />
+
+
+### HashSets, Sorted Dictionary and Dictionary
+<img width="1134" height="322" alt="image" src="https://github.com/user-attachments/assets/d50332b2-dff5-4ea6-b06d-e5dd1bcb1292" />
+
+## Services
+
+### 🗓️ EventAnnouncementService
+A centralized service managing event and announcement data using **dictionaries and hashsets** for fast filtering.
+
+Key functionalities:
+- Initialize indexes for events and announcements  
+- Filter events by:
+  - Date range  
+  - Category  
+  - Search term  
+- Retrieve announcements by date  
+- Retrieve available event categories  
+
+### Data structures used:
+<img width="949" height="202" alt="image" src="https://github.com/user-attachments/assets/bcef3077-52c4-438d-a6cb-8528001c3726" />
+
 
 ## Installation
 
@@ -99,14 +140,11 @@ A comprehensive web application for managing municipal reports with user and adm
 
 ### Users Table
 - UserId (PK)
-- Username
-- Email
-- PasswordHash
 - FirstName
 - LastName
-- Role
-- CreatedAt
-- LastLogin
+- Email
+- Password
+- IsAdmin
 
 ### Reports Table
 - ReportId (PK)
@@ -117,7 +155,33 @@ A comprehensive web application for managing municipal reports with user and adm
 - Location
 - Status (Pending/InReview/Approved/Rejected/Completed)
 - UpdatedAt
-- (Additional fields as per your model)
+
+### Events Table
+- EventId
+- Title
+- Location
+- Date
+- Category
+- Description
+- Status
+- UserId
+
+### Announcements Table
+- AnnouncementId
+- Title
+- Date
+- Description
+- Location
+- Status
+- UserId
+
+### UserSearchHistory
+- SearchId
+- UserId
+- SearchTerm
+- Category
+- SearchDate
+
 
 ## Project Structure
 
@@ -140,6 +204,7 @@ Municiple_Project_st10259527/
 2. **Report Submission**: Logged-in users can submit new reports with details and location.
 3. **Report Management**: Users can view their report history and status.
 4. **Admin Dashboard**: Administrators can manage all reports and user accounts.
+5. **Events & Announcements**: Create and manage events and announcements with system analytics and tracking
 
 ## API Endpoints
 
@@ -150,6 +215,7 @@ Municiple_Project_st10259527/
 - `POST /User/Login` - Authenticate user
 - `GET /User/Profile` - View user profile
 - `POST /User/Profile` - Update user profile
+- `GET /User/History` - View user activity history
 
 ### Report Endpoints
 - `GET /Report` - List user's reports
@@ -167,6 +233,13 @@ Municiple_Project_st10259527/
 - `GET /Admin/Users` - List all users
 - `POST /Admin/User/UpdateRole` - Update user role
 
+### Events & Announcements Endpoints
+- `GET /Events` - List upcoming events (User)
+- `GET /Events/{id}` - View event details
+- `POST /Events/Create` - Create new event (Admin)
+- `GET /Announcements` - View all announcements
+- `OST /Announcements/Create` - Create announcement (Admin)
+
 ## Screenshots
 
 ### User Interface
@@ -180,15 +253,30 @@ Municiple_Project_st10259527/
 
 3. **User Dashboard**
 <img width="2503" height="1220" alt="image" src="https://github.com/user-attachments/assets/a0d40b18-0b4d-4c2e-ac0d-bcf1c1958c47" />
+<img width="1253" height="425" alt="image" src="https://github.com/user-attachments/assets/d345ffed-a7ed-4b9d-ba8e-10bf6f560a52" />
 
+4. ** Local Events and Announcements Dashboard**
+<img width="1875" height="858" alt="image" src="https://github.com/user-attachments/assets/ef3c7d53-afa1-4eb7-b6f6-c99d2ad8bb65" />
 
 ### Admin Interface
-1. **Admin Dashboard**
+5. **Admin Dashboard**
 <img width="2497" height="1222" alt="image" src="https://github.com/user-attachments/assets/426144a5-651c-4ac9-8fbb-93fb2adf7ddc" />
 
-2. **Report Management**
+6. **Report Management**
 <img width="2496" height="1131" alt="image" src="https://github.com/user-attachments/assets/c9f6dcba-d7dd-4fb4-8096-a3b8da5da097" />
 <img width="2514" height="1130" alt="image" src="https://github.com/user-attachments/assets/1c82cf7b-5355-49fc-b0c9-287c81220886" />
+
+7. **Add Events**
+<img width="1861" height="862" alt="image" src="https://github.com/user-attachments/assets/ea901321-653c-4efb-8e81-78408228bde8" />
+
+8. **Manage Events**
+<img width="1860" height="918" alt="image" src="https://github.com/user-attachments/assets/5024690b-c3a1-4840-9526-0d92dfea4b6b" />
+
+9. Add Announcements
+<img width="1857" height="918" alt="image" src="https://github.com/user-attachments/assets/e4f79a3c-270a-4747-8c35-a15cf3fafcee" />
+
+10. Manage Announcements
+<img width="1858" height="919" alt="image" src="https://github.com/user-attachments/assets/51b88471-af6e-4112-a7d6-54c33ff49b6b" />
 
 ## Admin Login
 - admin@example.com
