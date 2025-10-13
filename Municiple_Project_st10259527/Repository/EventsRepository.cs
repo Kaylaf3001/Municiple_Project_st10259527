@@ -86,27 +86,45 @@ namespace Municiple_Project_st10259527.Repository
         //===============================================================================================
 
         //===============================================================================================
-        //Get Upcoming Events in a Queue
+        // Queue Operations
         //===============================================================================================
-        public Queue<EventModel> GetUpcomingEventsQueue()
+        
+        // Get all upcoming events as a queue
+        public async Task<Queue<EventModel>> GetUpcomingEventsQueueAsync()
         {
             var currentDate = DateTime.Now;
-
-            // Step 1: Fetch the upcoming events from the database
-            var upcomingEvents = _context.Events
+            var upcomingEvents = await _context.Events
                 .Where(e => e.Date >= currentDate)
                 .OrderBy(e => e.Date)
-                .ToList();
+                .ToListAsync();
 
-            // Step 2: Create a queue and enqueue each event
-            Queue<EventModel> eventQueue = new Queue<EventModel>();
-
+            var eventQueue = new Queue<EventModel>();
             foreach (var ev in upcomingEvents)
             {
                 eventQueue.Enqueue(ev);
             }
-
             return eventQueue;
+        }
+
+        // Get the next upcoming event (peek)
+        public async Task<EventModel> GetNextUpcomingEventAsync()
+        {
+            var currentDate = DateTime.Now;
+            return await _context.Events
+                .Where(e => e.Date >= currentDate)
+                .OrderBy(e => e.Date)
+                .FirstOrDefaultAsync();
+        }
+
+        // Dequeue the next upcoming event (removes it from the queue)
+        public async Task<EventModel> DequeueNextEventAsync()
+        {
+            var nextEvent = await GetNextUpcomingEventAsync();
+            if (nextEvent != null)
+            {
+                await DeleteEventAsync(nextEvent.EventId);
+            }
+            return nextEvent;
         }
         //===============================================================================================
 
@@ -119,5 +137,16 @@ namespace Municiple_Project_st10259527.Repository
         }
         //===============================================================================================
 
+        //===============================================================================================
+        //Get All Categories
+        //===============================================================================================
+        public async Task<IEnumerable<string>> GetAllCategoriesAsync()
+        {
+            return await _context.Events
+                .Select(e => e.Category)
+                .Distinct()
+                .ToListAsync();
+        }
+        //===============================================================================================
     }
 }

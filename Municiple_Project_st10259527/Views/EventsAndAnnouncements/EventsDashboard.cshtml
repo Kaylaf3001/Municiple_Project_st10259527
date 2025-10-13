@@ -192,61 +192,90 @@
     <!-- Page Heading -->
     <h1 class="page-title">Local Announcements & Events</h1>
 
-    <!-- Filter Section -->
-    <section class="filters">
-        <input type="text" placeholder="Search by event name, location or keyword" class="search-box">
-        <select class="dropdown">
-            <option value="">All Categories</option>
-            <option value="community">Community</option>
-            <option value="safety">Safety</option>
-            <option value="infrastructure">Infrastructure</option>
-            <option value="culture">Culture</option>
-        </select>
-        <select class="dropdown">
-            <option value="">All Dates</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-            <option value="upcoming">Upcoming</option>
-        </select>
-    </section>
+    <!-- Filter Form -->
+    <form method="get" asp-controller="EventsAndAnnouncements" asp-action="EventsDashboard" class="mb-4">
+        <div class="row g-3">
+            <!-- Date Range -->
+            <div class="col-md-3">
+                <label class="form-label">From Date</label>
+                <input type="date" class="form-control" name="startDate"
+                       value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">To Date</label>
+                <input type="date" class="form-control" name="endDate"
+                       value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" />
+            </div>
 
-    <div class="container mt-4">
-        <h2>Upcoming Events Queue</h2>
-        <div class="row">
-            <div class="col-md-8">
-                <div class="queue-container">
-                    @if (Model.UpcomingEventsQueue != null && Model.UpcomingEventsQueue.Count > 0)
+            <!-- Category Dropdown -->
+            <div class="col-md-3">
+                <label class="form-label">Category</label>
+                <select name="selectedCategory" class="form-select">
+                    <option value="">All Categories</option>
+                    @foreach (var category in Model.Categories)
                     {
-                        <div class="queue-visualization mb-4">
-                            @{
-                                int position = 1;
-                                foreach (var ev in Model.UpcomingEventsQueue)
-                                {
-                                    <div class="card mb-2">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <div>
-                                                    <h5 class="card-title">@position. @ev.Title</h5>
-                                                    <p class="card-text">
-                                                        <i class="far fa-calendar-alt"></i> @ev.Date.ToString("f")<br>
-                                                        <i class="fas fa-map-marker-alt"></i> @ev.Location
-                                                    </p>
-                                                </div>
-                                                <span class="badge bg-primary">#@position</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    position++;
-                                }
-                            }
-                        </div>
+                        <option value="@category"
+                                selected="@(category == Model.SelectedCategory ? "selected" : null)">
+                            @category
+                        </option>
                     }
-                    else
-                    {
-                        <div class="alert alert-info">No upcoming events in the queue.</div>
-                    }
+                </select>
+            </div>
+
+            <!-- Search Box -->
+            <div class="col-md-3">
+                <label class="form-label">Search</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="searchTerm"
+                           value="@Model.SearchTerm" placeholder="Search events..." />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Filter
+                    </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Active Filters -->
+        @{
+            bool hasActiveFilters = !string.IsNullOrEmpty(Model.SelectedCategory) ||
+            Model.StartDate.HasValue ||
+            Model.EndDate.HasValue ||
+            !string.IsNullOrEmpty(Model.SearchTerm);
+        }
+
+        @if (hasActiveFilters)
+        {
+            <div class="mt-2">
+                <small class="text-muted">
+                    Active filters:
+                    @if (!string.IsNullOrEmpty(Model.SelectedCategory))
+                    {
+                        <span class="badge bg-primary me-1">Category: @Model.SelectedCategory</span>
+                    }
+                    @if (Model.StartDate.HasValue)
+                    {
+                        <span class="badge bg-info me-1">From: @Model.StartDate.Value.ToShortDateString()</span>
+                    }
+                    @if (Model.EndDate.HasValue)
+                    {
+                        <span class="badge bg-info me-1">To: @Model.EndDate.Value.ToShortDateString()</span>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.SearchTerm))
+                    {
+                        <span class="badge bg-secondary me-1">Search: @Model.SearchTerm</span>
+                    }
+                    <a href="@Url.Action("EventsDashboard")" class="text-danger small ms-2">Clear all</a>
+                </small>
+            </div>
+        }
+    </form>
+
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Events & Announcements</h2>
+            <a href="/User/UserDashboard" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
         </div>
 
         <!-- Rest of your existing view content -->

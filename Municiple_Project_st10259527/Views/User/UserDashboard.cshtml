@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Dashboard";
 }
 
@@ -25,6 +25,7 @@
         padding: 25px;
         background: white;
         text-align: center;
+        margin-bottom: 20px;
     }
 
         .stat-card h6 {
@@ -37,6 +38,7 @@
             font-size: 2.5rem;
             font-weight: bold;
             color: #0d2b52;
+            margin: 0;
         }
 
     /* Action Cards */
@@ -47,6 +49,8 @@
         background: white;
         transition: 0.3s;
         text-align: center;
+        margin-bottom: 30px;
+        height: 100%;
     }
 
         .action-card:hover {
@@ -69,22 +73,45 @@
         .action-card p {
             font-size: 1.1rem;
             color: #555;
+            margin-bottom: 0;
         }
 
-    /* Footer */
-    .footer {
-        background-color: #0d2b52;
-        color: white;
-        margin-top: 60px;
-        text-align: center;
-        padding: 18px 0;
-        font-size: 1.1rem;
+    /* Upcoming Events */
+    .upcoming-events {
+        margin: 40px 0;
     }
+
+    .event-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+        .event-card h4 {
+            color: #0d2b52;
+            margin-bottom: 10px;
+        }
+
+    .event-meta {
+        color: #6b7280;
+        margin-bottom: 10px;
+    }
+
+        .event-meta i {
+            margin-right: 5px;
+            width: 20px;
+            text-align: center;
+        }
 
     /* Recent Activity Section */
     .recent-activity {
+        background: white;
         border-radius: 12px;
         padding: 35px;
+        margin-top: 40px;
     }
 
         .recent-activity h3 {
@@ -94,7 +121,6 @@
             color: #1a1a1a;
         }
 
-        /* Table Styling */
         .recent-activity table {
             width: 100%;
             border-collapse: separate;
@@ -125,30 +151,31 @@
                 background-color: #e3f2fd;
             }
 
-        .recent-activity .status {
-            font-weight: 600;
-            color: #ff6f00;
-        }
+    .badge {
+        padding: 0.5em 0.8em;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+    }
 </style>
 
 <div class="dashboard-container">
-
     <!-- Welcome -->
     <div class="container mt-4">
         <h2 class="welcome-text">Welcome, @(ViewBag.UserFirstName ?? "User")</h2>
 
         <!-- Stats Row -->
-        <div class="row text-center mb-5">
+        <div class="row text-center">
             <div class="col-md-4">
                 <div class="stat-card">
                     <h6>Reports Pending</h6>
-                    <h3>@ViewBag.TotalReports</h3>
+                    <h3>@(ViewBag.TotalReports ?? 0)</h3>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-card">
                     <h6>Upcoming Events</h6>
-                    <h3>0</h3>
+                    <h3>@(ViewBag.TotalEvents ?? 0)</h3>
                 </div>
             </div>
             <div class="col-md-4">
@@ -175,7 +202,7 @@
                     <div class="action-card">
                         <i class="bi bi-megaphone"></i>
                         <h6>Local Events & Announcements</h6>
-                        <p>Find out what’s happening in your area</p>
+                        <p>Find out what's happening in your area</p>
                     </div>
                 </a>
             </div>
@@ -188,91 +215,125 @@
             </div>
         </div>
 
-        <div class="row mt-5 mb-5">
-            <div class="col-12">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header pb-3 d-flex justify-content-between align-items-center">
-                        <h6 class="fw-bold text-dark mb-0">Recent Activity</h6>
-                        <a href="@Url.Action("MyReports", "User")" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-list-ul me-1"></i> View All Reports
-                        </a>
-                    </div>
-                    <div class="card-body px-4 pt-4 pb-4">
-                        <div class="table-responsive">
-                            <table class="table align-middle" style="margin-bottom: 0;">
-                                <thead>
-                                    <tr>
-                                        <th class="ps-3">Date</th>
-                                        <th>Location</th>
-                                        <th>Type</th>
-                                        <th>Description</th>
-                                        <th class="text-center pe-3">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @{
-                                        var hasReports = ViewBag.HasRecentReports != null && (bool)ViewBag.HasRecentReports;
-                                        var reports = ViewBag.RecentReports as IEnumerable<ReportModel>;
-                                    }
-                                    @if (hasReports && reports != null)
-                                    {
-                                        foreach (var report in reports)
-                                        {
-                                            <tr class="report-row">
-                                                <td class="ps-3 py-3">@report.ReportDate.ToString("yyyy/MM/dd")</td>
-                                                <td class="py-3">@(string.IsNullOrEmpty(report.Location) ? "N/A" : report.Location)</td>
-                                                <td class="py-3">@(string.IsNullOrEmpty(report.ReportType) ? "N/A" : report.ReportType)</td>
-                                                <td class="py-3">@(string.IsNullOrEmpty(report.Description) ? "No description provided" : report.Description)</td>
-                                                <td class="text-center pe-3 py-3">
-                                                    <span class="badge rounded-pill @GetStatusBadgeClass(report.Status)">
-                                                        @(report.Status == default ? "Pending" : report.Status.ToString())
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <tr>
-                                            <td colspan="5" class="text-center py-4 text-muted">No recent reports found.</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+        <!-- Upcoming Events Section -->
+        <div class="upcoming-events">
+            <div class="row">
+                <div class="col-12">
+                    <h3 class="mb-4">Upcoming Events</h3>
+                    @if (Model?.NextUpcomingEvent != null)
+                    {
+                        <div class="event-card">
+                            <h4>@Model.NextUpcomingEvent.Title</h4>
+                            <div class="event-meta">
+                                <p><i class="far fa-calendar-alt"></i> @Model.NextUpcomingEvent.Date.ToString("f")</p>
+                                <p><i class="fas fa-map-marker-alt"></i> @Model.NextUpcomingEvent.Location</p>
+                            </div>
+                            <p>@Model.NextUpcomingEvent.Description</p>
+                            <a href="/EventsAndAnnouncements/EventsDashboard" class="btn btn-primary mt-2">View All Events</a>
                         </div>
-                    </div>
+
+                        @if (Model.QueueCount > 0)
+                        {
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                There are @Model.QueueCount more upcoming events.
+                                <a href="/EventsAndAnnouncements/EventsDashboard" class="alert-link">View all events</a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="far fa-calendar-alt fa-3x text-muted mb-3"></i>
+                            <h5>No upcoming events</h5>
+                            <p class="text-muted">There are currently no scheduled events.</p>
+                            <a href="/EventsAndAnnouncements/EventsDashboard" class="btn btn-primary">Browse Events</a>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
 
+        <!-- Recent Activity Section -->
+        <div class="recent-activity">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Recent Activity</h3>
+                <a href="@Url.Action("MyReports", "User")" class="btn btn-outline-primary">
+                    <i class="fas fa-list me-1"></i> View All Reports
+                </a>
+            </div>
 
-        @section Scripts {
-            <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-            <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
-            <script>
-                $(document).ready(function () {
-                    $('#userReportsTable').DataTable({
-                        responsive: true,
-                        order: [[0, 'desc']]
-                    });
-                });
-            </script>
-        }
-
-        @functions {
-            string GetStatusBadgeClass(ReportStatus status)
+            @if (Model?.RecentReports != null && Model.RecentReports.Count > 0)
             {
-                return status switch
-                {
-                    ReportStatus.Pending => "bg-warning text-dark",
-                    ReportStatus.InReview => "bg-info text-dark",
-                    ReportStatus.Approved => "bg-primary",
-                    ReportStatus.Rejected => "bg-danger",
-                    ReportStatus.Completed => "bg-success",
-                    _ => "bg-secondary"
-                };
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Location</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th class="text-center">Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var report in Model.RecentReports)
+                            {
+                                <tr>
+                                    <td>@report.ReportDate.ToString("yyyy/MM/dd")</td>
+                                    <td>@(string.IsNullOrEmpty(report.Location) ? "N/A" : report.Location)</td>
+                                    <td>@(string.IsNullOrEmpty(report.ReportType) ? "N/A" : report.ReportType)</td>
+                                    <td>@(string.IsNullOrEmpty(report.Description) ? "No description provided" : report.Description)</td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill @GetStatusBadgeClass(report.Status)">
+                                            @(report.Status == null || report.Status == default(ReportStatus) ? "Pending" : report.Status.ToString())
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("ViewReport", "User", new { id = report.ReportId })"
+                                           class="btn btn-sm btn-outline-primary">View</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             }
-        }
-
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-4x text-muted mb-3" style="opacity: 0.6;"></i>
+                    <h5>No recent activity</h5>
+                    <p class="text-muted mb-4">Your recent reports will appear here.</p>
+                    <a href="@Url.Action("ReportIssueStep1", "Report")" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create Your First Report
+                    </a>
+                </div>
+            }
+        </div>
     </div>
 </div>
+
+@functions {
+    string GetStatusBadgeClass(ReportStatus status)
+    {
+        return status switch
+        {
+            ReportStatus.Pending => "bg-warning text-dark",
+            ReportStatus.InReview => "bg-info text-dark",
+            ReportStatus.Approved => "bg-primary",
+            ReportStatus.Rejected => "bg-danger",
+            ReportStatus.Completed => "bg-success",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            console.log("Dashboard loaded successfully");
+        });
+    </script>
+}

@@ -14,11 +14,13 @@ namespace Municiple_Project_st10259527.Controllers
         #region
         private readonly IUserRepository _userRepository;
         private readonly IReportRepository _reportRepository;
+        private readonly IEventsRepository _eventsRepository;
 
-        public UserController(IUserRepository userRepository, IReportRepository reportRepository)
+        public UserController(IUserRepository userRepository, IReportRepository reportRepository, IEventsRepository eventsRepository)
         {
             _userRepository = userRepository;
             _reportRepository = reportRepository;
+            _eventsRepository = eventsRepository;
         }
         #endregion
         //==============================================================================================
@@ -95,13 +97,17 @@ namespace Municiple_Project_st10259527.Controllers
         //==============================================================================================
         // User Dashboard
         //==============================================================================================
-        public IActionResult UserDashBoard()
+        
+
+
+        public async Task<IActionResult> UserDashBoard()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null)
                 return RedirectToAction("Login", "User");
 
             IEnumerable<ReportModel> recentUserReports = null;
+            var viewModel = new UserDashboardViewModel();
 
             try
             {
@@ -109,29 +115,30 @@ namespace Municiple_Project_st10259527.Controllers
                 var user = _userRepository.GetUserById(userId.Value);
                 if (user != null)
                 {
-                    ViewBag.UserFirstName = user.FirstName;
+                    viewModel.UserName = user.FirstName;
                 }
 
-                // Get total reports count
-                ViewBag.TotalReports = _reportRepository.GetReportsCountByUserId(userId.Value);
-
-                // Get recent user reports (limited to 5)
+                // Get reports data
+                viewModel.TotalReports = _reportRepository.GetReportsCountByUserId(userId.Value);
                 recentUserReports = _reportRepository.GetReportsByUserId(userId.Value, 5);
-                ViewBag.RecentReports = recentUserReports;
-                ViewBag.HasRecentReports = recentUserReports.Any();
+                viewModel.RecentReports = recentUserReports.ToList();
+
+                // Get upcoming events
+                var upcomingEventsQueue = await _eventsRepository.GetUpcomingEventsQueueAsync();
+                viewModel.NextUpcomingEvent = await _eventsRepository.GetNextUpcomingEventAsync();
+                viewModel.QueueCount = upcomingEventsQueue.Count;
             }
             catch (Exception ex)
             {
                 // Log the error
-                Console.WriteLine($"Error in Home/Index: {ex.Message}");
+                Console.WriteLine($"Error in User/UserDashBoard: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
 
                 // Initialize empty collections in case of error to prevent null reference
-                recentUserReports = Enumerable.Empty<ReportModel>();
-                ViewBag.RecentReports = Enumerable.Empty<ReportModel>();
+                viewModel.RecentReports = new List<ReportModel>();
             }
 
-            return View(recentUserReports); // pass user reports as model
+            return View(viewModel);
         }
         //==============================================================================================
 
