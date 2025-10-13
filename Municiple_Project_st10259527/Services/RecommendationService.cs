@@ -45,8 +45,9 @@ namespace Municiple_Project_st10259527.Services
                 bucket[key] = evt;
             }
 
-            // Base query for upcoming events
+            // Base query for upcoming events (no tracking for performance)
             var baseQuery = _context.Events
+                .AsNoTracking()
                 .Where(e => e.Date >= DateTime.Today);
 
             // Prepare frequency maps without using lists/arrays
@@ -56,6 +57,7 @@ namespace Municiple_Project_st10259527.Services
 
             int historyCount = 0;
             await foreach (var s in _context.UserSearchHistory
+                .AsNoTracking()
                 .Where(s => s.UserId == userId)
                 .OrderByDescending(s => s.SearchDate)
                 .Take(MAX_SEARCH_HISTORY)
@@ -131,27 +133,27 @@ namespace Municiple_Project_st10259527.Services
             {
                 if (search == null || recommendedEvents.Count >= MAX_RECOMMENDATIONS) return;
 
-                var term = search.SearchTerm.ToLower();
-                var category = search.Category?.ToLower();
+                var term = (search.SearchTerm ?? string.Empty).Trim().ToLower();
+                if (string.IsNullOrWhiteSpace(term)) return;
+                var category = search.Category?.Trim().ToLower();
 
                 var query = baseQuery.AsQueryable();
                 
                 if (!string.IsNullOrEmpty(category) && category != "general")
                 {
                     query = query.Where(e => 
-                        e.Category.ToLower() == category &&
-                        (e.Title.ToLower().Contains(term) || e.Description.ToLower().Contains(term))
+                        (e.Category != null && e.Category.ToLower() == category) &&
+                        ((e.Title != null && e.Title.ToLower().Contains(term)) || (e.Description != null && e.Description.ToLower().Contains(term)))
                     );
                 }
                 else
                 {
                     query = query.Where(e => 
-                        e.Title.ToLower().Contains(term) || 
-                        e.Description.ToLower().Contains(term)
+                        (e.Title != null && e.Title.ToLower().Contains(term)) || 
+                        (e.Description != null && e.Description.ToLower().Contains(term))
                     );
                 }
 
-                var countBefore = recommendedEvents.Count;
                 await AddMatchingEventsToDictionary(
                     query.OrderBy(e => e.Date),
                     recommendedEvents,
@@ -179,11 +181,10 @@ namespace Municiple_Project_st10259527.Services
                         if (recommendedEvents.Count >= MAX_RECOMMENDATIONS || taken >= 5) break;
                         var term = entry.Term;
                         if (term.Length < 4 || stopTerms.Contains(term)) { taken++; continue; }
-                        var countBefore = recommendedEvents.Count;
                         var query = baseQuery
                             .Where(e => !eventIds.Contains(e.EventId) &&
-                                      (e.Title.ToLower().Contains(term) ||
-                                       e.Description.ToLower().Contains(term)))
+                                      ((e.Title != null && e.Title.ToLower().Contains(term)) ||
+                                       (e.Description != null && e.Description.ToLower().Contains(term))))
                             .OrderBy(e => e.Date);
 
                         await AddMatchingEventsToDictionary(
@@ -211,10 +212,9 @@ namespace Municiple_Project_st10259527.Services
                     {
                         if (recommendedEvents.Count >= MAX_RECOMMENDATIONS || taken >= 3) break;
                         var cat = entry.Cat.ToLower();
-                        var countBefore = recommendedEvents.Count;
                         var query = baseQuery
                             .Where(e => !eventIds.Contains(e.EventId) &&
-                                      e.Category.ToLower() == cat)
+                                      (e.Category != null && e.Category.ToLower() == cat))
                             .OrderBy(e => e.Date);
 
                         await AddMatchingEventsToDictionary(
