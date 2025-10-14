@@ -202,7 +202,7 @@ namespace Municiple_Project_st10259527.Services
             var userId = _httpContextAccessor.HttpContext?.Session.GetInt32("UserId");
             if (userId.HasValue)
                 return await _recommendationService.GetRecommendedEventsAsync(userId.Value);
-            return new Stack<EventModel>(); // Return empty stack instead of List
+            return new Stack<EventModel>();
         }
         //==============================================================================================
 

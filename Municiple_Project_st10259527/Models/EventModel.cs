@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Municiple_Project_st10259527.Models
 {
+    //=================================================================
+    // Event Model
+    //=================================================================
     public class EventModel
     {
         [Key]
@@ -22,7 +25,7 @@ namespace Municiple_Project_st10259527.Models
 
         [Required]
         [StringLength(50)]
-        public string Category { get; set; }  // e.g., Community, Safety, Infrastructure, Culture
+        public string Category { get; set; }
 
         [Required]
         [StringLength(500)]
@@ -30,13 +33,12 @@ namespace Municiple_Project_st10259527.Models
 
         [Required]
         [StringLength(20)]
-        public string Status { get; set; } // Upcoming, Cancelled, etc.
+        public string Status { get; set; }
 
-        // In EventModel.cs
         [ForeignKey("User")]
-        public int UserId { get; set; }  // Changed from AdminId to UserId
+        public int UserId { get; set; }
 
-        // Navigation property for User (who created the event)
-        public UserModel? User { get; set; }  // Changed from Admin to User
+        public UserModel? User { get; set; } 
     }
+    //=================================================================
 }

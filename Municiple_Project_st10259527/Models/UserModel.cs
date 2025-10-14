@@ -31,10 +31,8 @@ namespace Municiple_Project_st10259527.Models
         [Display(Name = "Admin User")]
         public bool IsAdmin { get; set; } = false;
 
-        // Navigation property for reports created by this user
         public virtual ICollection<ReportModel> Reports { get; set; }
 
-        // Navigation property for reports assigned to this admin
         public virtual ICollection<ReportModel> AssignedReports { get; set; }
 
         [Display(Name = "Full Name")]

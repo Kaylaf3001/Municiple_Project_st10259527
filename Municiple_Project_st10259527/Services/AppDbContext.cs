@@ -26,39 +26,33 @@ namespace Municiple_Project_st10259527.Services
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure UserSearchHistory entity
             modelBuilder.Entity<UserSearchHistory>()
                 .HasKey(us => us.SearchId);
 
-            // Configure the relationship between Report and User (who created the report)
             modelBuilder.Entity<ReportModel>()
                 .HasOne(r => r.User)
                 .WithMany(u => u.Reports)
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Configure the relationship between Report and AssignedAdmin
             modelBuilder.Entity<ReportModel>()
                 .HasOne(r => r.AssignedAdmin)
                 .WithMany(a => a.AssignedReports)
                 .HasForeignKey(r => r.AssignedAdminId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Events ↔ User
             modelBuilder.Entity<EventModel>()
                 .HasOne(e => e.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Announcements ↔ User
             modelBuilder.Entity<AnnouncementModel>()
                 .HasOne(a => a.User)
                 .WithMany()
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // ✅ Seed a default admin user
             modelBuilder.Entity<UserModel>().HasData(
                 new UserModel
                 {

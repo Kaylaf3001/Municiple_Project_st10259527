@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Municiple_Project_st10259527.Models
 {
+    //=================================================================
+    // Announcement Model
+    //=================================================================
     public class AnnouncementModel
     {
         [Key]
@@ -26,14 +29,13 @@ namespace Municiple_Project_st10259527.Models
 
         [Required]
         [StringLength(20)]
-        public string Status { get; set; } // Announced, Cancelled, etc.
+        public string Status { get; set; }
 
-        // Foreign Key for Admin
         [ForeignKey("Admin")]
         public int UserId { get; set; }
 
-        // Navigation property for Admin
         public UserModel? User{ get; set; }
 
     }
+    //=================================================================
 }

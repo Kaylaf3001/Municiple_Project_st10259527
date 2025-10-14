@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Municiple_Project_st10259527.Models
 {
+    //=================================================================
+    // User Search History Model
+    //=================================================================
     public class UserSearchHistory
     {
         [Key]
@@ -22,5 +25,6 @@ namespace Municiple_Project_st10259527.Models
         [Required]
         public DateTime SearchDate { get; set; } = DateTime.UtcNow;
     }
+    //=================================================================
 }
 
