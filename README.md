@@ -79,9 +79,14 @@ A comprehensive web application for managing municipal reports with user and adm
 <img width="446" height="120" alt="image" src="https://github.com/user-attachments/assets/12be66f9-8bf5-4117-a4fe-00328afd52a2" />
 <img width="1501" height="634" alt="image" src="https://github.com/user-attachments/assets/74a74470-82c8-4c08-9197-eda48b2a6047" />
 
+### Stacks and Dictionary
+<img width="726" height="630" alt="image" src="https://github.com/user-attachments/assets/1e4ff19d-f483-40ea-9aca-f5505b3cfecc" />
 
-### HashSets, Sorted Dictionary and Dictionary
-<img width="1134" height="322" alt="image" src="https://github.com/user-attachments/assets/d50332b2-dff5-4ea6-b06d-e5dd1bcb1292" />
+### Queues
+<img width="752" height="751" alt="image" src="https://github.com/user-attachments/assets/9bc48010-bf7d-4aee-9f24-c5387b904034" />
+
+### Stacks
+<img width="792" height="769" alt="image" src="https://github.com/user-attachments/assets/799c85a3-3112-4544-beb2-d85b8da874ee" />
 
 ## Services
 
@@ -96,10 +101,6 @@ Key functionalities:
   - Search term  
 - Retrieve announcements by date  
 - Retrieve available event categories  
-
-### Data structures used:
-<img width="949" height="202" alt="image" src="https://github.com/user-attachments/assets/bcef3077-52c4-438d-a6cb-8528001c3726" />
-
 
 ## Installation
 
