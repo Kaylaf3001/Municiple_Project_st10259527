@@ -14,12 +14,14 @@ namespace Municiple_Project_st10259527.Repository
         //==============================================================
         // Dependency Injection.
         //==============================================================
+        #region
         private readonly AppDbContext _context;
 
         public ReportRepository(AppDbContext context)
         {
             _context = context;
         }
+        #endregion
         //==============================================================
 
         //==============================================================

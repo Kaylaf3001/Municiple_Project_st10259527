@@ -5,20 +5,15 @@ using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Sqlite with absolute path to avoid relative path issues
 var dataDir = Path.Combine(builder.Environment.ContentRootPath, "Data");
 Directory.CreateDirectory(dataDir);
 var dbPath = Path.Combine(dataDir, "municipal.db");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
 
-// ? Add distributed memory cache (required for session)
 builder.Services.AddDistributedMemoryCache();
-
-// Add HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -30,22 +25,18 @@ builder.Services.AddScoped<IUserSearchHistoryRepository, UserSearchHistoryReposi
 builder.Services.AddScoped<RecommendationService>();
 builder.Services.AddScoped<EventManagementService>();
 
-
-// ? Add session
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // session timeout
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true; // required for GDPR compliance
+    options.Cookie.IsEssential = true;
 });
 
 
 
-// Force development environment for detailed errors
 var app = builder.Build();
 app.UseDeveloperExceptionPage();
 
-// Ensure database is created and migrations are applied at startup
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -57,10 +48,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Enable session middleware BEFORE authorization and route mapping
 app.UseSession();
 
-// Add authorization middleware
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -10,20 +10,20 @@ using System.Threading.Tasks;
 
 namespace Municiple_Project_st10259527.Repository
 {
-    //===================================================================================
-    // Admin Repository Implementation
-    //===================================================================================
+
     public class AdminRepository : IAdminRepository
     {
         //===================================================================================
-        // Constructor
+        // Admin Repository Implementation
         //===================================================================================
+        #region
         private readonly AppDbContext _context;
 
         public AdminRepository(AppDbContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
+        #endregion
         //===================================================================================
 
         //===================================================================================

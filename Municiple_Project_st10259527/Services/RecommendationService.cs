@@ -10,6 +10,10 @@ namespace Municiple_Project_st10259527.Services
 {
     public class RecommendationService
     {
+        //===================================================================================
+        // Dependencies and Constants
+        //===================================================================================
+        #region
         private readonly IEventsRepository _eventsRepository;
         private readonly IUserSearchHistoryRepository _searchRepository;
         private const int MaxRecommendations = 5;
@@ -22,7 +26,12 @@ namespace Municiple_Project_st10259527.Services
             _eventsRepository = eventsRepository;
             _searchRepository = searchRepository;
         }
+        #endregion
+        //===================================================================================
 
+        //===================================================================================
+        // Get Recommended Events Based on User Search History
+        //===================================================================================
         public async Task<Stack<EventModel>> GetRecommendedEventsAsync(int userId)
         {
             var searches = new Stack<UserSearchHistory>();
@@ -56,8 +65,11 @@ namespace Municiple_Project_st10259527.Services
 
             return sortedStack;
         }
+        //===================================================================================
 
-
+        //===================================================================================
+        // Apply a single search entry to the event scores
+        //===================================================================================
         private async Task ApplySearchToScoresAsync(UserSearchHistory search, Dictionary<int, (EventModel Event, int Score)> eventScores, Queue<EventModel> upcomingQueue)
         {
             string term = (search.SearchTerm ?? string.Empty).Trim().ToLowerInvariant();
@@ -78,6 +90,7 @@ namespace Municiple_Project_st10259527.Services
                 }
             }
         }
-
+        //===================================================================================
     }
 }
+//========================End==Of==File======================================================

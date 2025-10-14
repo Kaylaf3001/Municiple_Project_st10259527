@@ -7,13 +7,22 @@ namespace Municiple_Project_st10259527.Repository
 {
     public class UserSearchHistoryRepository : IUserSearchHistoryRepository
     {
+        //===================================================================================
+        // Dependency Injection
+        //===================================================================================
+        #region
         private readonly AppDbContext _context;
 
         public UserSearchHistoryRepository(AppDbContext context)
         {
             _context = context;
         }
+        #endregion
+        //===================================================================================
 
+        //===================================================================================
+        // Add a new search entry
+        //===================================================================================
         public async Task AddSearchAsync(UserSearchHistory search)
         {
             if (search == null) throw new ArgumentNullException(nameof(search));
@@ -21,8 +30,11 @@ namespace Municiple_Project_st10259527.Repository
             await _context.UserSearchHistory.AddAsync(search);
             await _context.SaveChangesAsync();
         }
+        //===================================================================================
 
+        //===================================================================================
         // Return searches as IAsyncEnumerable (no list/array needed)
+        //===================================================================================
         public async IAsyncEnumerable<UserSearchHistory> GetRecentSearchesAsync(int userId, int maxCount)
         {
             await foreach (var s in _context.UserSearchHistory
@@ -35,7 +47,11 @@ namespace Municiple_Project_st10259527.Repository
                 yield return s;
             }
         }
+        //===================================================================================
 
+        //===================================================================================
+        // Log a search action
+        //===================================================================================
         public async Task LogSearchAsync(int userId, string searchTerm, string category)
         {
             var search = new UserSearchHistory
@@ -47,7 +63,8 @@ namespace Municiple_Project_st10259527.Repository
             };
             await AddSearchAsync(search);
         }
-
+        //===================================================================================
 
     }
 }
+//============================End==Of==File==================================================

@@ -7,12 +7,18 @@ namespace Municiple_Project_st10259527.Repository
 {
     public class EventsRepository : IEventsRepository
     {
+        //===============================================================================================
+        //Dependency Injection
+        //===============================================================================================
+        #region
         private readonly AppDbContext _context;
 
         public EventsRepository(AppDbContext context)
         {
             _context = context;
         }
+        #endregion
+        //===============================================================================================
 
         //CRUD
 
@@ -150,3 +156,4 @@ namespace Municiple_Project_st10259527.Repository
         //===============================================================================================
     }
 }
+//==================================End==Of==File========================================================
