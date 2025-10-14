@@ -196,7 +196,6 @@ namespace Municiple_Project_st10259527.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Category")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
@@ -204,7 +203,6 @@ namespace Municiple_Project_st10259527.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SearchTerm")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 

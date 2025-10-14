@@ -12,109 +12,163 @@ namespace Municiple_Project_st10259527.Services
 {
     public class EventManagementService
     {
+        //===============================================================================================
+        // Dependency Injection for Repositories and Constants
+        //===============================================================================================
+        #region
         private readonly IEventsRepository _eventsRepository;
-        private readonly IAnnouncementsRepository _announcementsRepository;
         private readonly RecommendationService _recommendationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private const string RecentlyViewedSessionKey = "RecentlyViewedStack";
 
-        public EventManagementService(
-            IEventsRepository eventsRepository,
-            IAnnouncementsRepository announcementsRepository,
-            RecommendationService recommendationService,
-            IHttpContextAccessor httpContextAccessor)
+        public EventManagementService(IEventsRepository eventsRepository,RecommendationService recommendationService,IHttpContextAccessor httpContextAccessor)
         {
             _eventsRepository = eventsRepository;
-            _announcementsRepository = announcementsRepository;
             _recommendationService = recommendationService;
             _httpContextAccessor = httpContextAccessor;
         }
+        #endregion
+        //===============================================================================================
 
-        public async Task<EventsAndAnnouncementsViewModel> GetEventsDashboardViewModelAsync(
-        string selectedCategory = null,
-        DateTime? startDate = null,
-        DateTime? endDate = null,
-        string searchTerm = null)
+        //==============================================================================================
+        // Manage the Events Dashboard ViewModel
+        //==============================================================================================
+        public async Task<EventsAndAnnouncementsViewModel> GetEventsDashboardViewModelAsync(string selectedCategory = null,DateTime? startDate = null,DateTime? endDate = null,string searchTerm = null)
         {
-            // Get all events and filter them
-            var allEvents = (await _eventsRepository.GetAllEventsAsync()).ToList();
-            var filteredEvents = FilterEvents(allEvents, selectedCategory, startDate, endDate, searchTerm).ToList();
+            // Get all events from repository
+            var allEvents = await _eventsRepository.GetAllEventsAsync();
 
-            // Attempt to log this search/filter to build recommendation history
-            await TryLogSearchAsync(selectedCategory, searchTerm);
+            var filteredEvents = FilterEvents(allEvents, selectedCategory, startDate, endDate, searchTerm);
 
-            // Group events by date
-            var eventsByDate = filteredEvents
-                .Where(e => e.Date >= DateTime.Today)  // Only show future events
-                .GroupBy(e => e.Date.Date)
-                .ToDictionary(
-                    g => g.Key,
-                    g => new Queue<EventModel>(g.OrderBy(e => e.Date))
-                );
+            // Group future events by date using Queue
+            var eventsByDate = new Dictionary<DateTime, Queue<EventModel>>();
+            foreach (var e in filteredEvents)
+            {
+                if (e.Date >= DateTime.Today)
+                {
+                    if (!eventsByDate.ContainsKey(e.Date.Date))
+                        eventsByDate[e.Date.Date] = new Queue<EventModel>();
+                    eventsByDate[e.Date.Date].Enqueue(e);
+                }
+            }
 
-            // Group events by category for sidebar counts (future events only)
-            var eventsByCategory = filteredEvents
-                .Where(e => e.Date >= DateTime.Today && !string.IsNullOrWhiteSpace(e.Category))
-                .GroupBy(e => e.Category, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(
-                    g => g.Key,
-                    g => new HashSet<EventModel>(g, new EventModelComparer()),
-                    StringComparer.OrdinalIgnoreCase
-                );
+            // Group future events by category using HashSet
+            var eventsByCategory = new Dictionary<string, HashSet<EventModel>>(StringComparer.OrdinalIgnoreCase);
+            foreach (var e in filteredEvents)
+            {
+                if (e.Date >= DateTime.Today && !string.IsNullOrWhiteSpace(e.Category))
+                {
+                    if (!eventsByCategory.ContainsKey(e.Category))
+                        eventsByCategory[e.Category] = new HashSet<EventModel>(new EventModelComparer());
+                    eventsByCategory[e.Category].Add(e);
+                }
+            }
 
-            // Get other required data
-            var allAnnouncements = await _announcementsRepository.GetAllAnnouncementsAsync();
-            var recommendations = await GetRecommendedEventsAsync();
+            // Get recently viewed events from session stack
             var recentEvents = await GetRecentlyViewedEventsAsync();
 
-            // Create and return view model
+            // Get recommended events
+            var recommendations = await GetRecommendedEventsAsync();
+
             return new EventsAndAnnouncementsViewModel
             {
                 Events = filteredEvents,
                 EventsByDate = eventsByDate,
                 EventsByCategory = eventsByCategory,
-                Announcements = allAnnouncements.OrderByDescending(a => a.Date),
+                RecentlyViewedEvents = recentEvents,
                 RecommendedEvents = recommendations,
                 SelectedCategory = selectedCategory,
                 StartDate = startDate,
                 EndDate = endDate,
                 SearchTerm = searchTerm,
-                UniqueCategories = allEvents
+                UniqueCategories = new HashSet<string>(allEvents
                     .Where(e => !string.IsNullOrEmpty(e.Category))
-                    .Select(e => e.Category)
-                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                    .OrderBy(c => c)
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase),
-                NextUpcomingEvent = allEvents
-                    .Where(e => e.Date >= DateTime.Now)
-                    .OrderBy(e => e.Date)
-                    .FirstOrDefault(),
-                RecentlyViewedEvents = recentEvents
+                    .Select(e => e.Category),
+                    StringComparer.OrdinalIgnoreCase),
+                NextUpcomingEvent = GetNextUpcomingEvent(filteredEvents)
             };
         }
 
+        //==============================================================================================
+        // Filtering and Helper Methods
+        //==============================================================================================
+        private IEnumerable<EventModel> FilterEvents(IEnumerable<EventModel> events,string category, DateTime? start,DateTime? end,string searchTerm)
+        {
+            foreach (var e in events)
+            {
+                if (!string.IsNullOrEmpty(category) &&
+                    (e.Category == null || !e.Category.Equals(category, StringComparison.OrdinalIgnoreCase)))
+                    continue;
+
+                if (start.HasValue && e.Date < start.Value)
+                    continue;
+
+                if (end.HasValue && e.Date > end.Value)
+                    continue;
+
+                if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    var term = searchTerm.Trim();
+                    if (!((e.Title?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                          (e.Description?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                          (e.Location?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                          (e.Category?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false)))
+                        continue;
+                }
+
+                yield return e;
+            }
+        }
+        //==============================================================================================
+
+        //==============================================================================================
+        // Tracking Recently Viewed Events using Stacks
+        //==============================================================================================
         public async Task LogEventViewAsync(int eventId)
         {
             var stack = GetRecentlyViewedStack();
-            
+
             // Avoid consecutive duplicates
             if (stack.Count == 0 || stack.Peek() != eventId)
             {
                 stack.Push(eventId);
-                
-                // Limit to 5 most recent
+
+                // Limit stack to 5 elements
                 while (stack.Count > 5)
                 {
                     var temp = new Stack<int>();
                     while (stack.Count > 1) temp.Push(stack.Pop());
-                    stack.Pop(); // Discard the bottom element
+                    stack.Pop(); // Remove bottom element
                     while (temp.Count > 0) stack.Push(temp.Pop());
                 }
-                
+
                 SaveRecentlyViewedStack(stack);
             }
         }
+        //==============================================================================================
 
+        //==============================================================================================
+        // Retrieve Recently Viewed Events, an internal helper to read from session
+        //==============================================================================================
+        private Stack<int> GetRecentlyViewedStack()
+        {
+            var json = _httpContextAccessor.HttpContext?.Session.GetString(RecentlyViewedSessionKey);
+            if (string.IsNullOrEmpty(json)) return new Stack<int>();
+
+            try
+            {
+                return JsonSerializer.Deserialize<Stack<int>>(json) ?? new Stack<int>();
+            }
+            catch
+            {
+                return new Stack<int>();
+            }
+        }
+        //==============================================================================================
+
+        //==============================================================================================
+        // Gets the viewed events, it takes the id from the stack and fetches the event details from repository
+        //==============================================================================================
         public async Task<IEnumerable<EventModel>> GetRecentlyViewedEventsAsync()
         {
             var stack = GetRecentlyViewedStack();
@@ -128,123 +182,56 @@ namespace Municiple_Project_st10259527.Services
             
             return recentEvents;
         }
+        //==============================================================================================
 
-        private IEnumerable<EventModel> FilterEvents(
-            IEnumerable<EventModel> events,
-            string selectedCategory,
-            DateTime? startDate,
-            DateTime? endDate,
-            string searchTerm)
-        {
-            var query = events.AsQueryable();
-
-            if (!string.IsNullOrEmpty(selectedCategory))
-            {
-                query = query.Where(e => 
-                    e.Category != null && 
-                    e.Category.Equals(selectedCategory, StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (startDate.HasValue)
-            {
-                query = query.Where(e => e.Date >= startDate.Value);
-            }
-
-            if (endDate.HasValue)
-            {
-                query = query.Where(e => e.Date <= endDate.Value);
-            }
-
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                var search = searchTerm.Trim().ToLower();
-                query = query.Where(e => 
-                    (e.Title != null && e.Title.ToLower().Contains(search)) ||
-                    (e.Description != null && e.Description.ToLower().Contains(search)) ||
-                    (e.Location != null && e.Location.ToLower().Contains(search)) ||
-                    (e.Category != null && e.Category.ToLower().Contains(search)));
-            }
-
-            return query.OrderBy(e => e.Date).ThenBy(e => e.Title);
-        }
-
-        private async Task<IEnumerable<EventModel>> GetRecommendedEventsAsync()
-        {
-            var currentUserId = GetCurrentUserId();
-            if (currentUserId.HasValue)
-            {
-                return await _recommendationService.GetRecommendedEventsAsync(currentUserId.Value);
-            }
-            return Enumerable.Empty<EventModel>();
-        }
-
-        private Stack<int> GetRecentlyViewedStack()
-        {
-            var json = _httpContextAccessor.HttpContext?.Session.GetString(RecentlyViewedSessionKey);
-            if (string.IsNullOrEmpty(json)) return new Stack<int>();
-            
-            try
-            {
-                return JsonSerializer.Deserialize<Stack<int>>(json) ?? new Stack<int>();
-            }
-            catch
-            {
-                return new Stack<int>();
-            }
-        }
-
+        //==============================================================================================
+        // Saves the stack back to session
+        //==============================================================================================
         private void SaveRecentlyViewedStack(Stack<int> stack)
         {
             var json = JsonSerializer.Serialize(stack);
             _httpContextAccessor.HttpContext?.Session.SetString(RecentlyViewedSessionKey, json);
         }
+        //==============================================================================================
 
-        private int? GetCurrentUserId()
+        //==============================================================================================
+        // Get recommended events based on user's search history that is stored in the database
+        //==============================================================================================
+        private async Task<IEnumerable<EventModel>> GetRecommendedEventsAsync()
         {
-            return _httpContextAccessor.HttpContext?.Session.GetInt32("UserId");
+            var userId = _httpContextAccessor.HttpContext?.Session.GetInt32("UserId");
+            if (userId.HasValue)
+                return await _recommendationService.GetRecommendedEventsAsync(userId.Value);
+            return new Stack<EventModel>(); // Return empty stack instead of List
         }
+        //==============================================================================================
 
-        private async Task TryLogSearchAsync(string selectedCategory, string searchTerm)
+        //==============================================================================================
+        // Get the next upcoming events
+        //==============================================================================================
+        private EventModel GetNextUpcomingEvent(IEnumerable<EventModel> events)
         {
-            var userId = GetCurrentUserId();
-            if (!userId.HasValue)
+            EventModel next = null;
+            foreach (var e in events)
             {
-                return;
+                if (e.Date >= DateTime.Now)
+                {
+                    if (next == null || e.Date < next.Date) next = e;
+                }
             }
-
-            // Prefer explicit search term; if not present, log category as the term
-            var termToLog = !string.IsNullOrWhiteSpace(searchTerm)
-                ? searchTerm
-                : (!string.IsNullOrWhiteSpace(selectedCategory) ? selectedCategory : null);
-
-            if (string.IsNullOrWhiteSpace(termToLog))
-            {
-                return;
-            }
-
-            try
-            {
-                await _recommendationService.LogSearchAsync(userId.Value, termToLog, selectedCategory);
-            }
-            catch
-            {
-                // no-op: avoid breaking dashboard on logging errors
-            }
+            return next;
         }
+        //==============================================================================================
     }
 
+    //==============================================================================================
+    // Custom comparer for EventModel to avoid duplicates in HashSet
+    //==============================================================================================
     public class EventModelComparer : IEqualityComparer<EventModel>
     {
-        public bool Equals(EventModel x, EventModel y)
-        {
-            if (ReferenceEquals(x, y)) return true;
-            if (x is null || y is null) return false;
-            return x.EventId == y.EventId;
-        }
-
-        public int GetHashCode(EventModel obj)
-        {
-            return obj.EventId.GetHashCode();
-        }
+        public bool Equals(EventModel x, EventModel y) => x?.EventId == y?.EventId;
+        public int GetHashCode(EventModel obj) => obj.EventId.GetHashCode();
     }
+    //==============================================================================================
 }
+//==============================================End==Of==File============================================

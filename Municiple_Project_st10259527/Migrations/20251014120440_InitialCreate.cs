@@ -35,8 +35,8 @@ namespace Municiple_Project_st10259527.Migrations
                     SearchId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     UserId = table.Column<int>(type: "INTEGER", nullable: false),
-                    SearchTerm = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
-                    Category = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
+                    SearchTerm = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    Category = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
                     SearchDate = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>

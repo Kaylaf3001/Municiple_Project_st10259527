@@ -11,7 +11,7 @@ using Municiple_Project_st10259527.Services;
 namespace Municiple_Project_st10259527.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251013140706_InitialCreate")]
+    [Migration("20251014120440_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -199,7 +199,6 @@ namespace Municiple_Project_st10259527.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Category")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("TEXT");
 
@@ -207,7 +206,6 @@ namespace Municiple_Project_st10259527.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SearchTerm")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 

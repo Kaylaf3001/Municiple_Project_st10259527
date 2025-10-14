@@ -11,13 +11,16 @@ namespace Municiple_Project_st10259527.Controllers
     {
         private readonly EventManagementService _eventManagementService;
         private readonly IEventsRepository _eventsRepository;
+        private readonly IUserSearchHistoryRepository _searchRepository;
+        private readonly RecommendationService _recommendationService;
 
-        public EventsAndAnnouncementsController(
-            EventManagementService eventManagementService,
-            IEventsRepository eventsRepository)
+
+        public EventsAndAnnouncementsController(EventManagementService eventManagementService, IEventsRepository eventsRepository,IUserSearchHistoryRepository searchRepository, RecommendationService recommendationService)
         {
             _eventManagementService = eventManagementService;
             _eventsRepository = eventsRepository;
+            _searchRepository = searchRepository;
+            _recommendationService = recommendationService;
         }
 
         // GET: EventsAndAnnouncements/EventsDashboard
@@ -27,8 +30,18 @@ namespace Municiple_Project_st10259527.Controllers
             DateTime? endDate = null,
             string searchTerm = null)
         {
+
             try
             {
+                var userIdClaim = User.FindFirst("UserId")?.Value;
+                if (int.TryParse(userIdClaim, out int userId))
+                {
+                    if (!string.IsNullOrWhiteSpace(searchTerm) || !string.IsNullOrWhiteSpace(selectedCategory))
+                    {
+                        await _recommendationService.LogSearchAsync(userId, searchTerm, selectedCategory ?? "General");
+                    }
+                }
+
                 var viewModel = await _eventManagementService.GetEventsDashboardViewModelAsync(
                     selectedCategory,
                     startDate,
@@ -51,29 +64,19 @@ namespace Municiple_Project_st10259527.Controllers
             return RedirectToAction(nameof(EventsDashboard));
         }
 
-        // AJAX endpoint for logging views
-        [HttpPost]
-        [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> LogView(int id)
+        public async Task LogSearchAsync(int userId, string searchTerm, string category)
         {
-            try
+            var search = new UserSearchHistory
             {
-                var evt = await _eventsRepository.GetEventByIdAsync(id);
-                if (evt == null)
-                {
-                    return NotFound();
-                }
+                UserId = userId,
+                SearchTerm = searchTerm,
+                Category = category,
+                SearchDate = DateTime.UtcNow
+            };
 
-                await _eventManagementService.LogEventViewAsync(id);
-                var recentEvents = await _eventManagementService.GetRecentlyViewedEventsAsync();
-
-                return Json(new { success = true, recentEvents });
-            }
-            catch
-            {
-                return StatusCode(500, new { success = false, error = "An error occurred while updating recently viewed events." });
-            }
+            await _searchRepository.AddSearchAsync(search);
         }
+
 
         // GET: Events/Edit
         public async Task<IActionResult> EditEvent(int? id)

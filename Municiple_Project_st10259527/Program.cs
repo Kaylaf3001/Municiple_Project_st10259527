@@ -27,6 +27,7 @@ builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAnnouncementsRepository, AnnouncementsRepository>();
 builder.Services.AddScoped<IEventsRepository, EventsRepository>();
 builder.Services.AddScoped<EventAnnouncementService>();
+builder.Services.AddScoped<IUserSearchHistoryRepository, UserSearchHistoryRepository>();
 builder.Services.AddScoped<RecommendationService>();
 builder.Services.AddScoped<EventManagementService>();
 
