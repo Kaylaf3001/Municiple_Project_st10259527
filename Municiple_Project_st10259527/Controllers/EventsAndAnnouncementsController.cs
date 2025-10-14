@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Repository;
 using Municiple_Project_st10259527.Services;
@@ -9,36 +10,40 @@ namespace Municiple_Project_st10259527.Controllers
 {
     public class EventsAndAnnouncementsController : Controller
     {
+        //===================================================================================
+        // Dependencies Injection
+        //===================================================================================
+        #region
         private readonly EventManagementService _eventManagementService;
         private readonly IEventsRepository _eventsRepository;
         private readonly IUserSearchHistoryRepository _searchRepository;
-        private readonly RecommendationService _recommendationService;
+        private readonly IAnnouncementsRepository _announcementsRepository;
 
 
-        public EventsAndAnnouncementsController(EventManagementService eventManagementService, IEventsRepository eventsRepository,IUserSearchHistoryRepository searchRepository, RecommendationService recommendationService)
+
+        public EventsAndAnnouncementsController(EventManagementService eventManagementService, IEventsRepository eventsRepository,IUserSearchHistoryRepository searchRepository, IAnnouncementsRepository announcementsRepository)
         {
             _eventManagementService = eventManagementService;
             _eventsRepository = eventsRepository;
             _searchRepository = searchRepository;
-            _recommendationService = recommendationService;
+            _announcementsRepository = announcementsRepository;
         }
+        #endregion
+        //===================================================================================
 
+        //===================================================================================
         // GET: EventsAndAnnouncements/EventsDashboard
-        public async Task<IActionResult> EventsDashboard(
-            string selectedCategory = null,
-            DateTime? startDate = null,
-            DateTime? endDate = null,
-            string searchTerm = null)
+        //===================================================================================
+        public async Task<IActionResult> EventsDashboard(string selectedCategory = null,DateTime? startDate = null,DateTime? endDate = null,string searchTerm = null)
         {
-
             try
             {
-                var userIdClaim = User.FindFirst("UserId")?.Value;
-                if (int.TryParse(userIdClaim, out int userId))
+                var sessionUserId = HttpContext.Session.GetInt32("UserId");
+                if (sessionUserId.HasValue)
                 {
                     if (!string.IsNullOrWhiteSpace(searchTerm) || !string.IsNullOrWhiteSpace(selectedCategory))
                     {
-                        await _recommendationService.LogSearchAsync(userId, searchTerm, selectedCategory ?? "General");
+                        await _searchRepository.LogSearchAsync(sessionUserId.Value, searchTerm, selectedCategory ?? "General");
                     }
                 }
 
@@ -48,6 +53,8 @@ namespace Municiple_Project_st10259527.Controllers
                     endDate,
                     searchTerm);
 
+                viewModel.Announcements = await _announcementsRepository.GetAllAnnouncementsAsync();
+
                 return View("EventsDashboard", viewModel);
             }
             catch
@@ -55,15 +62,22 @@ namespace Municiple_Project_st10259527.Controllers
                 return View("Error", new ErrorViewModel { RequestId = HttpContext.TraceIdentifier });
             }
         }
+        //===================================================================================
 
+        //===============================================================================
         // Record a recently viewed event
+        //===============================================================================
         [HttpGet]
         public async Task<IActionResult> ViewEvent(int id)
         {
             await _eventManagementService.LogEventViewAsync(id);
             return RedirectToAction(nameof(EventsDashboard));
         }
+        //===============================================================================
 
+        //===============================================================================
+        // Log a user search
+        //===============================================================================
         public async Task LogSearchAsync(int userId, string searchTerm, string category)
         {
             var search = new UserSearchHistory
@@ -76,9 +90,11 @@ namespace Municiple_Project_st10259527.Controllers
 
             await _searchRepository.AddSearchAsync(search);
         }
+        //===============================================================================
 
-
+        //===============================================================================
         // GET: Events/Edit
+        //===============================================================================
         public async Task<IActionResult> EditEvent(int? id)
         {
             if (id == null)
@@ -94,8 +110,11 @@ namespace Municiple_Project_st10259527.Controllers
 
             return View("EditEvent", eventModel);
         }
+        //===============================================================================
 
+        //===============================================================================
         // POST: Events/Edit
+        //===============================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditEvent(int id, [Bind("EventId,Title,Location,Date,Category,Description,Status")] EventModel eventModel)
@@ -119,8 +138,11 @@ namespace Municiple_Project_st10259527.Controllers
 
             return View("EditEvent", eventModel);
         }
+        //===============================================================================
 
+        //===============================================================================
         // POST: Events/Delete/id
+        //===============================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteEventConfirmed(int id)
@@ -137,5 +159,7 @@ namespace Municiple_Project_st10259527.Controllers
 
             return RedirectToAction("ManageEvents", "Events");
         }
+        //===============================================================================
     }
 }
+//=========================End==Of==File=================================================

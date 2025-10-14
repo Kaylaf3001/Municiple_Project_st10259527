@@ -8,5 +8,6 @@ namespace Municiple_Project_st10259527.Repository
     {
         Task AddSearchAsync(UserSearchHistory search);
         IAsyncEnumerable<UserSearchHistory> GetRecentSearchesAsync(int userId, int maxCount);
+        Task LogSearchAsync(int userId, string searchTerm, string category);
     }
 }

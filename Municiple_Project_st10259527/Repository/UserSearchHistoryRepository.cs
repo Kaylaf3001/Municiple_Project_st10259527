@@ -35,5 +35,19 @@ namespace Municiple_Project_st10259527.Repository
                 yield return s;
             }
         }
+
+        public async Task LogSearchAsync(int userId, string searchTerm, string category)
+        {
+            var search = new UserSearchHistory
+            {
+                UserId = userId,
+                SearchTerm = searchTerm,
+                Category = category,
+                SearchDate = DateTime.UtcNow
+            };
+            await AddSearchAsync(search);
+        }
+
+
     }
 }
