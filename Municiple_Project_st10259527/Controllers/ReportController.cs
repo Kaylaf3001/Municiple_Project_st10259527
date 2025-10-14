@@ -33,7 +33,6 @@ namespace Municiple_Project_st10259527.Controllers
             if (!IsUserLoggedIn())
                 return RedirectToAction("Login", "User");
 
-            // Pass the dictionary/list of locations to the view
             ViewBag.WesternCapeLocations = LocationService.WesternCapeLocations.Values.ToList();
 
             return View();
@@ -54,7 +53,6 @@ namespace Municiple_Project_st10259527.Controllers
             {
                 ModelState.AddModelError("", "Location is required");
 
-                // Repopulate locations
                 ViewBag.WesternCapeLocations = LocationService.WesternCapeLocations.Values.ToList();
 
                 return View();
@@ -94,11 +92,9 @@ namespace Municiple_Project_st10259527.Controllers
                 ModelState.AddModelError("", "Please select a category");
                 return View();
             }
-            
-            // Store all data in TempData
+
             TempData["Category"] = category.Trim();
             
-            // Keep existing TempData
             TempData.Keep("Location");
             
             return RedirectToAction("ReportIssueStep3");
@@ -129,7 +125,6 @@ namespace Municiple_Project_st10259527.Controllers
                 return RedirectToAction("Login", "User");
             }
             
-            // Get existing data from TempData
             var location = TempData.Peek("Location")?.ToString()?.Trim();
             var category = TempData.Peek("Category")?.ToString()?.Trim();
 
@@ -139,10 +134,8 @@ namespace Municiple_Project_st10259527.Controllers
                 return View();
             }
             
-            // Store all data in TempData for the next step
             TempData["Description"] = description.Trim();
             
-            // Keep existing TempData
             TempData.Keep("Location");
             TempData.Keep("Category");
 
@@ -180,12 +173,10 @@ namespace Municiple_Project_st10259527.Controllers
                 return RedirectToAction("Login", "User");
             }
             
-            // Get values from TempData without removing them
             var location = TempData.Peek("Location")?.ToString()?.Trim();
             var category = TempData.Peek("Category")?.ToString()?.Trim();
             var description = TempData.Peek("Description")?.ToString()?.Trim();
             
-            // Validate required fields with detailed logging
             string missingFields = "";
             if (string.IsNullOrWhiteSpace(location)) missingFields += "Location, ";
             if (string.IsNullOrWhiteSpace(category)) missingFields += "Category, ";
@@ -193,7 +184,6 @@ namespace Municiple_Project_st10259527.Controllers
             
             if (!string.IsNullOrWhiteSpace(missingFields))
             {
-                // Remove trailing comma and space
                 missingFields = missingFields.TrimEnd(',', ' ');
                 TempData["Error"] = $"Missing required information: {missingFields}. Please start over.";
                 return RedirectToAction("ReportIssueStep1");
@@ -214,7 +204,6 @@ namespace Municiple_Project_st10259527.Controllers
 
                 _reportRepository.AddReport(report, uploadedFile);
                 
-                // Clear TempData after successful submission
                 TempData.Remove("Location");
                 TempData.Remove("Category");
                 TempData.Remove("Description");
@@ -248,7 +237,6 @@ namespace Municiple_Project_st10259527.Controllers
             if (userId == null)
                 return RedirectToAction("Login", "User");
 
-            // Get user's first name
             var user = _userRepository.GetUserById(userId.Value);
             if (user != null)
             {

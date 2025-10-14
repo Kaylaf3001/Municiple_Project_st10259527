@@ -97,9 +97,6 @@ namespace Municiple_Project_st10259527.Controllers
         //==============================================================================================
         // User Dashboard
         //==============================================================================================
-        
-
-
         public async Task<IActionResult> UserDashBoard()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
@@ -111,19 +108,16 @@ namespace Municiple_Project_st10259527.Controllers
 
             try
             {
-                // Get user details
                 var user = _userRepository.GetUserById(userId.Value);
                 if (user != null)
                 {
                     viewModel.UserName = user.FirstName;
                 }
 
-                // Get reports data
                 viewModel.TotalReports = _reportRepository.GetReportsCountByUserId(userId.Value);
                 recentUserReports = _reportRepository.GetReportsByUserId(userId.Value, 5);
                 viewModel.RecentReports = recentUserReports.ToList();
 
-                // Get upcoming events
                 var upcomingEventsQueue = await _eventsRepository.GetUpcomingEventsQueueAsync();
                 viewModel.NextUpcomingEvent = await _eventsRepository.GetNextUpcomingEventAsync();
                 viewModel.QueueCount = upcomingEventsQueue.Count;
@@ -134,7 +128,6 @@ namespace Municiple_Project_st10259527.Controllers
                 Console.WriteLine($"Error in User/UserDashBoard: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
 
-                // Initialize empty collections in case of error to prevent null reference
                 viewModel.RecentReports = new List<ReportModel>();
             }
 
@@ -179,7 +172,6 @@ namespace Municiple_Project_st10259527.Controllers
 
             var report = await _reportRepository.GetReportByIdAsync(id);
 
-            // Ensure the report exists and belongs to the current user
             if (report == null || report.UserId != userId)
             {
                 return NotFound();

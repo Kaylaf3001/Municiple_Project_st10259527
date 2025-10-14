@@ -43,7 +43,6 @@ namespace Municiple_Project_st10259527.Controllers
             }
             catch (Exception ex)
             {
-                // Log the error
                 return StatusCode(500, "An error occurred while loading the dashboard.");
             }
         }
@@ -217,10 +216,9 @@ namespace Municiple_Project_st10259527.Controllers
             }
             else
             {
-                eventModel.UserId = 1; // fallback
+                eventModel.UserId = 1;
             }
 
-            // Set Status
             if (string.IsNullOrWhiteSpace(eventModel.Status))
             {
                 eventModel.Status = "Normal";
@@ -264,7 +262,6 @@ namespace Municiple_Project_st10259527.Controllers
             }
             catch (Exception ex)
             {
-                // Log the error
                 return StatusCode(500, "An error occurred while loading events.");
             }
         }
@@ -304,16 +301,14 @@ namespace Municiple_Project_st10259527.Controllers
             }
             else
             {
-                announcementModel.UserId = 1; // fallback
+                announcementModel.UserId = 1;
             }
 
-            // Set Status
             if (string.IsNullOrWhiteSpace(announcementModel.Status))
             {
                 announcementModel.Status = "Normal";
             }
 
-            // Set the creation date to current date/time
             announcementModel.Date = DateTime.Now;
 
             if (!ModelState.IsValid)
@@ -348,7 +343,6 @@ namespace Municiple_Project_st10259527.Controllers
                 return StatusCode(500, "An error occurred while loading events.");
             }
         }
-        //==============================================================================================
 
         [HttpPost]
         public async Task<IActionResult> ManageAnnouncements()
@@ -361,6 +355,9 @@ namespace Municiple_Project_st10259527.Controllers
         }
         //==============================================================================================
 
+        //==============================================================================================
+        // Edit Announcement
+        //==============================================================================================
         public IActionResult EditAnnouncement()
         {
             
@@ -368,6 +365,9 @@ namespace Municiple_Project_st10259527.Controllers
         }
         //==============================================================================================
 
+        //==============================================================================================
+        // Create Announcement
+        //==============================================================================================
         public IActionResult CreateAnnouncement()
         {
             return View("Announcements/CreateAnnouncements");
