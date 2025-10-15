@@ -162,20 +162,20 @@
 <div class="dashboard-container">
     <!-- Welcome -->
     <div class="container mt-4">
-        <h2 class="welcome-text">Welcome, @(ViewBag.UserFirstName ?? "User")</h2>
+        <h2 class="welcome-text">Welcome, @Model.UserName</h2>
 
         <!-- Stats Row -->
         <div class="row text-center">
             <div class="col-md-4">
                 <div class="stat-card">
                     <h6>Reports Pending</h6>
-                    <h3>@(ViewBag.TotalReports ?? 0)</h3>
+                    <h3>@Model.TotalReports</h3>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-card">
                     <h6>Upcoming Events</h6>
-                    <h3>@(ViewBag.TotalEvents ?? 0)</h3>
+                    <h3>@Model.TotalEvents</h3>
                 </div>
             </div>
             <div class="col-md-4">

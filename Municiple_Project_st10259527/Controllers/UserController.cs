@@ -114,13 +114,19 @@ namespace Municiple_Project_st10259527.Controllers
                     viewModel.UserName = user.FirstName;
                 }
 
+                // Get report counts
                 viewModel.TotalReports = _reportRepository.GetReportsCountByUserId(userId.Value);
                 recentUserReports = _reportRepository.GetReportsByUserId(userId.Value, 5);
                 viewModel.RecentReports = recentUserReports.ToList();
 
+                // Get event information
                 var upcomingEventsQueue = await _eventsRepository.GetUpcomingEventsQueueAsync();
                 viewModel.NextUpcomingEvent = await _eventsRepository.GetNextUpcomingEventAsync();
                 viewModel.QueueCount = upcomingEventsQueue.Count;
+
+                // Add total events count
+                viewModel.TotalEvents = _eventsRepository.GetEventsCount();
+
             }
             catch (Exception ex)
             {

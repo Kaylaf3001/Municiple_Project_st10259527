@@ -16,5 +16,6 @@ namespace Municiple_Project_st10259527.ViewModels
         public EventModel NextUpcomingEvent { get; set; }
         public int QueueCount { get; set; }
         public bool HasEventsInQueue => QueueCount > 0;
+        public int TotalEvents { get; set; }
     }
 }
