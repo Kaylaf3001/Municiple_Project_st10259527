@@ -172,15 +172,13 @@ namespace Municiple_Project_st10259527.Services
         public async Task<IEnumerable<EventModel>> GetRecentlyViewedEventsAsync()
         {
             var stack = GetRecentlyViewedStack();
-            var recentEvents = new List<EventModel>();
-            
-            foreach (var id in stack)
-            {
-                var e = await _eventsRepository.GetEventByIdAsync(id);
-                if (e != null) recentEvents.Add(e);
-            }
-            
-            return recentEvents;
+
+            return await Task.WhenAll(
+                stack.Select(async id =>
+                {
+                    return await _eventsRepository.GetEventByIdAsync(id);
+                })
+            ).ContinueWith(t => t.Result.Where(e => e != null));
         }
         //==============================================================================================
 
