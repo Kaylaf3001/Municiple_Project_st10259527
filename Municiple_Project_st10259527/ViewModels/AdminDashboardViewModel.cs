@@ -7,23 +7,23 @@ namespace Municiple_Project_st10259527.ViewModels
     public class AdminDashboardViewModel
     {
         // Report Collections
-        public List<ReportModel> PendingReports { get; set; } = new List<ReportModel>();
-        public List<ReportModel> InProgressReports { get; set; } = new List<ReportModel>();
-        public List<ReportModel> CompletedReports { get; set; } = new List<ReportModel>();
-        public List<ReportModel> ApprovedReports { get; set; } = new List<ReportModel>();
-        public List<ReportModel> RejectedReports { get; set; } = new List<ReportModel>();
-        public List<ReportModel> RecentReports { get; set; } = new List<ReportModel>();
+        public IEnumerable<ReportModel> PendingReports { get; set; } = Enumerable.Empty<ReportModel>();
+        public IEnumerable<ReportModel> InProgressReports { get; set; } = Enumerable.Empty<ReportModel>();
+        public IEnumerable<ReportModel> CompletedReports { get; set; } = Enumerable.Empty<ReportModel>();
+        public IEnumerable<ReportModel> ApprovedReports { get; set; } = Enumerable.Empty<ReportModel>();
+        public IEnumerable<ReportModel> RejectedReports { get; set; } = Enumerable.Empty<ReportModel>();
+        public IEnumerable<ReportModel> RecentReports { get; set; } = Enumerable.Empty<ReportModel>();
 
         // Counts
         public int TotalReports { get; set; }
         public int TotalUsers { get; set; }
 
         // Computed Properties
-        public int PendingCount => PendingReports?.Count ?? 0;
-        public int InProgressCount => InProgressReports?.Count ?? 0;
-        public int CompletedCount => CompletedReports?.Count ?? 0;
-        public int ApprovedCount => ApprovedReports?.Count ?? 0;
-        public int RejectedCount => RejectedReports?.Count ?? 0;
+        public int PendingCount => PendingReports?.Count() ?? 0;
+        public int InProgressCount => InProgressReports?.Count() ?? 0;
+        public int CompletedCount => CompletedReports?.Count() ?? 0;
+        public int ApprovedCount => ApprovedReports?.Count() ?? 0;
+        public int RejectedCount => RejectedReports?.Count() ?? 0;
 
         // Statistics
         public int NewReportsToday { get; set; }

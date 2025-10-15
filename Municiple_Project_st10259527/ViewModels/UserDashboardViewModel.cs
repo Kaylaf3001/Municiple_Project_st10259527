@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Municiple_Project_st10259527.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Municiple_Project_st10259527.ViewModels
 {
@@ -10,7 +12,7 @@ namespace Municiple_Project_st10259527.ViewModels
 
         // Reports
         public int TotalReports { get; set; }
-        public List<ReportModel> RecentReports { get; set; } = new List<ReportModel>();
+        public IEnumerable<ReportModel> RecentReports { get; set; } = Enumerable.Empty<ReportModel>();
 
         // Upcoming Events
         public EventModel NextUpcomingEvent { get; set; }

@@ -1,11 +1,12 @@
-﻿using Municiple_Project_st10259527.Models;
+using Municiple_Project_st10259527.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Municiple_Project_st10259527.ViewModels
 {
     public class AdminReportsListViewModel
     {
-        public IEnumerable<ReportModel> Reports { get; set; } = new List<ReportModel>();
+        public IEnumerable<ReportModel> Reports { get; set; } = Enumerable.Empty<ReportModel>();
         public ReportStatus? FilterStatus { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }

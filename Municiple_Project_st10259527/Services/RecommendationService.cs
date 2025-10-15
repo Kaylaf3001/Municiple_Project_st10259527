@@ -60,7 +60,7 @@ namespace Municiple_Project_st10259527.Services
                     .ThenBy(x => x.Value.Event.Date)
                     .Select(x => x.Value.Event)
                     .Take(MaxRecommendations)
-                    .Reverse() // so highest score is on top of stack
+                    .Reverse()
             );
 
             return sortedStack;

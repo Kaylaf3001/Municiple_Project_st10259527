@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Repository;
 using Municiple_Project_st10259527.ViewModels;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Municiple_Project_st10259527.Controllers
 {
@@ -117,7 +119,7 @@ namespace Municiple_Project_st10259527.Controllers
                 // Get report counts
                 viewModel.TotalReports = _reportRepository.GetReportsCountByUserId(userId.Value);
                 recentUserReports = _reportRepository.GetReportsByUserId(userId.Value, 5);
-                viewModel.RecentReports = recentUserReports.ToList();
+                viewModel.RecentReports = recentUserReports;
 
                 // Get event information
                 var upcomingEventsQueue = await _eventsRepository.GetUpcomingEventsQueueAsync();
@@ -134,7 +136,7 @@ namespace Municiple_Project_st10259527.Controllers
                 Console.WriteLine($"Error in User/UserDashBoard: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
 
-                viewModel.RecentReports = new List<ReportModel>();
+                viewModel.RecentReports = Enumerable.Empty<ReportModel>();
             }
 
             return View(viewModel);
