@@ -11,7 +11,7 @@ using Municiple_Project_st10259527.Services;
 namespace Municiple_Project_st10259527.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251014120440_InitialCreate")]
+    [Migration("20251015093942_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
