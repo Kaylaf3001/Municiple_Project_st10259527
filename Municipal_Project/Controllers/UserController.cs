@@ -126,9 +126,6 @@ namespace Municiple_Project_st10259527.Controllers
                 viewModel.NextUpcomingEvent = await _eventsRepository.GetNextUpcomingEventAsync();
                 viewModel.QueueCount = upcomingEventsQueue.Count;
 
-                // Add total events count
-                viewModel.TotalEvents = _eventsRepository.GetEventsCount();
-
             }
             catch (Exception ex)
             {
