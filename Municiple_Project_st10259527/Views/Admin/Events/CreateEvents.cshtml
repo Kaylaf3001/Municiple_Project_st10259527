@@ -2,7 +2,52 @@
     ViewData["Title"] = "Create Event";
     Layout = "_AdminLayout";
 }
+<style>
+    .input-group {
+        position: relative;
+        max-width: 100%;
+    }
 
+    #locationInput {
+        border-top-right-radius: 0.25rem !important;
+        border-bottom-right-radius: 0.25rem !important;
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border-left: none;
+        padding: 0.375rem 0.75rem;
+    }
+
+
+    datalist {
+        position: absolute;
+        max-height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        background: white;
+        z-index: 1000;
+        width: 100%;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+
+        datalist option {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+            datalist option:hover {
+                background-color: #f8f9fa;
+            }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875em;
+        margin-top: 0.25rem;
+    }
+</style>
 <h2>Create Event</h2>
 
 <form asp-controller="Admin" asp-action="AddEvent" method="post">
@@ -12,8 +57,27 @@
         <input type="text" class="form-control" name="Title" required>
     </div>
     <div class="mb-3">
-        <label class="form-label">Location</label>
-        <input type="text" class="form-control" name="Location" required>
+        <label for="locationInput" class="form-label">Location</label>
+        <div class="input-group">
+            <input type="text"
+                   id="locationInput"
+                   class="form-control"
+                   name="Location"
+                   placeholder="Start typing to see location suggestions..."
+                   list="locationOptions"
+                   autocomplete="off"
+                   required />
+            <span class="input-group-text">
+                <i class="bi bi-geo-alt-fill"></i>
+            </span>
+        </div>
+        <datalist id="locationOptions" class="location-datalist">
+            @foreach (var loc in ViewBag.WesternCapeLocations)
+            {
+                <option value="@loc"></option>
+            }
+        </datalist>
+        <div class="form-text">Select a location from the dropdown or type to filter</div>
     </div>
     <div class="mb-3">
         <label class="form-label">Date & Time</label>

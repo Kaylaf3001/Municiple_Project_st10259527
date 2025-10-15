@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Repository;
+using Municiple_Project_st10259527.Services;
 using Municiple_Project_st10259527.ViewModels;
 using System;
 using System.Linq;
@@ -245,6 +246,7 @@ namespace Municiple_Project_st10259527.Controllers
         //===============================================================================================
         public IActionResult CreateEvent()
         {
+            ViewBag.WesternCapeLocations = LocationService.WesternCapeLocations.Values.ToList();
             return View("Events/CreateEvents");
         }
         //===============================================================================================
@@ -370,6 +372,7 @@ namespace Municiple_Project_st10259527.Controllers
         //==============================================================================================
         public IActionResult CreateAnnouncement()
         {
+            ViewBag.WesternCapeLocations = LocationService.WesternCapeLocations.Values.ToList();
             return View("Announcements/CreateAnnouncements");
         }
         //==============================================================================================
