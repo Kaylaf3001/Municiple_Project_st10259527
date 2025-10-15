@@ -50,27 +50,17 @@ A comprehensive web application for managing municipal reports with user and adm
 - **Client-side Scripting**: JavaScript, jQuery
 
 ## Data Structure
-
-| Data Structure | Usage Description |
-|----------------|-------------------|
-| **Dictionary<TKey, TValue>** | Stores and retrieves reports, events, and announcements by ID or category for O(1) access. |
-| **HashSet<T>** | Maintains unique event IDs, categories, and search keywords to avoid duplicates. |
-| **Queue<T>** | Groups upcoming events by date in chronological order for dashboard display. |
-| **Stack<T>** | Tracks recently viewed events in LIFO order for the “Recently Viewed” section. |
-| **IQueryable<T>** | Used in filtering and LINQ queries for efficient, database-backed search operations. |
-| **IEnumerable<T>** | Supports enumeration for recommendations, filtered lists, and dashboard outputs. |
-| **SortedDictionary<TKey, TValue>** | Used in `RecommendationService` to rank recommended events by score and date. |
-
 ---
 
 ### HashSet
 <img width="1004" height="534" alt="image" src="https://github.com/user-attachments/assets/e2e4a359-c5a1-49d5-ae7d-b576d2dca8ea" />
+<img width="771" height="604" alt="image" src="https://github.com/user-attachments/assets/0d3f0045-bea3-4325-b637-95b10b9cd0b4" />
 
 ### Dictionary
 <img width="1035" height="541" alt="image" src="https://github.com/user-attachments/assets/f4f4308b-06ab-4e73-8af8-a7bba128502f" />
 
 ### Database
-<img width="1139" height="1159" alt="image" src="https://github.com/user-attachments/assets/a63c8333-99f2-4ae6-9228-9ecee2769efc" />
+<img width="1262" height="1224" alt="image" src="https://github.com/user-attachments/assets/4707624b-13d9-4f88-95d7-58f9903fc10e" />
 
 ### IQueryable
 <img width="923" height="836" alt="image" src="https://github.com/user-attachments/assets/13080132-2050-4b36-93a0-8d47dfbe4f94" />
@@ -101,6 +91,34 @@ Key functionalities:
   - Search term  
 - Retrieve announcements by date  
 - Retrieve available event categories  
+
+### Recommendation Service
+The RecommendationService class implements a stack- and queue-based recommendation algorithm that dynamically suggests upcoming municipal events to users based on their recent search history.
+
+## How It Works
+1. **Search History Stack:**
+- The algorithm retrieves the user's latest searches from the database and stores them in a Stack<UserSearchHistory>.
+- The stack ensures the most recent searches are processed first, reflecting current user interests.
+
+2. **Upcoming Events Queue:**
+- Upcoming events are retrieved from the repository as a Queue<EventModel>.
+- This queue represents events in chronological order.
+
+3. **Scoring and Matching:**
+- Each event is scored against search terms and categories from the user’s history.
+- Matches increase an event’s score depending on relevance (e.g., category match = higher score).
+
+4. **Dictionary for Event Ranking:**
+- A Dictionary<int, (EventModel Event, int Score)> stores each event with its cumulative score.
+- The dictionary allows constant-time lookups and efficient score updates.
+
+5. **Final Recommendation Stack:**
+- Events are sorted by score and date, then pushed into a Stack<EventModel>.
+- This stack represents the final set of top recommended events (limited to 5).
+
+**Display:** 
+<img width="1265" height="309" alt="image" src="https://github.com/user-attachments/assets/533ba3ff-7e27-403a-822c-53869a5dc66f" />
+
 
 ## Installation
 
