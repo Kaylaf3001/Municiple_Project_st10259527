@@ -121,11 +121,16 @@
     }
 </style>
 <div class="container page-container">
-    <div class="header-row">
-        <h2 class="welcome-text m-0">Service Request Status</h2>
-        <a class="btn btn-primary d-flex align-items-center" href="@Url.Action("Create","ServiceRequest")">
-            <i class="bi bi-plus me-1"></i> New Request
-        </a>
+    <div class="header-row pt-4">
+        <div class="d-flex flex-column">
+            <h2 class="welcome-text m-0">Service Request Status</h2>
+            <p class="text-muted mb-0" style="font-size: 0.95rem;">Track and manage your service requests</p>
+        </div>
+        <div>
+            <a class="btn btn-primary d-flex align-items-center" href="@Url.Action("Create","ServiceRequest")">
+                <i class="bi bi-plus-lg me-1"></i> New Request
+            </a>
+        </div>
     </div>
 
     <div class="row g-4">

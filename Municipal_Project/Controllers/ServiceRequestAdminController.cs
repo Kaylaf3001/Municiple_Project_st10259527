@@ -22,7 +22,7 @@ namespace Municiple_Project_st10259527.Controllers
         public async Task<IActionResult> ManageServiceRequest()
         {
             var indexes = await _statusService.BuildGlobalIndexesAsync();
-            return View("ManageServiceRequest");
+            return View("ManageServiceRequest", indexes);
         }
 
         [HttpPost]
@@ -30,7 +30,7 @@ namespace Municiple_Project_st10259527.Controllers
         public async Task<IActionResult> Update(int id, ServiceRequestStatus status)
         {
             await _repo.UpdateStatusAsync(id, status);
-            return RedirectToAction("Index");
+            return RedirectToAction("ManageServiceRequest");
         }
     }
 }
