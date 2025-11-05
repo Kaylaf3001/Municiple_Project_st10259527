@@ -298,6 +298,15 @@
                     <span class="menu-text">Manage Announcements</span>
                 </a>
             </li>
+            
+            <li class="menu-header">Service Requests</li>
+            <li class="menu-item">
+                <a class="menu-link @(ViewContext.RouteData.Values["Controller"].ToString() == "ServiceRequestAdmin" ? "active" : "")"
+                   asp-controller="ServiceRequestAdmin" asp-action="ManageServiceRequest">
+                    <i class="bi bi-wrench-adjustable-circle menu-icon"></i>
+                    <span class="menu-text">Manage Service Requests</span>
+                </a>
+            </li>
 
             <!-- other report items ... -->
             <li class="menu-header">Management</li>

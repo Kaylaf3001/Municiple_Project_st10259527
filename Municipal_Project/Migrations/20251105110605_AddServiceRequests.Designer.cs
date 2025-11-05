@@ -8,11 +8,11 @@ using Municiple_Project_st10259527.Services;
 
 #nullable disable
 
-namespace Municiple_Project_st10259527.Migrations
+namespace Municipal_Project.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251015093942_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251105110605_AddServiceRequests")]
+    partial class AddServiceRequests
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -149,6 +149,44 @@ namespace Municiple_Project_st10259527.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reports");
+                });
+
+            modelBuilder.Entity("Municiple_Project_st10259527.Models.ServiceRequestModel", b =>
+                {
+                    b.Property<int>("RequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Priority")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TrackingCode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("RequestId");
+
+                    b.HasIndex("TrackingCode")
+                        .IsUnique();
+
+                    b.ToTable("ServiceRequests");
                 });
 
             modelBuilder.Entity("Municiple_Project_st10259527.Models.UserModel", b =>

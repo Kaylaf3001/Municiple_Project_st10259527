@@ -207,11 +207,13 @@
                 </a>
             </div>
             <div class="col-md-4">
-                <div class="action-card" style="cursor:pointer;" onclick="alert('Work in progress')">
-                    <i class="bi bi-gear"></i>
-                    <h6>Request a Service</h6>
-                    <p>Submit a service request online</p>
-                </div>
+                <a href="@Url.Action("Status", "ServiceRequest")" style="text-decoration: none; color: inherit;">
+                    <div class="action-card">
+                        <i class="bi bi-gear"></i>
+                        <h6>Request a Service</h6>
+                        <p>Submit a service request online</p>
+                    </div>
+                </a>
             </div>
         </div>
 

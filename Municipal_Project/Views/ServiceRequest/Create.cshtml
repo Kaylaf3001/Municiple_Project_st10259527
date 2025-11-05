@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "New Service Request";
+}
+<style>
+    .card { border:1px solid #e2e8f0; border-radius:12px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.04); }
+    .card-header { background:#0d2b52; color:#fff; padding:16px 20px; border-top-left-radius:12px; border-top-right-radius:12px; }
+    .card-body { padding:24px; }
+    .form-label { font-weight:600; }
+</style>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="m-0">Request a Service</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-action="Create" asp-controller="ServiceRequest">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input name="title" class="form-control" placeholder="e.g. Pothole repair on Main Street" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" rows="4" class="form-control" placeholder="Add helpful details for the team..."></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Priority</label>
+                            <select name="priority" class="form-select">
+                                <option value="1">High</option>
+                                <option value="2">Medium</option>
+                                <option value="3">Low</option>
+                            </select>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest")">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Submit Request</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

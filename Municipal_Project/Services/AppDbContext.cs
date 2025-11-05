@@ -17,6 +17,7 @@ namespace Municiple_Project_st10259527.Services
         public DbSet<EventModel> Events { get; set; }
         public DbSet<AnnouncementModel> Announcements { get; set; }
         public DbSet<UserSearchHistory> UserSearchHistory { get; set; }
+        public DbSet<ServiceRequestModel> ServiceRequests { get; set; }
         //===================================================================================
 
         //===================================================================================
@@ -53,6 +54,15 @@ namespace Municiple_Project_st10259527.Services
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // ServiceRequests configuration
+            modelBuilder.Entity<ServiceRequestModel>()
+                .Property(s => s.Status)
+                .HasConversion<int>();
+
+            modelBuilder.Entity<ServiceRequestModel>()
+                .HasIndex(s => s.TrackingCode)
+                .IsUnique();
+
             modelBuilder.Entity<UserModel>().HasData(
                 new UserModel
                 {
@@ -69,3 +79,4 @@ namespace Municiple_Project_st10259527.Services
     }
 }
 //====================================End=of=File=============================================
+

@@ -24,6 +24,8 @@ builder.Services.AddScoped<IEventsRepository, EventsRepository>();
 builder.Services.AddScoped<IUserSearchHistoryRepository, UserSearchHistoryRepository>();
 builder.Services.AddScoped<RecommendationService>();
 builder.Services.AddScoped<EventManagementService>();
+builder.Services.AddScoped<IServiceRequestRepository, ServiceRequestEfRepository>();
+builder.Services.AddScoped<ServiceRequestStatusService>();
 
 builder.Services.AddSession(options =>
 {

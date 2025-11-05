@@ -1,0 +1,253 @@
+@model Municiple_Project_st10259527.ViewModels.ServiceRequestStatusViewModel
+@{
+    ViewData["Title"] = "Service Request Status";
+    Layout = "_Layout";
+}
+
+<style>
+    .page-container {
+        min-height: calc(100vh - 200px);
+        padding-bottom: 2rem;
+    }
+    
+    .action-card { 
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        background: #fff;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        height: 100%;
+    }
+    
+    .action-card:hover { 
+        transform: translateY(-3px); 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    .recent-activity { 
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+    }
+    
+    .table {
+        margin-bottom: 0;
+        width: 100%;
+    }
+    
+    .table th {
+        background-color: #0d2b52;
+        color: #fff;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        text-align: left;
+    }
+    
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: #edf2f7;
+        word-break: break-word;
+    }
+    
+    .table tbody tr {
+        transition: background-color 0.2s;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+    
+    .badge { 
+        padding: 0.5em 0.8em; 
+        font-size: 0.85rem; 
+        font-weight: 600;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 100px;
+    }
+    
+    .header-row { 
+        display: flex; 
+        align-items: center; 
+        justify-content: space-between; 
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .welcome-text {
+        color: #0d2b52;
+        font-weight: 600;
+    }
+    
+    .tracking-form {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .tracking-form .form-control {
+        min-width: 200px;
+    }
+    
+    @@media (max-width: 768px) {
+        .header-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .tracking-form {
+            flex-direction: column;
+            width: 100%;
+        }
+        
+        .tracking-form .btn {
+            width: 100%;
+        }
+    }
+</style>
+<div class="container page-container">
+    <div class="header-row">
+        <h2 class="welcome-text m-0">Service Request Status</h2>
+        <a class="btn btn-primary d-flex align-items-center" href="@Url.Action("Create","ServiceRequest")">
+            <i class="bi bi-plus me-1"></i> New Request
+        </a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="recent-activity">
+                <h3 class="mb-4">Your Requests</h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width: 180px;">Tracking Code</th>
+                                <th>Title</th>
+                                <th style="width: 150px;">Status</th>
+                                <th style="width: 100px;">Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model?.RequestsTree?.Root == null)
+                            {
+                                <tr><td colspan="4" class="text-center py-4">No service requests found.</td></tr>
+                            }
+                            else
+                            {
+                                RenderNode(Model.RequestsTree.Root);
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="d-flex flex-column gap-3">
+                <div class="action-card">
+                    <h5 class="mb-3">Track Another Request</h5>
+                    <form method="post" asp-action="Track" asp-controller="ServiceRequest" class="tracking-form">
+                        <input name="trackingCode" class="form-control" placeholder="Enter tracking code" required />
+                        <button class="btn btn-primary d-flex align-items-center justify-content-center" type="submit">
+                            <i class="bi bi-search me-1"></i> Track
+                        </button>
+                    </form>
+                    @if (TempData["TrackResult"] != null)
+                    {
+                        <div class="alert alert-info mt-3 mb-0">
+                            <i class="bi bi-info-circle me-2"></i>@TempData["TrackResult"]
+                        </div>
+                    }
+                </div>
+                
+                <div class="action-card">
+                    <h5 class="mb-3">Next by Priority</h5>
+                    @if (Model?.PriorityHeap == null || Model.PriorityHeap.Count == 0)
+                    {
+                        <div class="text-center py-3">
+                            <i class="bi bi-inbox" style="font-size: 2rem; color: #6c757d;"></i>
+                            <p class="mt-2 mb-0 text-muted">No pending requests</p>
+                        </div>
+                    }
+                    else
+                    {
+                        var top = Model.PriorityHeap.Peek();
+                        if (top.Item2 == null)
+                        {
+                            <div class="text-center py-3">
+                                <i class="bi bi-inbox" style="font-size: 2rem; color: #6c757d;"></i>
+                                <p class="mt-2 mb-0 text-muted">No pending requests</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0 me-3">
+                                    <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                        <i class="bi bi-flag text-primary"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">@top.Item2.Title</h6>
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge @GetStatusBadgeClass(top.Item2.Status)" style="min-width: auto;">
+                                            @top.Item2.Status
+                                        </span>
+                                        <span class="ms-2 text-muted small">Priority: @top.Item1</span>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+        </div>
+    </div>
+</div>
+
+@functions{
+    private void RenderNode(Municiple_Project_st10259527.Services.DataStructures.TreeNode<Municiple_Project_st10259527.Models.ServiceRequestModel> node)
+    {
+        if (node == null) return;
+        var r = node.Value;
+        <tr>
+            <td>@r.TrackingCode</td>
+            <td>@r.Title</td>
+            <td>
+                <span class="badge @GetStatusBadgeClass(r.Status)">@r.Status</span>
+            </td>
+            <td>@r.Priority</td>
+        </tr>
+        var child = node.FirstChild;
+        while (child != null)
+        {
+            RenderNode(child);
+            child = child.NextSibling;
+        }
+    }
+
+    private string GetStatusBadgeClass(Municiple_Project_st10259527.Models.ServiceRequestStatus status)
+    {
+        switch (status)
+        {
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Submitted: return "bg-warning text-dark";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.InProgress: return "bg-info text-dark";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.OnHold: return "bg-secondary";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed: return "bg-success";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Cancelled: return "bg-danger";
+            default: return "bg-secondary";
+        }
+    }
+}

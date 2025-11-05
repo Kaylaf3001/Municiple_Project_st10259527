@@ -1,0 +1,228 @@
+@model (Municiple_Project_st10259527.Services.DataStructures.BasicTree<Municiple_Project_st10259527.Models.ServiceRequestModel> Tree, Municiple_Project_st10259527.Services.DataStructures.MinHeap<int, Municiple_Project_st10259527.Models.ServiceRequestModel> Heap)
+@{
+    ViewData["Title"] = "Manage Service Requests";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .page-container {
+        min-height: calc(100vh - 200px);
+        padding-bottom: 2rem;
+    }
+    
+    .card { 
+        border: 1px solid #e2e8f0; 
+        border-radius: 12px; 
+        background: #fff; 
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
+    }
+    
+    .card-header { 
+        background: #0d2b52; 
+        color: #fff; 
+        padding: 1rem 1.5rem; 
+        border-top-left-radius: 12px; 
+        border-top-right-radius: 12px; 
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .card-body { 
+        padding: 1.5rem; 
+    }
+    
+    .badge { 
+        padding: 0.5em 0.8em; 
+        font-size: 0.85rem; 
+        font-weight: 600;
+        border-radius: 4px;
+    }
+    
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+    }
+    
+    .table {
+        margin-bottom: 0;
+    }
+    
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+    
+    .table td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: #edf2f7;
+    }
+    
+    .table tbody tr {
+        transition: background-color 0.2s;
+    }
+    
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+    
+    .form-select {
+        min-width: 150px;
+    }
+    
+    .action-form {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    @@media (max-width: 768px) {
+        .action-form {
+            flex-direction: column;
+        }
+        
+        .action-form .btn {
+            width: 100%;
+        }
+    }
+</style>
+<div class="container page-container">
+    <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
+        <div class="d-flex flex-column">
+            <a href="@Url.Action("Dashboard","Admin")" class="text-decoration-none text-muted mb-2 d-flex align-items-center" style="font-size: 0.9rem;">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
+            <h2 class="m-0">Service Requests</h2>
+            <p class="text-muted mb-0" style="font-size: 0.95rem;">Manage and track service requests</p>
+        </div>
+        <a class="btn btn-primary" href="@Url.Action("Create","ServiceRequest")" style="height: fit-content;">
+            <i class="bi bi-plus-lg me-1"></i> Create New Request
+        </a>
+    </div>
+    <div class="card mb-4">
+        <div class="card-header">All Requests</div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tracking</th>
+                            <th>Title</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Tree?.Root == null)
+                        {
+                            <tr><td colspan="7" class="text-center">No service requests.</td></tr>
+                        }
+                        else
+                        {
+                            await RenderNode(Model.Tree.Root); 
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions{
+    private string Badge(Municiple_Project_st10259527.Models.ServiceRequestStatus status)
+    {
+        switch (status)
+        {
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Submitted: return "bg-warning text-dark";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.InProgress: return "bg-info text-dark";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.OnHold: return "bg-secondary";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed: return "bg-success";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Cancelled: return "bg-danger";
+            default: return "bg-secondary";
+        }
+    }
+
+    private async Task RenderNode(Municiple_Project_st10259527.Services.DataStructures.TreeNode<Municiple_Project_st10259527.Models.ServiceRequestModel> node)
+    {
+        if (node == null) return;
+        var r = node.Value;
+        <tr>
+            <td>@r.RequestId</td>
+            <td>@r.TrackingCode</td>
+            <td>@r.Title</td>
+            <td>@r.UserId</td>
+            <td><span class="badge @Badge(r.Status)">@r.Status</span></td>
+            <td>@r.Priority</td>
+            <td>
+                <form method="post" asp-action="Update" asp-controller="ServiceRequestAdmin" class="action-form">
+                    <input type="hidden" name="id" value="@r.RequestId" />
+                    <select name="status" class="form-select form-select-sm">
+                        @if (r.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.Submitted)
+                        {
+                            <option value="Submitted" selected>Submitted</option>
+                        }
+                        else
+                        {
+                            <option value="Submitted">Submitted</option>
+                        }
+
+                        @if (r.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.InProgress)
+                        {
+                            <option value="InProgress" selected>In Progress</option>
+                        }
+                        else
+                        {
+                            <option value="InProgress">In Progress</option>
+                        }
+
+                        @if (r.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.OnHold)
+                        {
+                            <option value="OnHold" selected>On Hold</option>
+                        }
+                        else
+                        {
+                            <option value="OnHold">On Hold</option>
+                        }
+
+                        @if (r.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed)
+                        {
+                            <option value="Completed" selected>Completed</option>
+                        }
+                        else
+                        {
+                            <option value="Completed">Completed</option>
+                        }
+
+                        @if (r.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.Cancelled)
+                        {
+                            <option value="Cancelled" selected>Cancelled</option>
+                        }
+                        else
+                        {
+                            <option value="Cancelled">Cancelled</option>
+                        }
+                    </select>
+                    <button class="btn btn-sm btn-primary d-flex align-items-center" type="submit">
+                        <i class="bi bi-save me-1"></i> Save
+                    </button>
+                </form>
+            </td>
+        </tr>
+        var child = node.FirstChild;
+        while (child != null)
+        {
+            await RenderNode(child);
+            child = child.NextSibling;
+        }
+    }
+}
