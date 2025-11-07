@@ -94,7 +94,7 @@ namespace Municiple_Project_st10259527.Controllers
             TempData["SignUpSuccess"] = "User registered successfully!";
             return RedirectToAction("Login", "User"); // Redirect to login page after successful signup
         }
-        // ==============================================================================================
+        //==============================================================================================
 
         //==============================================================================================
         // User Dashboard

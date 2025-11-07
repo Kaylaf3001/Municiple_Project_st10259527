@@ -11,20 +11,35 @@ namespace Municiple_Project_st10259527.Controllers
     [CheckAdmin]
     public class ServiceRequestAdminController : Controller
     {
+
+        //==============================================================================================
+        // Dependency Injection
+        //==============================================================================================
+        #region
         private readonly IServiceRequestRepository _repo;
         private readonly ServiceRequestStatusService _statusService;
+
         public ServiceRequestAdminController(IServiceRequestRepository repo, ServiceRequestStatusService statusService)
         {
             _repo = repo;
             _statusService = statusService;
         }
+        #endregion
+        //==============================================================================================
 
+        //==============================================================================================
+        // Manage Service Request
+        //==============================================================================================
         public async Task<IActionResult> ManageServiceRequest()
         {
             var indexes = await _statusService.BuildGlobalIndexesAsync();
             return View("ManageServiceRequest", indexes);
         }
+        //==============================================================================================
 
+        //==============================================================================================
+        // Update Service Request Status
+        //==============================================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id, ServiceRequestStatus status)
@@ -32,6 +47,8 @@ namespace Municiple_Project_st10259527.Controllers
             await _repo.UpdateStatusAsync(id, status);
             return RedirectToAction("ManageServiceRequest");
         }
+        //==============================================================================================
     }
 }
+//====================================End=Of=File========================================================
 
