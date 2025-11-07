@@ -4,6 +4,9 @@ using Municiple_Project_st10259527.Models;
 
 namespace Municiple_Project_st10259527.Repository
 {
+    //=================================================================
+    // Service Request Repository Interface
+    //=================================================================
     public interface IServiceRequestRepository
     {
         Task<ServiceRequestModel> AddAsync(ServiceRequestModel request);
@@ -14,4 +17,6 @@ namespace Municiple_Project_st10259527.Repository
         IAsyncEnumerable<ServiceRequestModel> GetByStatusAsync(ServiceRequestStatus status);
         Task UpdateStatusAsync(int id, ServiceRequestStatus status);
     }
+    //=================================================================
 }
+//==================================End=Of=File==========================================================
