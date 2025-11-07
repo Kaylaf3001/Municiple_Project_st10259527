@@ -1,4 +1,5 @@
 @model Municiple_Project_st10259527.ViewModels.ServiceRequestStatusViewModel
+@using System.Linq
 @{
     ViewData["Title"] = "Service Request Status";
     Layout = "_Layout";
@@ -171,11 +172,33 @@
                             <i class="bi bi-search me-1"></i> Track
                         </button>
                     </form>
-                    @if (TempData["TrackResult"] != null)
+                    @if (TempData["TrackFound"] != null)
                     {
-                        <div class="alert alert-info mt-3 mb-0">
-                            <i class="bi bi-info-circle me-2"></i>@TempData["TrackResult"]
-                        </div>
+                        var found = (bool)TempData["TrackFound"];
+                        if (!found)
+                        {
+                            <div class="alert alert-warning mt-3 mb-0">
+                                <i class="bi bi-exclamation-triangle me-2"></i>@(TempData["TrackMessage"] as string)
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card mt-3">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <div>
+                                            <div class="fw-semibold">@TempData["TrackTitle"]</div>
+                                            <div class="small text-muted">ID: @TempData["TrackId"] • Submitted: @TempData["TrackSubmittedAt"]</div>
+                                        </div>
+                                        <span class="badge @GetStatusBadgeClass(Enum.Parse<Municiple_Project_st10259527.Models.ServiceRequestStatus>(TempData["TrackStatus"].ToString()))">@TempData["TrackStatus"]</span>
+                                    </div>
+                                    <div class="mt-2">
+                                        <div class="small text-muted">Tracking Code: @TempData["TrackCode"]</div>
+                                        <div class="small text-muted mt-1">Priority: @TempData["TrackPriority"]</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     }
                 </div>
                 
@@ -218,6 +241,9 @@
                             </div>
                         }
                     }
+                </div>
+
+                
         </div>
     </div>
 </div>
@@ -228,7 +254,12 @@
         if (node == null) return;
         var r = node.Value;
         <tr>
-            <td>@r.TrackingCode</td>
+            <td>
+                <div class="input-group input-group-sm">
+                    <input class="form-control" value="@r.TrackingCode" readonly id="code-@r.RequestId" />
+                    <button class="btn btn-outline-secondary" type="button" onclick="copyCode('code-@r.RequestId')">Copy</button>
+                </div>
+            </td>
             <td>@r.Title</td>
             <td>
                 <span class="badge @GetStatusBadgeClass(r.Status)">@r.Status</span>
@@ -255,4 +286,15 @@
             default: return "bg-secondary";
         }
     }
+
 }
+
+<script>
+    function copyCode(id) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.select();
+        el.setSelectionRange(0, 99999);
+        try { document.execCommand('copy'); } catch (e) { navigator.clipboard && navigator.clipboard.writeText(el.value); }
+    }
+</script>

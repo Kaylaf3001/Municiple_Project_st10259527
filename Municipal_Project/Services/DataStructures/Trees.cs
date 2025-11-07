@@ -21,6 +21,15 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     // I implements IEnumerable<T> for easy traversal
     // This method is used to manage hierarchical relationships between service requests
     //===============================================================================
+    /// <summary>
+    /// Basic general tree using first-child/next-sibling representation.
+    /// </summary>
+    /// <remarks>
+    /// Operations:
+    /// - SetRoot: O(1)
+    /// - AddChild: O(k) where k is number of existing children (to append at end)
+    /// - Traversal (pre-order): O(n)
+    /// </remarks>
     public class BasicTree<T> : IEnumerable<T>
     {
         // setting root
@@ -74,6 +83,9 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Binary Search Tree, AVL Tree, Red-Black Tree, Min-Heap, Graph
     //===============================================================================
+    /// <summary>
+    /// Binary node used by BinarySearchTree/AVL/Red-Black trees.
+    /// </summary>
     public class BinaryNode<T>
     {
         public T Value;
@@ -88,12 +100,18 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Ikey is used to comapare keys in the tree
     //===============================================================================
+    /// <summary>
+    /// Abstraction for comparing keys.
+    /// </summary>
     public interface IKey<TK> { int Compare(TK a, TK b); }
     //===============================================================================
 
     //===============================================================================
     // ComparableKey uses IComparable to compare keys
     //===============================================================================
+    /// <summary>
+    /// Default comparer using IComparable.
+    /// </summary>
     public class ComparableKey<TK> : IKey<TK> where TK : IComparable<TK>
     {
         // compare two keys
@@ -104,6 +122,12 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Binary Search Tree
     //===============================================================================
+    /// <summary>
+    /// Unbalanced Binary Search Tree.
+    /// </summary>
+    /// <remarks>
+    /// Average-case operations: Insert/Find O(log n). Worst-case O(n).
+    /// </remarks>
     public class BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         // Creating a new ComparableKey instance to compare keys
@@ -113,9 +137,15 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         protected BinaryNode<(TK Key, TV Val)> Root;
 
         // Insert key-value pair into the tree
+        /// <summary>
+        /// Insert key/value. Amortized O(log n), worst O(n).
+        /// </summary>
         public virtual void Insert(TK key, TV val) { Root = Insert(Root, key, val); }
 
         // Find value by key in the tree
+        /// <summary>
+        /// Find value by key. Amortized O(log n), worst O(n).
+        /// </summary>
         public virtual TV Find(TK key)
         {
             // Start from the root node
@@ -148,6 +178,12 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // AVL Tree
     //===============================================================================
+    /// <summary>
+    /// AVL Tree: self-balancing BST.
+    /// </summary>
+    /// <remarks>
+    /// Operations Insert/Find O(log n).
+    /// </remarks>
     public class AvlTree<TK, TV> : BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         // Height of a node
@@ -185,6 +221,12 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Red-Black Tree
     //===============================================================================
+    /// <summary>
+    /// Left-leaning Red-Black Tree variant.
+    /// </summary>
+    /// <remarks>
+    /// Operations Insert/Find O(log n).
+    /// </remarks>
     public class RedBlackTree<TK, TV> : BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         // Check if a node is red
@@ -229,6 +271,12 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Min-Heap
     //===============================================================================
+    /// <summary>
+    /// Min-Heap based on binary tree stored with explicit node links.
+    /// </summary>
+    /// <remarks>
+    /// Insert O(log n), Peek O(1), InOrder traversal O(n) (not heap-ordered sequence).
+    /// </remarks>
     public class MinHeap<TK, TV> where TK : IComparable<TK>
     {
         // Heap Node
@@ -286,6 +334,15 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Graph
     //===============================================================================
+    /// <summary>
+    /// Adjacency list graph with lightweight node and edge structures.
+    /// </summary>
+    /// <remarks>
+    /// - AddNode O(1)
+    /// - AddUndirectedEdge O(1)
+    /// - DFS/BFS O(V+E)
+    /// - PrimMst O(V * E) in this simple implementation
+    /// </remarks>
     public class Graph<T>
     {
         // Edge class representing a connection between nodes
@@ -325,11 +382,34 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             }
         }
 
+        // Breadth-First Search (BFS) traversal of the graph
+        public IEnumerable<T> Bfs(GraphNode start)
+        {
+            var visited = new HashSet<GraphNode>(); var q = new Queue<GraphNode>(); q.Enqueue(start);
+            while (q.Count > 0)
+            {
+                var n = q.Dequeue(); if (!visited.Add(n)) continue; yield return n.Val;
+                var e = n.First; while (e != null) { q.Enqueue(e.To); e = e.Next; }
+            }
+        }
+
+        // Enumerate all nodes for visualization
+        public IEnumerable<GraphNode> Nodes()
+        {
+            var n = head; while (n != null) { yield return n; n = n.Next; }
+        }
+
+        // Enumerate all edges (directed listing of undirected edges)
+        public IEnumerable<(GraphNode From, GraphNode To, int W)> Edges()
+        {
+            var n = head; while (n != null) { var e = n.First; while (e != null) { yield return (n, e.To, e.W); e = e.Next; } n = n.Next; }
+        }
+
         // Prim's Minimum Spanning Tree (MST) algorithm
         public IEnumerable<(GraphNode, GraphNode, int)> PrimMst()
         {
             // initialize
-            var resultHead = (GraphNode)null; var visited = new HashSet<GraphNode>();
+            var visited = new HashSet<GraphNode>();
             var p = head; if (p == null) yield break; visited.Add(p);
 
             // In this loop we repeatedly find the minimum weight edge that connects a visited node to an unvisited node

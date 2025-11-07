@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "Track Service Request";
+    Layout = "_Layout";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="m-0">Track Your Service Request</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Lookup" asp-controller="PublicTracking" method="post" class="row g-2">
+                        <div class="col-md-9">
+                            <input name="trackingCode" class="form-control" placeholder="Enter tracking code" value="@((TempData["Code"] ?? ViewData["Code"]) as string)" required />
+                        </div>
+                        <div class="col-md-3 d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search me-1"></i> Search
+                            </button>
+                        </div>
+                        @Html.AntiForgeryToken()
+                    </form>
+
+                    @if (TempData["TrackResult"] != null)
+                    {
+                        <div class="alert alert-info mt-3 mb-0">
+                            <i class="bi bi-info-circle me-2"></i>@TempData["TrackResult"]
+                        </div>
+                    }
+
+                    <div class="mt-3 text-muted small">
+                        Tip: You can find your tracking code on the confirmation screen after submitting a request.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

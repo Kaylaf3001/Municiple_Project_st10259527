@@ -106,8 +106,22 @@ namespace Municiple_Project_st10259527.Controllers
             // Track Request
             var req = await _statusService.TrackByCodeAsync(trackingCode.Trim());
 
-            // Store Result in TempData for Display
-            TempData["TrackResult"] = req == null ? "Not found" : $"{req.Title} - {req.Status} (ID: {req.RequestId})";
+            // Store Result in TempData for Display (detailed)
+            if (req == null)
+            {
+                TempData["TrackFound"] = false;
+                TempData["TrackMessage"] = "Not found";
+            }
+            else
+            {
+                TempData["TrackFound"] = true;
+                TempData["TrackId"] = req.RequestId;
+                TempData["TrackTitle"] = req.Title;
+                TempData["TrackStatus"] = req.Status.ToString();
+                TempData["TrackPriority"] = req.Priority;
+                TempData["TrackCode"] = req.TrackingCode;
+                TempData["TrackSubmittedAt"] = req.SubmittedAt.ToString("u");
+            }
 
             return RedirectToAction("Status");
         }
