@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Municiple_Project_st10259527.Models
 {
+    //==============================================================================================
+    // Service Request Model
+    //==============================================================================================
     public enum ServiceRequestStatus
     {
         Submitted,
@@ -11,7 +14,11 @@ namespace Municiple_Project_st10259527.Models
         Completed,
         Cancelled
     }
+    //==============================================================================================
 
+    //==============================================================================================
+    // Service Request Model Definition
+    //==============================================================================================
     public class ServiceRequestModel
     {
         [Key]
@@ -32,4 +39,6 @@ namespace Municiple_Project_st10259527.Models
         
         public string TrackingCode { get; set; } = Guid.NewGuid().ToString("N").ToUpperInvariant();
     }
+    //==============================================================================================
 }
+//==================================End=Of=File==========================================================
