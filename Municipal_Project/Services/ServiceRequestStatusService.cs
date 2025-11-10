@@ -52,7 +52,11 @@ namespace Municiple_Project_st10259527.Services
         //====================================================================
         // Building Global Indexes
         //====================================================================
-        public async Task<(BasicTree<ServiceRequestModel> Tree, MinHeap<int, ServiceRequestModel> Heap, Graph<ServiceRequestModel> Graph)> BuildGlobalIndexesAsync()
+        public async Task<(BasicTree<ServiceRequestModel> Tree, MinHeap<int, ServiceRequestModel> Heap, Graph<ServiceRequestModel> Graph)> BuildGlobalIndexesAsync(
+            string statusFilter = null,
+            string categoryFilter = null,
+            int? priorityFilter = null,
+            string locationFilter = null)
         {
             // Calling the data structures from the Services/DataStructures folder
             var tree = new BasicTree<ServiceRequestModel>();
@@ -64,6 +68,28 @@ namespace Municiple_Project_st10259527.Services
             // await for each service request
             await foreach (var r in _repo.GetAllAsync())
             {
+                // Apply filters
+                if (!string.IsNullOrWhiteSpace(statusFilter))
+                {
+                    var sf = statusFilter.Trim();
+                    // Compare by enum name
+                    if (!string.Equals(r.Status.ToString(), sf, StringComparison.OrdinalIgnoreCase)) continue;
+                }
+                if (!string.IsNullOrWhiteSpace(categoryFilter))
+                {
+                    var cf = categoryFilter.Trim();
+                    if (!string.Equals(r.Category ?? string.Empty, cf, StringComparison.OrdinalIgnoreCase)) continue;
+                }
+                if (priorityFilter.HasValue)
+                {
+                    if (r.Priority != priorityFilter.Value) continue;
+                }
+                if (!string.IsNullOrWhiteSpace(locationFilter))
+                {
+                    var lf = locationFilter.Trim();
+                    var rl = r.Location ?? string.Empty;
+                    if (rl.IndexOf(lf, StringComparison.OrdinalIgnoreCase) < 0) continue;
+                }
                 // Here, if the root is null, set the root to the first request
                 if (root == null) { tree.SetRoot(r); root = tree.Root; }
 

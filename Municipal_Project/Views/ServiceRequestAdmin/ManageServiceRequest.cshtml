@@ -100,11 +100,86 @@
             <a href="@Url.Action("Dashboard", "Admin")" class="text-decoration-none text-muted mb-2 d-flex align-items-center" style="font-size: 0.9rem;">
                 <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
             </a>
-            <h2 class="m-0">Service Requests</h2>
-            <p class="text-muted mb-0" style="font-size: 0.95rem;">Manage and track service requests</p>
+            <h2 class="m-0">Manage Service Requests</h2>
+            <p class="text-muted mb-0" style="font-size: 0.95rem;">Review, update, and prioritize all requests</p>
         </div>
-        <div class="ms-3">
-            <div class="card mb-0" style="min-width: 320px;">
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">All Requests</div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div></div>
+                        <form method="get" asp-action="ManageServiceRequest" asp-controller="ServiceRequestAdmin" class="d-flex align-items-center gap-2">
+                            <select name="statusFilter" class="form-select form-select-sm" style="max-width:180px">
+                                {
+                                    var sf = ViewData["StatusFilter"] as string;
+                                }
+                                <option value="" selected="@string.IsNullOrWhiteSpace(ViewData["StatusFilter"] as string)">All Statuses</option>
+                                <option value="Submitted" selected="@((ViewData["StatusFilter"] as string) == "Submitted")">Submitted</option>
+                                <option value="InProgress" selected="@((ViewData["StatusFilter"] as string) == "InProgress")">In Progress</option>
+                                <option value="OnHold" selected="@((ViewData["StatusFilter"] as string) == "OnHold")">On Hold</option>
+                                <option value="Completed" selected="@((ViewData["StatusFilter"] as string) == "Completed")">Completed</option>
+                                <option value="Cancelled" selected="@((ViewData["StatusFilter"] as string) == "Cancelled")">Cancelled</option>
+                            </select>
+                            <select name="categoryFilter" class="form-select form-select-sm" style="max-width:200px">
+                                <option value="">All Categories</option>
+                                <option value="Infrastructure" selected="@((ViewData["CategoryFilter"] as string) == "Infrastructure")">Infrastructure</option>
+                                <option value="Utilities" selected="@((ViewData["CategoryFilter"] as string) == "Utilities")">Utilities</option>
+                                <option value="Electrical" selected="@((ViewData["CategoryFilter"] as string) == "Electrical")">Electrical</option>
+                                <option value="Waste" selected="@((ViewData["CategoryFilter"] as string) == "Waste")">Waste</option>
+                                <option value="Health" selected="@((ViewData["CategoryFilter"] as string) == "Health")">Health</option>
+                                <option value="Safety" selected="@((ViewData["CategoryFilter"] as string) == "Safety")">Safety</option>
+                                <option value="Fire" selected="@((ViewData["CategoryFilter"] as string) == "Fire")">Fire</option>
+                                <option value="Parks" selected="@((ViewData["CategoryFilter"] as string) == "Parks")">Parks</option>
+                                <option value="General" selected="@((ViewData["CategoryFilter"] as string) == "General")">General</option>
+                            </select>
+                            <input name="priorityFilter" type="number" min="1" max="3" class="form-control form-control-sm" style="max-width:100px" placeholder="Priority" value="@ViewData["PriorityFilter"]" />
+                            <select name="locationFilter" class="form-select form-select-sm" style="max-width:320px">
+                                <option value="">All Locations</option>
+                                @{
+                                    var selectedLocation = ViewData["LocationFilter"] as string;
+                                    foreach (var loc in Municiple_Project_st10259527.Services.LocationService.WesternCapeLocations.Values)
+                                    {
+                                        <option value="@loc" selected="@(loc == selectedLocation)">@loc</option>
+                                    }
+                                }
+                            </select>
+                            <button class="btn btn-sm btn-outline-primary" type="submit">Filter</button>
+                        </form>
+                    </div>
+            }
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle" style="table-layout: fixed;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">ID</th>
+                                    <th>Title</th>
+                                    <th style="width: 120px;">Status</th>
+                                    <th style="width: 120px;">Priority</th>
+                                    <th style="width: 180px;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Tree?.Root == null)
+                                {
+                                    <tr><td colspan="5" class="text-center">No service requests.</td></tr>
+                                }
+                                else
+                                {
+                                    await RenderNodeSimple(Model.Tree.Root);
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card mb-3" style="min-width: 320px;">
                 <div class="card-header">Next by Priority</div>
                 <div class="card-body">
                     @{
@@ -130,9 +205,31 @@
                     }
                 </div>
             </div>
-            <div class="card mt-3" style="min-width: 320px;">
+            @if ((ViewData["StartId"] as int?) > 0)
+            {
+            <div class="card mb-3" style="min-width: 320px;">
                 <div class="card-header d-flex align-items-center justify-content-between">
-                    <span>Related Requests</span>
+                    <span>
+                        Related Requests
+                        @{
+                            var anchorTitle = "";
+                            var sidObj = ViewData["StartId"];
+                            int sid = (sidObj is int) ? (int)sidObj : (sidObj is int? ? ((int?)sidObj).GetValueOrDefault() : 0);
+                            if (sid > 0 && Model.Graph != null)
+                            {
+                                var n = Model.Graph.Nodes()?.FirstOrDefault();
+                                while (n != null)
+                                {
+                                    if (n.Val?.RequestId == sid) { anchorTitle = n.Val.Title; break; }
+                                    n = n.Next;
+                                }
+                            }
+                            if (!string.IsNullOrWhiteSpace(anchorTitle))
+                            {
+                                <span class="small text-light ms-2">(from: @anchorTitle)</span>
+                            }
+                        }
+                    </span>
                     <i class="bi bi-info-circle" title="Quick view of other requests that are connected by similar status/priority. Handy for batching."></i>
                 </div>
                 <div class="card-body">
@@ -141,12 +238,24 @@
                         <input type="hidden" name="categoryFilter" value="@ViewData["CategoryFilter"]" />
                         <input type="hidden" name="priorityFilter" value="@ViewData["PriorityFilter"]" />
                         <input name="locationFilter" class="form-control form-control-sm" style="max-width:200px" placeholder="Start area (e.g. Building A)" value="@ViewData["LocationFilter"]" />
+                        <input type="hidden" name="startId" value="@ViewData["StartId"]" />
                         <button class="btn btn-sm btn-outline-primary" type="submit" title="Seed related items from this area">Start</button>
                     </form>
                     @{
                         var seed = (ViewData["LocationFilter"] as string) ?? string.Empty;
-                        var start = Model.Graph?.Nodes()?.FirstOrDefault();
-                        if (!string.IsNullOrWhiteSpace(seed))
+                        Municiple_Project_st10259527.Services.DataStructures.Graph<Municiple_Project_st10259527.Models.ServiceRequestModel>.GraphNode start = null;
+                        var sidObj2 = ViewData["StartId"];
+                        int sid2 = (sidObj2 is int) ? (int)sidObj2 : (sidObj2 is int? ? ((int?)sidObj2).GetValueOrDefault() : 0);
+                        if (sid2 > 0)
+                        {
+                            var n = Model.Graph?.Nodes()?.FirstOrDefault();
+                            while (n != null)
+                            {
+                                if (n.Val?.RequestId == sid2) { start = n; break; }
+                                n = n.Next;
+                            }
+                        }
+                        if (start == null && !string.IsNullOrWhiteSpace(seed))
                         {
                             var n = Model.Graph?.Nodes()?.FirstOrDefault();
                             while (n != null)
@@ -155,6 +264,10 @@
                                 if (!string.IsNullOrWhiteSpace(loc) && loc.IndexOf(seed, StringComparison.OrdinalIgnoreCase) >= 0) { start = n; break; }
                                 n = n.Next;
                             }
+                        }
+                        if (start == null)
+                        {
+                            start = Model.Graph?.Nodes()?.FirstOrDefault();
                         }
                         if (start == null)
                         {
@@ -185,8 +298,9 @@
                     <div class="mt-2 small text-muted">Tip: Work on a cluster of similar items together to save time.</div>
                 </div>
             </div>
+            }
 
-            <div class="card mt-3" style="min-width: 320px;">
+            <div class="card" style="min-width: 320px;">
                 <div class="card-header d-flex align-items-center justify-content-between">
                     <span>Closest Links (Minimal Set)</span>
                     <i class="bi bi-info-circle" title="A simple view of the closest connections between requests. Lower weight = more similar."></i>
@@ -222,209 +336,117 @@
             </div>
         </div>
     </div>
-
-    <div class="card mb-4">
-        <div class="card-header">All Requests</div>
-        <div class="card-body">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <div class="btn-group btn-group-sm" role="group">
-                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin")">All</a>
-                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { statusFilter = "Submitted", categoryFilter = ViewData["CategoryFilter"], priorityFilter = ViewData["PriorityFilter"] })">Submitted</a>
-                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { statusFilter = "InProgress", categoryFilter = ViewData["CategoryFilter"], priorityFilter = ViewData["PriorityFilter"] })">In Progress</a>
-                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { statusFilter = "OnHold", categoryFilter = ViewData["CategoryFilter"], priorityFilter = ViewData["PriorityFilter"] })">On Hold</a>
-                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { statusFilter = "Completed", categoryFilter = ViewData["CategoryFilter"], priorityFilter = ViewData["PriorityFilter"] })">Completed</a>
-                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { statusFilter = "Cancelled", categoryFilter = ViewData["CategoryFilter"], priorityFilter = ViewData["PriorityFilter"] })">Cancelled</a>
-                </div>
-                <form method="get" asp-action="ManageServiceRequest" asp-controller="ServiceRequestAdmin" class="d-flex align-items-center gap-2">
-                    <input type="hidden" name="statusFilter" value="@ViewData["StatusFilter"]" />
-                    <input name="categoryFilter" class="form-control form-control-sm" style="max-width:200px" placeholder="Category filter" value="@ViewData["CategoryFilter"]" />
-                    <input name="priorityFilter" type="number" min="1" max="3" class="form-control form-control-sm" style="max-width:100px" placeholder="Priority" value="@ViewData["PriorityFilter"]" />
-                    <button class="btn btn-sm btn-outline-primary" type="submit">Filter</button>
-                </form>
-            </div>
-            <div class="table-responsive">
-                <table class="table table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tracking</th>
-                            <th>Title</th>
-                            <th>User</th>
-                            <th>Location</th>
-                            <th>Category</th>
-                            <th>Status</th>
-                            <th>Priority</th>
-                            <th>Similar</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model.Tree?.Root == null)
-                        {
-                            <tr><td colspan="8" class="text-center">No service requests.</td></tr>
-                        }
-                        else
-                        {
-                            await RenderNode(Model.Tree.Root);
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
 </div>
 
 @functions {
     private string Badge(Municiple_Project_st10259527.Models.ServiceRequestStatus status)
     {
-        switch (status)
+        return status switch
         {
-            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Submitted: return "bg-warning text-dark";
-            case Municiple_Project_st10259527.Models.ServiceRequestStatus.InProgress: return "bg-info text-dark";
-            case Municiple_Project_st10259527.Models.ServiceRequestStatus.OnHold: return "bg-secondary";
-            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed: return "bg-success";
-            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Cancelled: return "bg-danger";
-            default: return "bg-secondary";
-        }
+            Municiple_Project_st10259527.Models.ServiceRequestStatus.Submitted => "bg-warning text-dark",
+            Municiple_Project_st10259527.Models.ServiceRequestStatus.InProgress => "bg-info text-dark",
+            Municiple_Project_st10259527.Models.ServiceRequestStatus.OnHold => "bg-secondary",
+            Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed => "bg-success",
+            Municiple_Project_st10259527.Models.ServiceRequestStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
     }
 
-    private async Task RenderNode(Municiple_Project_st10259527.Services.DataStructures.TreeNode<Municiple_Project_st10259527.Models.ServiceRequestModel> node)
+    private async Task RenderNodeSimple(Municiple_Project_st10259527.Services.DataStructures.TreeNode<Municiple_Project_st10259527.Models.ServiceRequestModel> node)
     {
         if (node == null) return;
         var r = node.Value;
-        var sf = (string)ViewData["StatusFilter"]; var cf = (string)ViewData["CategoryFilter"]; var pf = (int?)ViewData["PriorityFilter"];
-        bool statusOk = string.IsNullOrWhiteSpace(sf) || r.Status.ToString().Equals(sf, StringComparison.OrdinalIgnoreCase);
-        bool categoryOk = string.IsNullOrWhiteSpace(cf) || (!string.IsNullOrWhiteSpace(r.Category) && r.Category.IndexOf(cf, StringComparison.OrdinalIgnoreCase) >= 0);
-        bool priorityOk = (!pf.HasValue) || r.Priority == pf.Value;
-        if (statusOk && categoryOk && priorityOk)
-        {
         <tr>
             <td>@r.RequestId</td>
-            <td>@r.TrackingCode</td>
             <td>@r.Title</td>
-            <td>@r.UserId</td>
-            <td>@(string.IsNullOrWhiteSpace(r.Location) ? "-" : r.Location)</td>
-            <td>@(string.IsNullOrWhiteSpace(r.Category) ? "General" : r.Category)</td>
             <td><span class="badge @Badge(r.Status)">@r.Status</span></td>
+            <td><span class="badge bg-light text-dark">Priority @r.Priority</span></td>
             <td>
-                @{
-                    string pText; string pClass;
-                    if (r.Priority == 1) { pText = "Priority 1 – Urgent / Critical"; pClass = "bg-danger"; }
-                    else if (r.Priority == 2) { pText = "Priority 2 – High / Important"; pClass = "bg-warning text-dark"; }
-                    else { pText = "Priority 3 – Routine / Low"; pClass = "bg-success"; }
-                }
-                <span class="badge @pClass" title="@pText">@pText</span>
-            </td>
-            <td>
-                @{
-                    var deg = 0;
-                    var nodes = Model.Graph?.Nodes();
-                    if (nodes != null)
-                    {
-                        foreach (var n in nodes)
-                        {
-                            if (n.Val.RequestId == r.RequestId)
-                            {
-                                var e = n.First; while (e != null) { deg++; e = e.Next; }
-                                break;
-                            }
-                        }
-                    }
-                }
-                <span class="badge bg-light text-dark" title="Other requests related by status and priority">@deg</span>
-            </td>
-            <td>
-                <form method="post" asp-action="Update" asp-controller="ServiceRequestAdmin" class="action-form">
-                    <input type="hidden" name="id" value="@r.RequestId" />
-                    <select name="status" class="form-select form-select-sm">
-                        @if (r.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.Submitted)
-                        {
-                            <option value="Submitted" selected>Submitted</option>
-                        }
-                        else
-                        {
-                            <option value="Submitted">Submitted</option>
-                        }
-
-                        @if (r.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.InProgress)
-                        {
-                            <option value="InProgress" selected>In Progress</option>
-                        }
-                        else
-                        {
-                            <option value="InProgress">In Progress</option>
-                        }
-
-                        @if (r.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.OnHold)
-                        {
-                            <option value="OnHold" selected>On Hold</option>
-                        }
-                        else
-                        {
-                            <option value="OnHold">On Hold</option>
-                        }
-
-                        @if (r.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed)
-                        {
-                            <option value="Completed" selected>Completed</option>
-                        }
-                        else
-                        {
-                            <option value="Completed">Completed</option>
-                        }
-
-                        @if (r.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.Cancelled)
-                        {
-                            <option value="Cancelled" selected>Cancelled</option>
-                        }
-                        else
-                        {
-                            <option value="Cancelled">Cancelled</option>
-                        }
-                    </select>
-                    <select name="priority" class="form-select form-select-sm" title="
-🔺 Priority 1 – Urgent / Critical: Immediate risk to safety, health, operations, or environment.
-🟠 Priority 2 – High / Important: Not immediately dangerous but can escalate. Aim 24–48h.
-🟢 Priority 3 – Routine / Low: Non-urgent; schedule with maintenance.">
-                        @if (r.Priority == 1)
-                        {
-                            <option value="1" selected>Priority 1 – Urgent / Critical</option>
-                        }
-                        else
-                        {
-                            <option value="1">Priority 1 – Urgent / Critical</option>
-                        }
-
-                        @if (r.Priority == 2)
-                        {
-                            <option value="2" selected>Priority 2 – High / Important</option>
-                        }
-                        else
-                        {
-                            <option value="2">Priority 2 – High / Important</option>
-                        }
-
-                        @if (r.Priority == 3)
-                        {
-                            <option value="3" selected>Priority 3 – Routine / Low</option>
-                        }
-                        else
-                        {
-                            <option value="3">Priority 3 – Routine / Low</option>
-                        }
-                    </select>
-                    <button class="btn btn-sm btn-primary d-flex align-items-center" type="submit">
-                        <i class="bi bi-save me-1"></i> Save
-                    </button>
-                </form>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#requestModal" data-id="@r.RequestId" data-title="@r.Title" data-description="@r.Description" data-location="@r.Location" data-category="@r.Category" data-status="@r.Status" data-priority="@r.Priority" data-userid="@r.UserId">
+                    View
+                </button>
+                <a class="btn btn-sm btn-outline-secondary"
+                   href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { 
+                        startId = r.RequestId,
+                        statusFilter = ViewData["StatusFilter"],
+                        categoryFilter = ViewData["CategoryFilter"],
+                        priorityFilter = ViewData["PriorityFilter"],
+                        locationFilter = ViewData["LocationFilter"]
+                   })"
+                   title="See related to this request">
+                    Related
+                </a>
             </td>
         </tr>
-        }
-        var child = node.FirstChild;
-        while (child != null)
-        {
-            await RenderNode(child);
-            child = child.NextSibling;
-        }
+        await RenderNodeSimple(node.FirstChild);
+        await RenderNodeSimple(node.NextSibling);
     }
 }
+
+<!-- Modal -->
+<div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="requestModalLabel">Request Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="modal-form" method="post" action="@Url.Action("Update","ServiceRequestAdmin")">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="form-id" />
+                    <input type="hidden" name="priority" id="form-priority" />
+                    <dl class="row">
+                        <dt class="col-sm-3">ID</dt><dd class="col-sm-9" id="modal-id"></dd>
+                        <dt class="col-sm-3">Title</dt><dd class="col-sm-9" id="modal-title"></dd>
+                        <dt class="col-sm-3">Description</dt><dd class="col-sm-9" id="modal-description"></dd>
+                        <dt class="col-sm-3">Location</dt><dd class="col-sm-9" id="modal-location"></dd>
+                        <dt class="col-sm-3">Category</dt><dd class="col-sm-9" id="modal-category"></dd>
+                        <dt class="col-sm-3">Status</dt>
+                        <dd class="col-sm-9">
+                            <select id="modal-status-select" class="form-select form-select-sm" name="status">
+                                <option value="Submitted">Submitted</option>
+                                <option value="InProgress">In Progress</option>
+                                <option value="OnHold">On Hold</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </dd>
+                        <dt class="col-sm-3">Priority</dt><dd class="col-sm-9" id="modal-priority"></dd>
+                        <dt class="col-sm-3">User ID</dt><dd class="col-sm-9" id="modal-userid"></dd>
+                    </dl>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="submit" class="btn btn-sm btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const requestModal = document.getElementById('requestModal');
+    requestModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const id = button.getAttribute('data-id');
+        document.getElementById('modal-id').textContent = id;
+        const formId = document.getElementById('form-id');
+        const formPriority = document.getElementById('form-priority');
+        formId.value = id;
+        document.getElementById('modal-title').textContent = button.getAttribute('data-title');
+        document.getElementById('modal-description').textContent = button.getAttribute('data-description');
+        document.getElementById('modal-location').textContent = button.getAttribute('data-location');
+        document.getElementById('modal-category').textContent = button.getAttribute('data-category');
+        const status = button.getAttribute('data-status');
+        const statusSelect = document.getElementById('modal-status-select');
+        statusSelect.value = status;
+        const currentPriority = button.getAttribute('data-priority');
+        document.getElementById('modal-priority').textContent = 'Priority ' + currentPriority;
+        formPriority.value = currentPriority;
+        document.getElementById('modal-userid').textContent = button.getAttribute('data-userid');
+
+        // No extra JS submit handler needed; form posts directly with anti-forgery token
+    });
+});
+</script>
