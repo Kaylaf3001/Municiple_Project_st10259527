@@ -8,6 +8,6 @@ namespace Municiple_Project_st10259527.ViewModels
         public int UserId { get; set; }
         public BasicTree<ServiceRequestModel> RequestsTree { get; set; }
         public MinHeap<int, ServiceRequestModel> PriorityHeap { get; set; }
-        public Graph<ServiceRequestModel> RelationshipGraph { get; set; }
+        public RedBlackTree<int, (int Ahead, int Total)> QueueAheadIndex { get; set; }
     }
 }

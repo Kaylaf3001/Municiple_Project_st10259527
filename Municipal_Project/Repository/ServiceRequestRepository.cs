@@ -60,7 +60,8 @@ namespace Municiple_Project_st10259527.Repository
             // Traverse linked list to find request by ID
             return await Task.Run(() =>
             {
-                var cur = head; while (cur != null) { if (cur.Value.RequestId == id) return cur.Value; cur = cur.Next; } return null;
+                var cur = head; while (cur != null) { if (cur.Value.RequestId == id) return cur.Value; cur = cur.Next; }
+                return null;
             });
         }
         //==============================================================================================
@@ -72,7 +73,8 @@ namespace Municiple_Project_st10259527.Repository
         {
             return await Task.Run(() =>
             {
-                var cur = head; while (cur != null) { if (cur.Value.TrackingCode == trackingCode) return cur.Value; cur = cur.Next; } return null;
+                var cur = head; while (cur != null) { if (cur.Value.TrackingCode == trackingCode) return cur.Value; cur = cur.Next; }
+                return null;
             });
         }
         //==============================================================================================
@@ -140,6 +142,28 @@ namespace Municiple_Project_st10259527.Repository
                 var cur = head; while (cur != null) { if (cur.Value.RequestId == id) { cur.Value.Status = status; break; } cur = cur.Next; }
             });
         }
+
+        //==============================================================================================
+        // Update the status and priority of a service request
+        // Implementing interface member: Task UpdateStatusAndPriorityAsync(int id, ServiceRequestStatus status, int priority)
+        //==============================================================================================
+        public async Task UpdateStatusAndPriorityAsync(int id, ServiceRequestStatus status, int priority)
+        {
+            await Task.Run(() =>
+            {
+                var cur = head;
+                while (cur != null)
+                {
+                    if (cur.Value.RequestId == id)
+                    {
+                        cur.Value.Status = status;
+                        cur.Value.Priority = priority;
+                        break;
+                    }
+                    cur = cur.Next;
+                }
+            });
+        }
         //==============================================================================================
 
         //==============================================================================================
@@ -147,7 +171,8 @@ namespace Municiple_Project_st10259527.Repository
         //==============================================================================================
         private bool HasAnyForUser(int userId)
         {
-            var cur = head; while (cur != null) { if (cur.Value.UserId == userId) return true; cur = cur.Next; } return false;
+            var cur = head; while (cur != null) { if (cur.Value.UserId == userId) return true; cur = cur.Next; }
+            return false;
         }
         //==============================================================================================
     }

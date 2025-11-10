@@ -32,9 +32,13 @@ namespace Municiple_Project_st10259527.Controllers
         //==============================================================================================
         // Manage Service Request
         //==============================================================================================
-        public async Task<IActionResult> ManageServiceRequest()
+        public async Task<IActionResult> ManageServiceRequest(string statusFilter = null, string categoryFilter = null, int? priorityFilter = null, string locationFilter = null)
         {
             var indexes = await _statusService.BuildGlobalIndexesAsync();
+            ViewData["StatusFilter"] = statusFilter;
+            ViewData["CategoryFilter"] = categoryFilter;
+            ViewData["PriorityFilter"] = priorityFilter;
+            ViewData["LocationFilter"] = locationFilter;
             return View("ManageServiceRequest", indexes);
         }
         //==============================================================================================
@@ -44,9 +48,9 @@ namespace Municiple_Project_st10259527.Controllers
         //==============================================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Update(int id, ServiceRequestStatus status)
+        public async Task<IActionResult> Update(int id, ServiceRequestStatus status, int priority)
         {
-            await _repo.UpdateStatusAsync(id, status);
+            await _repo.UpdateStatusAndPriorityAsync(id, status, priority);
             return RedirectToAction("ManageServiceRequest");
         }
         //==============================================================================================

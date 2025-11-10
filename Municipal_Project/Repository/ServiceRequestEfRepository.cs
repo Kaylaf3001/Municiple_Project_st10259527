@@ -104,6 +104,21 @@ namespace Municiple_Project_st10259527.Repository
             }
         }
         //==============================================================================================
+
+        //==============================================================================================
+        // Update Service Request Status and Priority by Id
+        //==============================================================================================
+        public async Task UpdateStatusAndPriorityAsync(int id, ServiceRequestStatus status, int priority)
+        {
+            var entity = await _db.ServiceRequests.FirstOrDefaultAsync(r => r.RequestId == id);
+            if (entity != null)
+            {
+                entity.Status = status;
+                entity.Priority = priority;
+                await _db.SaveChangesAsync();
+            }
+        }
+        //==============================================================================================
     }
     //==============================================================================================
 }

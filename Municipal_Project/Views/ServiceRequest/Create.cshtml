@@ -25,13 +25,35 @@
                             <label class="form-label">Description</label>
                             <textarea name="description" rows="4" class="form-control" placeholder="Add helpful details for the team..."></textarea>
                         </div>
+                        <div class="form-group">
+                            <input type="text"
+                                   name="Location"
+                                   placeholder="Example: Blouberg, Cape Town, Western Cape"
+                                   list="locationOptions"
+                                   autocomplete="off"
+                                   required />
+                            <datalist id="locationOptions">
+                                @foreach (var loc in ViewBag.WesternCapeLocations)
+                                {
+                                    <option value="@loc"></option>
+                                }
+                            </datalist>
+                        </div>
                         <div class="mb-3">
-                            <label class="form-label">Priority</label>
-                            <select name="priority" class="form-select">
-                                <option value="1">High</option>
-                                <option value="2">Medium</option>
-                                <option value="3">Low</option>
+                            <label class="form-label">Category</label>
+                            <select name="category" class="form-select">
+                                <option value="">Select a category</option>
+                                <option>Infrastructure</option>
+                                <option>Utilities</option>
+                                <option>Electrical</option>
+                                <option>Waste</option>
+                                <option>Health</option>
+                                <option>Safety</option>
+                                <option>General</option>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">A tracking code will be generated automatically after you submit. Priority is assigned by the municipal team.</small>
                         </div>
                         <div class="d-flex gap-2">
                             <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest")">Cancel</a>

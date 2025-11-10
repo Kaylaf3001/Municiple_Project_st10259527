@@ -10,8 +10,8 @@
         min-height: calc(100vh - 200px);
         padding-bottom: 2rem;
     }
-    
-    .action-card { 
+
+    .action-card {
         border: 1px solid #e2e8f0;
         border-radius: 12px;
         padding: 1.5rem;
@@ -20,52 +20,52 @@
         box-shadow: 0 2px 12px rgba(0,0,0,0.05);
         height: 100%;
     }
-    
-    .action-card:hover { 
-        transform: translateY(-3px); 
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    }
-    
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
     .table-responsive {
         border-radius: 8px;
         overflow: hidden;
         box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
     }
-    
+
     .table {
         margin-bottom: 0;
         width: 100%;
     }
-    
-    .table th {
-        background-color: #0d2b52;
-        color: #fff;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        padding: 1rem;
-        text-align: left;
-    }
-    
-    .table td {
-        padding: 1rem;
-        vertical-align: middle;
-        border-color: #edf2f7;
-        word-break: break-word;
-    }
-    
-    .table tbody tr {
-        transition: background-color 0.2s;
-    }
-    
-    .table tbody tr:hover {
-        background-color: #f8fafc;
-    }
-    
-    .badge { 
-        padding: 0.5em 0.8em; 
-        font-size: 0.85rem; 
+
+        .table th {
+            background-color: #0d2b52;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: #edf2f7;
+            word-break: break-word;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.2s;
+        }
+
+            .table tbody tr:hover {
+                background-color: #f8fafc;
+            }
+
+    .badge {
+        padding: 0.5em 0.8em;
+        font-size: 0.85rem;
         font-weight: 600;
         border-radius: 4px;
         display: inline-flex;
@@ -73,45 +73,45 @@
         justify-content: center;
         min-width: 100px;
     }
-    
-    .header-row { 
-        display: flex; 
-        align-items: center; 
-        justify-content: space-between; 
+
+    .header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         margin-bottom: 1.5rem;
         flex-wrap: wrap;
         gap: 1rem;
     }
-    
+
     .welcome-text {
         color: #0d2b52;
         font-weight: 600;
     }
-    
+
     .tracking-form {
         display: flex;
         gap: 0.5rem;
         margin-top: 1rem;
     }
-    
-    .tracking-form .form-control {
-        min-width: 200px;
-    }
-    
+
+        .tracking-form .form-control {
+            min-width: 200px;
+        }
+
     @@media (max-width: 768px) {
         .header-row {
             flex-direction: column;
             align-items: flex-start;
         }
-        
+
         .tracking-form {
             flex-direction: column;
             width: 100%;
         }
-        
-        .tracking-form .btn {
-            width: 100%;
-        }
+
+            .tracking-form .btn {
+                width: 100%;
+            }
     }
 </style>
 <div class="container page-container">
@@ -121,7 +121,7 @@
             <p class="text-muted mb-0" style="font-size: 0.95rem;">Track and manage your service requests</p>
         </div>
         <div>
-            <a class="btn btn-primary d-flex align-items-center" href="@Url.Action("Create","ServiceRequest")">
+            <a class="btn btn-primary d-flex align-items-center" href="@Url.Action("Create", "ServiceRequest")">
                 <i class="bi bi-plus-lg me-1"></i> New Request
             </a>
         </div>
@@ -130,14 +130,29 @@
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="recent-activity">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest")">All</a>
+                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest", new { statusFilter = "Submitted", categoryFilter = ViewData["CategoryFilter"] })">Submitted</a>
+                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest", new { statusFilter = "InProgress", categoryFilter = ViewData["CategoryFilter"] })">In Progress</a>
+                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest", new { statusFilter = "OnHold", categoryFilter = ViewData["CategoryFilter"] })">On Hold</a>
+                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest", new { statusFilter = "Completed", categoryFilter = ViewData["CategoryFilter"] })">Completed</a>
+                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest", new { statusFilter = "Cancelled", categoryFilter = ViewData["CategoryFilter"] })">Cancelled</a>
+                    </div>
+                    <form method="get" asp-action="Status" asp-controller="ServiceRequest" class="d-flex align-items-center gap-2">
+                        <input type="hidden" name="statusFilter" value="@ViewData["StatusFilter"]" />
+                        <input name="categoryFilter" class="form-control form-control-sm" style="max-width:200px" placeholder="Category filter" value="@ViewData["CategoryFilter"]" />
+                        <button class="btn btn-sm btn-outline-primary" type="submit">Filter</button>
+                    </form>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th style="width: 180px;">Tracking Code</th>
                                 <th>Title</th>
-                                <th style="width: 150px;">Status</th>
-                                <th style="width: 100px;">Priority</th>
+                                <th style="width: 140px;">Category</th>
+                                <th style="width: 140px;">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -186,16 +201,15 @@
                                     </div>
                                     <div class="mt-2">
                                         <div class="small text-muted">Tracking Code: @TempData["TrackCode"]</div>
-                                        <div class="small text-muted mt-1">Priority: @TempData["TrackPriority"]</div>
                                     </div>
                                 </div>
                             </div>
                         }
                     }
                 </div>
-                
+
                 <div class="action-card">
-                    <h5 class="mb-3">Next by Priority</h5>
+                    <h5 class="mb-3">Next issue to be dealt with</h5>
                     @if (Model?.PriorityHeap == null || Model.PriorityHeap.Count == 0)
                     {
                         <div class="text-center py-3">
@@ -227,7 +241,7 @@
                                         <span class="badge @GetStatusBadgeClass(top.Item2.Status)" style="min-width: auto;">
                                             @top.Item2.Status
                                         </span>
-                                        <span class="ms-2 text-muted small">Priority: @top.Item1</span>
+                                        <span class="ms-2 text-muted small">Submitted: @top.Item2.SubmittedAt.ToString("u")</span>
                                     </div>
                                 </div>
                             </div>
@@ -236,28 +250,49 @@
                 </div>
 
                 
+
+            </div>
         </div>
     </div>
-</div>
 
-@functions{
+@functions {
     private void RenderNode(Municiple_Project_st10259527.Services.DataStructures.TreeNode<Municiple_Project_st10259527.Models.ServiceRequestModel> node)
     {
         if (node == null) return;
         var r = node.Value;
-        <tr>
-            <td>
-                <div class="input-group input-group-sm">
-                    <input class="form-control" value="@r.TrackingCode" readonly id="code-@r.RequestId" />
-                    <button class="btn btn-outline-secondary" type="button" onclick="copyCode('code-@r.RequestId')">Copy</button>
-                </div>
-            </td>
-            <td>@r.Title</td>
-            <td>
-                <span class="badge @GetStatusBadgeClass(r.Status)">@r.Status</span>
-            </td>
-            <td>@r.Priority</td>
-        </tr>
+        var sf = (string)ViewData["StatusFilter"]; var cf = (string)ViewData["CategoryFilter"];
+        bool statusOk = string.IsNullOrWhiteSpace(sf) || r.Status.ToString().Equals(sf, StringComparison.OrdinalIgnoreCase);
+        bool categoryOk = string.IsNullOrWhiteSpace(cf) || (!string.IsNullOrWhiteSpace(r.Category) && r.Category.IndexOf(cf, StringComparison.OrdinalIgnoreCase) >= 0);
+        if (statusOk && categoryOk)
+        {
+            <tr>
+                <td>
+                    <div class="input-group input-group-sm">
+                        <input class="form-control" value="@r.TrackingCode" readonly id="code-@r.RequestId" />
+                        <button class="btn btn-outline-secondary" type="button" onclick="copyCode('code-@r.RequestId')">Copy</button>
+                    </div>
+                </td>
+                <td>@r.Title</td>
+                <td>@(string.IsNullOrWhiteSpace(r.Category) ? "General" : r.Category)</td>
+                <td>
+                    <span class="badge @GetStatusBadgeClass(r.Status)">@r.Status</span>
+                    @{
+                        var mq = Model?.QueueAheadIndex?.Find(r.RequestId);
+                        // Only show when we have a non-zero total tracked
+                        // mq is a nullable value-tuple: (int Ahead, int Total)?
+                        // must access .Value or pattern-match before using members
+                        if (mq.HasValue && mq.Value.Total > 0)
+                        {
+                            var ahead = mq.Value.Ahead;
+                            var total = mq.Value.Total;
+                            <div class="small text-muted mt-1" title="Your place in the current queue for this status.">
+                                Position: @(ahead + 1) of @total
+                            </div>
+                        }
+                    }
+                </td>
+            </tr>
+        }
         var child = node.FirstChild;
         while (child != null)
         {
@@ -281,12 +316,12 @@
 
 }
 
-<script>
-    function copyCode(id) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.select();
-        el.setSelectionRange(0, 99999);
-        try { document.execCommand('copy'); } catch (e) { navigator.clipboard && navigator.clipboard.writeText(el.value); }
-    }
-</script>
+    <script>
+        function copyCode(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.select();
+            el.setSelectionRange(0, 99999);
+            try { document.execCommand('copy'); } catch (e) { navigator.clipboard && navigator.clipboard.writeText(el.value); }
+        }
+    </script>

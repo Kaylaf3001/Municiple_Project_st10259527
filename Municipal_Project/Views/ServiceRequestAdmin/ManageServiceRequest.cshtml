@@ -1,4 +1,5 @@
-@model (Municiple_Project_st10259527.Services.DataStructures.BasicTree<Municiple_Project_st10259527.Models.ServiceRequestModel> Tree, Municiple_Project_st10259527.Services.DataStructures.MinHeap<int, Municiple_Project_st10259527.Models.ServiceRequestModel> Heap)
+@model (Municiple_Project_st10259527.Services.DataStructures.BasicTree<Municiple_Project_st10259527.Models.ServiceRequestModel> Tree, Municiple_Project_st10259527.Services.DataStructures.MinHeap<int, Municiple_Project_st10259527.Models.ServiceRequestModel> Heap, Municiple_Project_st10259527.Services.DataStructures.Graph<Municiple_Project_st10259527.Models.ServiceRequestModel> Graph)
+
 @{
     ViewData["Title"] = "Manage Service Requests";
     Layout = "_AdminLayout";
@@ -9,103 +10,238 @@
         min-height: calc(100vh - 200px);
         padding-bottom: 2rem;
     }
-    
-    .card { 
-        border: 1px solid #e2e8f0; 
-        border-radius: 12px; 
-        background: #fff; 
+
+    .card {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        background: #fff;
         box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         margin-bottom: 2rem;
     }
-    
-    .card-header { 
-        background: #0d2b52; 
-        color: #fff; 
-        padding: 1rem 1.5rem; 
-        border-top-left-radius: 12px; 
-        border-top-right-radius: 12px; 
+
+    .card-header {
+        background: #0d2b52;
+        color: #fff;
+        padding: 1rem 1.5rem;
+        border-top-left-radius: 12px;
+        border-top-right-radius: 12px;
         font-weight: 600;
         font-size: 1.1rem;
     }
-    
-    .card-body { 
-        padding: 1.5rem; 
+
+    .card-body {
+        padding: 1.5rem;
     }
-    
-    .badge { 
-        padding: 0.5em 0.8em; 
-        font-size: 0.85rem; 
+
+    .badge {
+        padding: 0.5em 0.8em;
+        font-size: 0.85rem;
         font-weight: 600;
         border-radius: 4px;
     }
-    
+
     .table-responsive {
         border-radius: 8px;
         overflow: hidden;
         box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
     }
-    
+
     .table {
         margin-bottom: 0;
     }
-    
-    .table th {
-        background-color: #f8f9fa;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 0.5px;
-        padding: 1rem;
-        border-bottom: 2px solid #e9ecef;
-    }
-    
-    .table td {
-        padding: 1rem;
-        vertical-align: middle;
-        border-color: #edf2f7;
-    }
-    
-    .table tbody tr {
-        transition: background-color 0.2s;
-    }
-    
-    .table tbody tr:hover {
-        background-color: #f8fafc;
-    }
-    
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-color: #edf2f7;
+        }
+
+        .table tbody tr {
+            transition: background-color 0.2s;
+        }
+
+            .table tbody tr:hover {
+                background-color: #f8fafc;
+            }
+
     .form-select {
         min-width: 150px;
     }
-    
+
     .action-form {
         display: flex;
         gap: 0.5rem;
         flex-wrap: wrap;
     }
-    
+
     @@media (max-width: 768px) {
         .action-form {
             flex-direction: column;
         }
-        
-        .action-form .btn {
-            width: 100%;
-        }
+
+            .action-form .btn {
+                width: 100%;
+            }
     }
 </style>
 <div class="container page-container">
     <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
         <div class="d-flex flex-column">
-            <a href="@Url.Action("Dashboard","Admin")" class="text-decoration-none text-muted mb-2 d-flex align-items-center" style="font-size: 0.9rem;">
+            <a href="@Url.Action("Dashboard", "Admin")" class="text-decoration-none text-muted mb-2 d-flex align-items-center" style="font-size: 0.9rem;">
                 <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
             </a>
             <h2 class="m-0">Service Requests</h2>
             <p class="text-muted mb-0" style="font-size: 0.95rem;">Manage and track service requests</p>
         </div>
+        <div class="ms-3">
+            <div class="card mb-0" style="min-width: 320px;">
+                <div class="card-header">Next by Priority</div>
+                <div class="card-body">
+                    @{
+                        // Model.Heap?.Peek() returns a nullable tuple: (int, ServiceRequestModel)?
+                        var topNullable = Model.Heap?.Peek();
+
+                        // Check the nullable before accessing Item1/Item2
+                        if (!topNullable.HasValue || topNullable.Value.Item2 == null)
+                        {
+                            <div class="text-muted">No pending requests</div>
+                        }
+                        else
+                        {
+                            var top = topNullable.Value; // (int, ServiceRequestModel)
+                                                         <div class="d-flex align-items-center justify-content-between">
+                                                             <div>
+                                                                 <div class="fw-semibold">@top.Item2.Title</div>
+                                                                 <div class="small text-muted">Priority: @top.Item1 • ID: @top.Item2.RequestId</div>
+                                                             </div>
+                                                             <span class="badge bg-secondary">@top.Item2.Status</span>
+                                                         </div>
+                        }
+                    }
+                </div>
+            </div>
+            <div class="card mt-3" style="min-width: 320px;">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <span>Related Requests</span>
+                    <i class="bi bi-info-circle" title="Quick view of other requests that are connected by similar status/priority. Handy for batching."></i>
+                </div>
+                <div class="card-body">
+                    <form method="get" asp-action="ManageServiceRequest" asp-controller="ServiceRequestAdmin" class="d-flex align-items-center gap-2 mb-2">
+                        <input type="hidden" name="statusFilter" value="@ViewData["StatusFilter"]" />
+                        <input type="hidden" name="categoryFilter" value="@ViewData["CategoryFilter"]" />
+                        <input type="hidden" name="priorityFilter" value="@ViewData["PriorityFilter"]" />
+                        <input name="locationFilter" class="form-control form-control-sm" style="max-width:200px" placeholder="Start area (e.g. Building A)" value="@ViewData["LocationFilter"]" />
+                        <button class="btn btn-sm btn-outline-primary" type="submit" title="Seed related items from this area">Start</button>
+                    </form>
+                    @{
+                        var seed = (ViewData["LocationFilter"] as string) ?? string.Empty;
+                        var start = Model.Graph?.Nodes()?.FirstOrDefault();
+                        if (!string.IsNullOrWhiteSpace(seed))
+                        {
+                            var n = Model.Graph?.Nodes()?.FirstOrDefault();
+                            while (n != null)
+                            {
+                                var loc = n.Val?.Location ?? string.Empty;
+                                if (!string.IsNullOrWhiteSpace(loc) && loc.IndexOf(seed, StringComparison.OrdinalIgnoreCase) >= 0) { start = n; break; }
+                                n = n.Next;
+                            }
+                        }
+                        if (start == null)
+                        {
+                            <div class="text-muted">No relationships to show yet</div>;
+                        }
+                        else
+                        {
+                            <div class="small text-muted mb-2">Showing up to 10 related items</div>
+                            var shown = 0;
+                            foreach (var r in Model.Graph.Bfs(start))
+                            {
+                                shown++;
+                                if (shown > 10) { break; }
+                                <div class="d-flex align-items-center justify-content-between small py-1">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-node-plus text-secondary"></i>
+                                        <span class="text-truncate" title="@r.Title">@r.Title</span>
+                                    </div>
+                                    <span class="badge @Badge(r.Status)">@r.Status</span>
+                                </div>
+                            }
+                            if (shown == 0)
+                            {
+                                <div class="text-muted">No related items found</div>
+                            }
+                        }
+                    }
+                    <div class="mt-2 small text-muted">Tip: Work on a cluster of similar items together to save time.</div>
+                </div>
+            </div>
+
+            <div class="card mt-3" style="min-width: 320px;">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <span>Closest Links (Minimal Set)</span>
+                    <i class="bi bi-info-circle" title="A simple view of the closest connections between requests. Lower weight = more similar."></i>
+                </div>
+                <div class="card-body">
+                    @if (Model.Graph == null)
+                    {
+                        <div class="text-muted">No link data available</div>
+                    }
+                    else
+                    {
+                        var any = false;
+                        foreach (var e in Model.Graph.PrimMst())
+                        {
+                            any = true;
+                            <div class="d-flex align-items-center justify-content-between small py-1">
+                                <div class="d-flex align-items-center gap-2 text-truncate">
+                                    <i class="bi bi-diagram-2 text-secondary"></i>
+                                    <span class="text-truncate" title="@e.Item1.Val.Title">@e.Item1.Val.Title</span>
+                                    <span class="mx-2">→</span>
+                                    <span class="text-truncate" title="@e.Item2.Val.Title">@e.Item2.Val.Title</span>
+                                </div>
+                                <span class="ms-2 badge bg-light text-dark" title="Lower is closer">weight @e.Item3</span>
+                            </div>
+                        }
+                        if (!any)
+                        {
+                            <div class="text-muted">No strong links found</div>
+                        }
+                    }
+                    <div class="mt-2 small text-muted">Tip: Use these links to form a small action group.</div>
+                </div>
+            </div>
+        </div>
     </div>
+
     <div class="card mb-4">
         <div class="card-header">All Requests</div>
         <div class="card-body">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div class="btn-group btn-group-sm" role="group">
+                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin")">All</a>
+                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { statusFilter = "Submitted", categoryFilter = ViewData["CategoryFilter"], priorityFilter = ViewData["PriorityFilter"] })">Submitted</a>
+                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { statusFilter = "InProgress", categoryFilter = ViewData["CategoryFilter"], priorityFilter = ViewData["PriorityFilter"] })">In Progress</a>
+                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { statusFilter = "OnHold", categoryFilter = ViewData["CategoryFilter"], priorityFilter = ViewData["PriorityFilter"] })">On Hold</a>
+                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { statusFilter = "Completed", categoryFilter = ViewData["CategoryFilter"], priorityFilter = ViewData["PriorityFilter"] })">Completed</a>
+                    <a class="btn btn-outline-secondary" href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { statusFilter = "Cancelled", categoryFilter = ViewData["CategoryFilter"], priorityFilter = ViewData["PriorityFilter"] })">Cancelled</a>
+                </div>
+                <form method="get" asp-action="ManageServiceRequest" asp-controller="ServiceRequestAdmin" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="statusFilter" value="@ViewData["StatusFilter"]" />
+                    <input name="categoryFilter" class="form-control form-control-sm" style="max-width:200px" placeholder="Category filter" value="@ViewData["CategoryFilter"]" />
+                    <input name="priorityFilter" type="number" min="1" max="3" class="form-control form-control-sm" style="max-width:100px" placeholder="Priority" value="@ViewData["PriorityFilter"]" />
+                    <button class="btn btn-sm btn-outline-primary" type="submit">Filter</button>
+                </form>
+            </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
                     <thead>
@@ -114,19 +250,22 @@
                             <th>Tracking</th>
                             <th>Title</th>
                             <th>User</th>
+                            <th>Location</th>
+                            <th>Category</th>
                             <th>Status</th>
                             <th>Priority</th>
+                            <th>Similar</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @if (Model.Tree?.Root == null)
                         {
-                            <tr><td colspan="7" class="text-center">No service requests.</td></tr>
+                            <tr><td colspan="8" class="text-center">No service requests.</td></tr>
                         }
                         else
                         {
-                            await RenderNode(Model.Tree.Root); 
+                            await RenderNode(Model.Tree.Root);
                         }
                     </tbody>
                 </table>
@@ -135,7 +274,7 @@
     </div>
 </div>
 
-@functions{
+@functions {
     private string Badge(Municiple_Project_st10259527.Models.ServiceRequestStatus status)
     {
         switch (status)
@@ -153,13 +292,47 @@
     {
         if (node == null) return;
         var r = node.Value;
+        var sf = (string)ViewData["StatusFilter"]; var cf = (string)ViewData["CategoryFilter"]; var pf = (int?)ViewData["PriorityFilter"];
+        bool statusOk = string.IsNullOrWhiteSpace(sf) || r.Status.ToString().Equals(sf, StringComparison.OrdinalIgnoreCase);
+        bool categoryOk = string.IsNullOrWhiteSpace(cf) || (!string.IsNullOrWhiteSpace(r.Category) && r.Category.IndexOf(cf, StringComparison.OrdinalIgnoreCase) >= 0);
+        bool priorityOk = (!pf.HasValue) || r.Priority == pf.Value;
+        if (statusOk && categoryOk && priorityOk)
+        {
         <tr>
             <td>@r.RequestId</td>
             <td>@r.TrackingCode</td>
             <td>@r.Title</td>
             <td>@r.UserId</td>
+            <td>@(string.IsNullOrWhiteSpace(r.Location) ? "-" : r.Location)</td>
+            <td>@(string.IsNullOrWhiteSpace(r.Category) ? "General" : r.Category)</td>
             <td><span class="badge @Badge(r.Status)">@r.Status</span></td>
-            <td>@r.Priority</td>
+            <td>
+                @{
+                    string pText; string pClass;
+                    if (r.Priority == 1) { pText = "Priority 1 – Urgent / Critical"; pClass = "bg-danger"; }
+                    else if (r.Priority == 2) { pText = "Priority 2 – High / Important"; pClass = "bg-warning text-dark"; }
+                    else { pText = "Priority 3 – Routine / Low"; pClass = "bg-success"; }
+                }
+                <span class="badge @pClass" title="@pText">@pText</span>
+            </td>
+            <td>
+                @{
+                    var deg = 0;
+                    var nodes = Model.Graph?.Nodes();
+                    if (nodes != null)
+                    {
+                        foreach (var n in nodes)
+                        {
+                            if (n.Val.RequestId == r.RequestId)
+                            {
+                                var e = n.First; while (e != null) { deg++; e = e.Next; }
+                                break;
+                            }
+                        }
+                    }
+                }
+                <span class="badge bg-light text-dark" title="Other requests related by status and priority">@deg</span>
+            </td>
             <td>
                 <form method="post" asp-action="Update" asp-controller="ServiceRequestAdmin" class="action-form">
                     <input type="hidden" name="id" value="@r.RequestId" />
@@ -209,12 +382,44 @@
                             <option value="Cancelled">Cancelled</option>
                         }
                     </select>
+                    <select name="priority" class="form-select form-select-sm" title="
+🔺 Priority 1 – Urgent / Critical: Immediate risk to safety, health, operations, or environment.
+🟠 Priority 2 – High / Important: Not immediately dangerous but can escalate. Aim 24–48h.
+🟢 Priority 3 – Routine / Low: Non-urgent; schedule with maintenance.">
+                        @if (r.Priority == 1)
+                        {
+                            <option value="1" selected>Priority 1 – Urgent / Critical</option>
+                        }
+                        else
+                        {
+                            <option value="1">Priority 1 – Urgent / Critical</option>
+                        }
+
+                        @if (r.Priority == 2)
+                        {
+                            <option value="2" selected>Priority 2 – High / Important</option>
+                        }
+                        else
+                        {
+                            <option value="2">Priority 2 – High / Important</option>
+                        }
+
+                        @if (r.Priority == 3)
+                        {
+                            <option value="3" selected>Priority 3 – Routine / Low</option>
+                        }
+                        else
+                        {
+                            <option value="3">Priority 3 – Routine / Low</option>
+                        }
+                    </select>
                     <button class="btn btn-sm btn-primary d-flex align-items-center" type="submit">
                         <i class="bi bi-save me-1"></i> Save
                     </button>
                 </form>
             </td>
         </tr>
+        }
         var child = node.FirstChild;
         while (child != null)
         {

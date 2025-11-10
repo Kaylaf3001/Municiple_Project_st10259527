@@ -27,7 +27,7 @@ namespace Municiple_Project_st10259527.Controllers
         //==============================================================================================
         // Service Request Status and Creation
         //==============================================================================================
-        public async Task<IActionResult> Status()
+        public async Task<IActionResult> Status(string statusFilter = null, string categoryFilter = null)
         {
             // Get UserId from Session
             var userId = HttpContext.Session.GetInt32("UserId");
@@ -35,13 +35,18 @@ namespace Municiple_Project_st10259527.Controllers
 
             // Build Data Structures
             var indexes = await _statusService.BuildIndexesAsync(userId.Value);
+            var queueAhead = await _statusService.BuildQueueAheadIndexAsync(userId.Value);
             var vm = new ServiceRequestStatusViewModel
             {
                 UserId = userId.Value,
                 RequestsTree = indexes.Tree,
                 PriorityHeap = indexes.Heap,
-                RelationshipGraph = indexes.Graph
+                QueueAheadIndex = queueAhead
             };
+
+            // Pass filters to the view (read-only values; filtering is done during tree traversal)
+            ViewData["StatusFilter"] = statusFilter;
+            ViewData["CategoryFilter"] = categoryFilter;
 
             return View(vm);
         }
@@ -55,6 +60,8 @@ namespace Municiple_Project_st10259527.Controllers
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null) return RedirectToAction("Login", "User");
+            // Populate location suggestions for the datalist
+            ViewBag.WesternCapeLocations = LocationService.WesternCapeLocations.Values;
             return View();
         }
         //==============================================================================================
@@ -64,7 +71,7 @@ namespace Municiple_Project_st10259527.Controllers
         //==============================================================================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string title, string description, int priority)
+        public async Task<IActionResult> Create(string title, string description, string category, string location)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null) return RedirectToAction("Login", "User");
@@ -76,13 +83,19 @@ namespace Municiple_Project_st10259527.Controllers
                 return View();
             }
 
+            // Infer priority and category (admins can adjust later)
+            var inferred = _statusService.InferPriorityAndCategory(title, description, category);
+
             // Create and Save Service Request
             var req = new ServiceRequestModel
             {
                 UserId = userId.Value,
                 Title = title.Trim(),
                 Description = description?.Trim(),
-                Priority = priority
+                Location = string.IsNullOrWhiteSpace(location) ? null : location.Trim(),
+                Status = ServiceRequestStatus.Submitted,
+                Priority = inferred.Priority,
+                Category = string.IsNullOrWhiteSpace(category) ? inferred.Category : category
             };
 
             // Save to Repository
@@ -104,7 +117,7 @@ namespace Municiple_Project_st10259527.Controllers
             if (string.IsNullOrWhiteSpace(trackingCode)) return RedirectToAction("Status");
 
             // Track Request
-            var req = await _statusService.TrackByCodeAsync(trackingCode.Trim());
+            var req = await _statusService.TrackByCodeUsingAvlAsync(trackingCode.Trim());
 
             // Store Result in TempData for Display (detailed)
             if (req == null)

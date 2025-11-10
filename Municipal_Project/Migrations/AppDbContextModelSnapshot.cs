@@ -54,6 +54,58 @@ namespace Municipal_Project.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Announcements");
+
+                    b.HasData(
+                        new
+                        {
+                            AnnouncementId = 1,
+                            Date = new DateTime(2025, 11, 22, 8, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Planned maintenance will interrupt water service in the Eastside from 8am-2pm.",
+                            Location = "Eastside District",
+                            Status = "Published",
+                            Title = "Water Service Interruption",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            AnnouncementId = 2,
+                            Date = new DateTime(2025, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Recycling pickup moves to Fridays for Zone B starting next week.",
+                            Location = "Zone B",
+                            Status = "Published",
+                            Title = "Recycling Schedule Update",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            AnnouncementId = 3,
+                            Date = new DateTime(2025, 12, 2, 6, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Elm Street will be closed for resurfacing. Use Oak Ave detour.",
+                            Location = "Elm Street",
+                            Status = "Published",
+                            Title = "Road Closure Notice",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            AnnouncementId = 4,
+                            Date = new DateTime(2025, 12, 15, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "High temperatures expected. Cooling centers open 10am-7pm.",
+                            Location = "Citywide",
+                            Status = "Published",
+                            Title = "Heat Advisory",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            AnnouncementId = 5,
+                            Date = new DateTime(2026, 1, 5, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Main library will undergo renovations; temporary location on Pine St.",
+                            Location = "Main Library",
+                            Status = "Published",
+                            Title = "Library Renovation",
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("Municiple_Project_st10259527.Models.EventModel", b =>
@@ -98,6 +150,63 @@ namespace Municipal_Project.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Events");
+
+                    b.HasData(
+                        new
+                        {
+                            EventId = 1,
+                            Category = "Community",
+                            Date = new DateTime(2025, 11, 20, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Join neighbors to clean up the park and surrounding streets.",
+                            Location = "Main Street Park",
+                            Status = "Scheduled",
+                            Title = "Community Cleanup Day",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            EventId = 2,
+                            Category = "Government",
+                            Date = new DateTime(2025, 12, 1, 18, 30, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Monthly town hall to discuss budget and development plans.",
+                            Location = "Municipal Hall, Council Chamber",
+                            Status = "Scheduled",
+                            Title = "Town Hall Meeting",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            EventId = 3,
+                            Category = "Culture",
+                            Date = new DateTime(2025, 12, 10, 16, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Local vendors, crafts, and live music for the holidays.",
+                            Location = "Riverside Square",
+                            Status = "Scheduled",
+                            Title = "Holiday Market",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            EventId = 4,
+                            Category = "Sports",
+                            Date = new DateTime(2026, 1, 15, 15, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Open tryouts for municipal youth soccer and basketball.",
+                            Location = "Community Sports Center",
+                            Status = "Scheduled",
+                            Title = "Youth Sports Tryouts",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            EventId = 5,
+                            Category = "Safety",
+                            Date = new DateTime(2026, 2, 5, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Learn fire safety, emergency kits, and first aid basics.",
+                            Location = "Fire Station #2",
+                            Status = "Scheduled",
+                            Title = "Public Safety Workshop",
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("Municiple_Project_st10259527.Models.ReportModel", b =>
@@ -154,8 +263,18 @@ namespace Municipal_Project.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(150)
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Priority")
