@@ -7,6 +7,20 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
                     <div class="d-flex justify-content-between align-items-center">
@@ -54,7 +68,7 @@
                         <div class="btn-group">
                             @if (Model.Status != Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed)
                             {
-                                <form asp-action="CompleteRequest" method="post" class="d-inline">
+                                <form id="completeRequestForm" asp-action="CompleteRequest" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@Model.RequestId" />
                                     <button type="submit" class="btn btn-success">
@@ -72,6 +86,128 @@
         </div>
     </div>
 </div>
+
+<!-- Related Requests Modal -->
+<div class="modal fade" id="relatedRequestsModal" tabindex="-1" aria-labelledby="relatedRequestsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="relatedRequestsModalLabel">Related Service Requests</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>You might want to check these related service requests next:</p>
+                <div id="relatedRequestsList" class="list-group">
+                    <!-- Related requests will be inserted here by JavaScript -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a id="viewAllLink" href="@Url.Action("ManageServiceRequest")?startId=@Model.RequestId" class="btn btn-primary">
+                    View All Related
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Auto-hide alerts after 5 seconds
+        $(document).ready(function() {
+            // Auto-hide alerts
+            window.setTimeout(function() {
+                $('.alert').fadeTo(500, 0).slideUp(500, function(){
+                    $(this).remove(); 
+                });
+            }, 5000);
+
+            // Handle form submission
+            $('#completeRequestForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var $form = $(this);
+                var $button = $form.find('button[type="submit"]');
+                $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Completing...');
+                
+                $.ajax({
+                    url: $form.attr('action'),
+                    type: 'POST',
+                    data: $form.serialize(),
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            // Show related requests if any
+                            if (response.relatedRequests && response.relatedRequests.length > 0) {
+                                var relatedList = $('#relatedRequestsList');
+                                relatedList.empty();
+                                
+                                response.relatedRequests.forEach(function(request) {
+                                    relatedList.append(`
+                                        <a href="/ServiceRequestAdmin/Detail/${request.id}" 
+                                           class="list-group-item list-group-item-action"
+                                           target="_blank"
+                                           onclick="event.stopPropagation(); window.open(this.href, '_blank'); return false;">
+                                            <div class="d-flex w-100 justify-content-between">
+                                                <h6 class="mb-1">${escapeHtml(request.title)}</h6>
+                                                <span class="badge bg-light text-dark">Priority ${request.priority}</span>
+                                            </div>
+                                            <p class="mb-1">${escapeHtml(request.category)} • ${escapeHtml(request.location)}</p>
+                                            <div class="small text-muted d-flex align-items-center">
+                                                <span>Reason: ${escapeHtml(request.reason || 'Related')}</span>
+                                                <i class="bi bi-info-circle ms-2" data-bs-toggle="tooltip" title="${escapeHtml(request.reason || 'Related')}"></i>
+                                            </div>
+                                            <small class="text-muted">Submitted on ${request.submittedAt}</small>
+                                        </a>
+                                    `);
+                                });
+                                // Initialize tooltips for newly added items
+                                var tts = [].slice.call(document.querySelectorAll('#relatedRequestsList [data-bs-toggle="tooltip"]'));
+                                tts.forEach(function (el) { new bootstrap.Tooltip(el); });
+                                
+                                // Update the view all link
+                                $('#viewAllLink').attr('href', `/ServiceRequestAdmin/ManageServiceRequest?startId=${response.relatedRequests[0].id}`);
+                                
+                                // Show the modal
+                                var modal = new bootstrap.Modal(document.getElementById('relatedRequestsModal'));
+                                modal.show();
+                                
+                                // Redirect after modal is hidden
+                                $('#relatedRequestsModal').on('hidden.bs.modal', function () {
+                                    window.location.href = response.redirectUrl;
+                                });
+                            } else {
+                                // No related requests, just redirect
+                                window.location.href = response.redirectUrl;
+                            }
+                        } else {
+                            alert(response.error || 'An error occurred while completing the request.');
+                            $button.prop('disabled', false).html('<i class="bi bi-check-circle"></i> Mark as Completed');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('An error occurred while processing your request. Please try again.');
+                        $button.prop('disabled', false).html('<i class="bi bi-check-circle"></i> Mark as Completed');
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return unsafe
+                .toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+}
 
 <style>
     .card {

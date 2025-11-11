@@ -65,7 +65,6 @@ namespace Municiple_Project_st10259527.Services
             TreeNode<ServiceRequestModel> root = null;
             var heap = new MinHeap<ServiceRequestPriority, ServiceRequestModel>();
             var graph = new Graph<ServiceRequestModel>();
-            Graph<ServiceRequestModel>.GraphNode prev = null;
 
             // await for each service request
             await foreach (var r in _repo.GetAllAsync())
@@ -107,7 +106,6 @@ namespace Municiple_Project_st10259527.Services
 
                 // Build graph
                 var node = graph.AddNode(r);
-                if (prev != null) graph.AddUndirectedEdge(prev, node, 1);
                 foreach (var existing in graph.Nodes())
                 {
                     if (ReferenceEquals(existing, node)) continue;
@@ -118,14 +116,20 @@ namespace Municiple_Project_st10259527.Services
                     // Same status connection
                     if (existing.Val.Status == r.Status)
                     {
-                        graph.AddUndirectedEdge(existing, node, w);
+                        // Only connect same-status if submitted within 1 day to avoid overly broad links
+                        var dtA = existing.Val?.SubmittedAt ?? DateTime.MinValue;
+                        var dtB = r?.SubmittedAt ?? DateTime.MinValue;
+                        if (dtA != DateTime.MinValue && dtB != DateTime.MinValue && Math.Abs((dtA - dtB).TotalDays) <= 1)
+                        {
+                            graph.AddUndirectedEdge(existing, node, w);
+                        }
                     }
 
-                    // Same category connection (tighter cluster)
+                    // Same category connection (fixed tight weight)
                     var ec = existing.Val?.Category ?? string.Empty; var rc = r?.Category ?? string.Empty;
                     if (!string.IsNullOrWhiteSpace(ec) && !string.IsNullOrWhiteSpace(rc) && ec.Equals(rc, StringComparison.OrdinalIgnoreCase))
                     {
-                        graph.AddUndirectedEdge(existing, node, Math.Max(1, w - 1));
+                        graph.AddUndirectedEdge(existing, node, 1);
                     }
 
                     // Same location connection (very tight)
@@ -147,7 +151,7 @@ namespace Municiple_Project_st10259527.Services
                         graph.AddUndirectedEdge(existing, node, 1);
                     }
                 }
-                prev = node;
+                // No sequential linking to avoid artificial relationships
             }
             return (tree, heap, graph);
         }

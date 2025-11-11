@@ -1,4 +1,5 @@
 @using Municiple_Project_st10259527.Services.DataStructures
+@using System.Linq
 @model (Municiple_Project_st10259527.Services.DataStructures.BasicTree<Municiple_Project_st10259527.Models.ServiceRequestModel> Tree, Municiple_Project_st10259527.Services.DataStructures.MinHeap<ServiceRequestPriority, Municiple_Project_st10259527.Models.ServiceRequestModel> Heap, Municiple_Project_st10259527.Services.DataStructures.Graph<Municiple_Project_st10259527.Models.ServiceRequestModel> Graph)
 
 @{
@@ -96,6 +97,9 @@
     }
 </style>
 <div class="container page-container">
+    <form id="antiForgeryForm" method="post" style="display:none;">
+        @Html.AntiForgeryToken()
+    </form>
     <div class="d-flex justify-content-between align-items-center mb-4 pt-4">
         <div class="d-flex flex-column">
             <a href="@Url.Action("Dashboard", "Admin")" class="text-decoration-none text-muted mb-2 d-flex align-items-center" style="font-size: 0.9rem;">
@@ -248,8 +252,9 @@
                                             </div>
                                             <span class="badge @Badge(to.Status)">@to.Status</span>
                                         </div>
-                                        <div class="small text-muted mt-1">
-                                            <i class="bi @GetReasonIcon(reason)"></i> @reason
+                                        <div class="small text-muted mt-1 d-flex align-items-center">
+                                            <span>Reason: @reason</span>
+                                            <i class="bi bi-info-circle ms-2" data-bs-toggle="tooltip" title="@reason"></i>
                                         </div>
                                         <div class="d-flex justify-content-end">
                                             <a asp-action="Detail" asp-route-id="@to.RequestId" class="btn btn-sm btn-outline-primary">
@@ -266,6 +271,50 @@
                     }
                 </div>
             </div>
+
+            <!-- Traversal from Request Card (BFS) -->
+            @{
+                var startIdObj = ViewData["StartId"]; 
+                int parsedStartId;
+                bool hasStart = startIdObj != null && int.TryParse(startIdObj.ToString(), out parsedStartId);
+                var startNode = hasStart ? Model.Graph?.Nodes()?.FirstOrDefault(n => n.Val != null && n.Val.RequestId == parsedStartId) : null;
+            }
+            @if (hasStart)
+            {
+                <div class="card mb-3" style="min-width: 320px;">
+                    <div class="card-header">Traversal from Request #@parsedStartId</div>
+                    <div class="card-body">
+                        @if (startNode == null)
+                        {
+                            <div class="text-muted">Start request not found in graph.</div>
+                        }
+                        else
+                        {
+                            var bfs = Model.Graph?.Bfs(startNode)?.Take(8) ?? Enumerable.Empty<Municiple_Project_st10259527.Models.ServiceRequestModel>();
+                            if (!bfs.Any())
+                            {
+                                <div class="text-muted">No connected requests found.</div>
+                            }
+                            else
+                            {
+                                <div class="list-group small">
+                                @foreach (var r in bfs)
+                                {
+                                    <a asp-action="Detail" asp-route-id="@r.RequestId" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <div class="fw-semibold text-truncate" style="max-width: 220px;">@r.Title</div>
+                                            <div class="text-muted">ID: @r.RequestId • @r.Category</div>
+                                            <div class="text-muted">Reason: Connected (BFS)</div>
+                                        </div>
+                                        <span class="badge @Badge(r.Status)">@r.Status</span>
+                                    </a>
+                                }
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -273,31 +322,10 @@
 @functions {
     private string GetConnectionReason(Municiple_Project_st10259527.Models.ServiceRequestModel r1, Municiple_Project_st10259527.Models.ServiceRequestModel r2, int weight)
     {
-        if (r1.Status == r2.Status)
-            return $"Both are {r1.Status} status";
-            
-        if (r1.Category == r2.Category && !string.IsNullOrEmpty(r1.Category))
-            return $"Same category: {r1.Category}";
-            
-        if (r1.Location == r2.Location && !string.IsNullOrEmpty(r1.Location))
-            return $"Same location: {r1.Location}";
-            
-        if (((r1.Title + " " + r1.Description).Contains("electrical", StringComparison.OrdinalIgnoreCase) && 
-             (r2.Title + " " + r2.Description).Contains("paint", StringComparison.OrdinalIgnoreCase)) ||
-            ((r2.Title + " " + r2.Description).Contains("electrical", StringComparison.OrdinalIgnoreCase) && 
-             (r1.Title + " " + r1.Description).Contains("paint", StringComparison.OrdinalIgnoreCase)))
-            return "Electrical work before painting";
-            
-        return "Related requests";
-    }
-    
-    private string GetReasonIcon(string reason)
-    {
-        if (reason.Contains("status")) return "bi-arrow-repeat";
-        if (reason.Contains("category")) return "bi-tag";
-        if (reason.Contains("location")) return "bi-geo-alt";
-        if (reason.Contains("before")) return "bi-arrow-right-circle";
-        return "bi-link";
+        if (r1.Status == r2.Status) return "Same status";
+        if (!string.IsNullOrEmpty(r1.Category) && r1.Category == r2.Category) return "Same category";
+        if (!string.IsNullOrEmpty(r1.Location) && r1.Location == r2.Location) return "Same location";
+        return "Related";
     }
 
     private string Badge(Municiple_Project_st10259527.Models.ServiceRequestStatus status)
@@ -407,12 +435,10 @@ async function completeRequest(id) {
         const result = await response.json();
         
         if (result.success) {
-            // Show success message
             showToast('Request completed successfully!', 'success');
-            
-            // Show related requests if any
+
+            const relatedList = document.getElementById('relatedRequestsList');
             if (result.relatedRequests && result.relatedRequests.length > 0) {
-                const relatedList = document.getElementById('relatedRequestsList');
                 relatedList.innerHTML = `
                     <p class="mb-3">Here are some related requests you might want to work on next:</p>
                     <div class="row g-3">
@@ -430,6 +456,10 @@ async function completeRequest(id) {
                                             <i class="bi bi-geo-alt me-1"></i> ${escapeHtml(req.location)}<br>
                                             <i class="bi bi-flag me-1"></i> Priority: ${req.priority}
                                         </div>
+                                        <div class="small text-muted d-flex align-items-center">
+                                            <span>Reason: ${escapeHtml(req.reason || 'Connected')}</span>
+                                            <i class="bi bi-info-circle ms-2" data-bs-toggle="tooltip" title="${escapeHtml(req.reason || 'Connected')}"></i>
+                                        </div>
                                         <a href="/ServiceRequestAdmin/ManageServiceRequest?requestId=${req.id}" 
                                            class="btn btn-sm btn-outline-primary w-100">
                                             <i class="bi bi-arrow-right-circle me-1"></i> View Request
@@ -440,16 +470,25 @@ async function completeRequest(id) {
                         `).join('')}
                     </div>
                 `;
-                
-                // Show the modal
-                const modal = new bootstrap.Modal(document.getElementById('relatedRequestsModal'));
-                modal.show();
+            } else {
+                relatedList.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="bi bi-check2-circle fs-1 text-success d-block mb-2"></i>
+                        <p class="mb-0">No strong related requests found right now.</p>
+                    </div>`;
             }
-            
-            // Refresh the page after a short delay to show the modal
-            setTimeout(() => {
-                window.location.reload();
-            }, 3000);
+
+            // Initialize tooltips for dynamically added elements
+            const newTooltipTriggerList = [].slice.call(document.querySelectorAll('#relatedRequestsList [data-bs-toggle="tooltip"]'));
+            newTooltipTriggerList.forEach(function (el) { new bootstrap.Tooltip(el); });
+
+            // Show the modal and redirect to detail after close
+            const modalEl = document.getElementById('relatedRequestsModal');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                if (result.redirectUrl) window.location.href = result.redirectUrl;
+            }, { once: true });
         } else {
             showToast(result.error || 'Error completing request', 'danger');
         }

@@ -399,6 +399,34 @@ namespace Municiple_Project_st10259527.Services.DataStructures
                 yield return (bestU, bestV, bestW);
             }
         }
+        
+        // Prim's MST starting from a specific node
+        public IEnumerable<(GraphNode, GraphNode, int)> PrimMst(GraphNode start)
+        {
+            var visited = new HashSet<GraphNode>();
+            if (start == null) yield break; visited.Add(start);
+            while (true)
+            {
+                GraphNode bestU = null, bestV = null; int bestW = int.MaxValue; bool found = false;
+                var u = head;
+                while (u != null)
+                {
+                    if (visited.Contains(u))
+                    {
+                        var e = u.First;
+                        while (e != null)
+                        {
+                            if (!visited.Contains(e.To) && e.W < bestW) { bestW = e.W; bestU = u; bestV = e.To; found = true; }
+                            e = e.Next;
+                        }
+                    }
+                    u = u.Next;
+                }
+                if (!found) yield break;
+                visited.Add(bestV);
+                yield return (bestU, bestV, bestW);
+            }
+        }
         //===============================================================================
     }
 }

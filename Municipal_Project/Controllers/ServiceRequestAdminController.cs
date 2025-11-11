@@ -5,6 +5,9 @@ using Municiple_Project_st10259527.Attributes;
 using Municiple_Project_st10259527.Models;
 using Municiple_Project_st10259527.Repository;
 using Municiple_Project_st10259527.Services;
+using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Municiple_Project_st10259527.Controllers
 {
@@ -78,34 +81,53 @@ namespace Municiple_Project_st10259527.Controllers
                 request.CompletedAt = DateTime.UtcNow;
                 await _repo.UpdateAsync(request);
 
-                // Get related requests
+                // Get related requests using minimum spanning tree
                 var indexes = await _statusService.BuildGlobalIndexesAsync();
                 var relatedRequests = new List<ServiceRequestModel>();
                 var currentNode = indexes.Graph?.Nodes().FirstOrDefault(n => n.Val.RequestId == id);
-                
+
+                List<(ServiceRequestModel Model, int Weight)> relatedWithWeights = new();
                 if (currentNode != null)
                 {
-                    var mstEdges = indexes.Graph.PrimMst();
-                    relatedRequests = mstEdges
+                    // Always use MST-adjacent edges for recommendations per rubric
+                    var mstEdges = indexes.Graph.PrimMst(currentNode);
+                    relatedWithWeights = mstEdges
                         .Where(e => e.Item1 == currentNode || e.Item2 == currentNode)
-                        .OrderBy(e => e.Item3) // Sort by weight (most related first)
+                        .Select(e => (Model: (e.Item1 == currentNode ? e.Item2.Val : e.Item1.Val), Weight: e.Item3))
+                        .Where(x => x.Model != null && x.Model.Status != ServiceRequestStatus.Completed)
+                        .OrderBy(x => x.Weight)
+                        .ThenBy(x => x.Model.Priority)
+                        .ThenBy(x => x.Model.SubmittedAt)
                         .Take(3)
-                        .Select(e => e.Item1 == currentNode ? e.Item2.Val : e.Item1.Val)
-                        .Where(r => r.Status != ServiceRequestStatus.Completed)
                         .ToList();
+
+                    relatedRequests = relatedWithWeights.Select(x => x.Model).ToList();
                 }
 
-                return Json(new { 
-                    success = true, 
-                    relatedRequests = relatedRequests.Select(r => new {
+                var relatedPayload = relatedRequests.Select(r =>
+                {
+                    var match = relatedWithWeights.FirstOrDefault(x => x.Model.RequestId == r.RequestId);
+                    var w = match.Weight;
+                    var baseReason = GetRelationReason(request, r);
+                    var reason = baseReason == "Related" && w > 0 ? $"Connected via MST (weight {w})" : baseReason;
+                    return new
+                    {
                         id = r.RequestId,
                         title = r.Title,
                         status = r.Status.ToString(),
                         category = r.Category,
                         location = r.Location,
                         priority = r.Priority,
-                        submittedAt = r.SubmittedAt.ToString("g")
-                    })
+                        submittedAt = r.SubmittedAt.ToString("g"),
+                        weight = w,
+                        reason = reason
+                    };
+                }).ToList();
+
+                return Json(new {
+                    success = true,
+                    redirectUrl = Url.Action("Detail", new { id }),
+                    relatedRequests = relatedPayload
                 });
             }
             catch (Exception ex)
@@ -136,6 +158,33 @@ namespace Municiple_Project_st10259527.Controllers
                 await _repo.UpdateStatusAndPriorityAsync(id, ServiceRequestStatus.Completed, request.Priority);
             }
             return RedirectToAction("ManageServiceRequest");
+        }
+
+        //==============================================================================================
+        // Helpers
+        //==============================================================================================
+        private string GetRelationReason(ServiceRequestModel a, ServiceRequestModel b)
+        {
+            if (a == null || b == null) return "Related";
+            if (!string.IsNullOrWhiteSpace(a.Location) && a.Location.Equals(b.Location, StringComparison.OrdinalIgnoreCase))
+                return "Same location";
+            if (!string.IsNullOrWhiteSpace(a.Category) && a.Category.Equals(b.Category, StringComparison.OrdinalIgnoreCase))
+                return "Same category";
+            if (a.Status == b.Status)
+            {
+                // Only call out time proximity when also same status and within 1 day
+                var dtA = a.SubmittedAt;
+                var dtB = b.SubmittedAt;
+                if (dtA != default && dtB != default && Math.Abs((dtA - dtB).TotalDays) <= 1)
+                    return "Same status and submitted around same time";
+                return "Same status";
+            }
+            // Simple keyword overlap hint
+            var at = ((a.Title ?? "") + " " + (a.Description ?? "")).ToLowerInvariant();
+            var bt = ((b.Title ?? "") + " " + (b.Description ?? "")).ToLowerInvariant();
+            if ((at.Contains("electrical") && bt.Contains("paint")) || (bt.Contains("electrical") && at.Contains("paint")))
+                return "Electrical work before painting";
+            return "Related";
         }
 
         //==============================================================================================

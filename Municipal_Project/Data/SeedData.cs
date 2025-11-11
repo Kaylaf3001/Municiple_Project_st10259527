@@ -118,10 +118,10 @@ namespace Municiple_Project_st10259527.Data
                         UserId = regularUser1.UserId,
                         Title = "Pothole Repair",
                         Description = "Large pothole causing damage to vehicles on the main road",
-                        Location = "Corner of Oak and Main",
+                        Location = LocationService.WesternCapeLocations[36],
                         Status = ServiceRequestStatus.Submitted,
                         Priority = 1,
-                        Category = "Road Maintenance",
+                        Category = "Infrastructure",
                         SubmittedAt = DateTime.Now.AddDays(-10)
                     },
                     new ServiceRequestModel
@@ -130,10 +130,10 @@ namespace Municiple_Project_st10259527.Data
                         UserId = regularUser1.UserId,
                         Title = "Road Resurfacing",
                         Description = "Entire street needs resurfacing, multiple potholes and cracks",
-                        Location = "500 Block of Maple Avenue",
+                        Location = LocationService.WesternCapeLocations[31],
                         Status = ServiceRequestStatus.InProgress,
                         Priority = 2,
-                        Category = "Road Maintenance",
+                        Category = "Infrastructure",
                         SubmittedAt = DateTime.Now.AddDays(-7)
                     },
                     
@@ -144,7 +144,7 @@ namespace Municiple_Project_st10259527.Data
                         UserId = adminUser.UserId,
                         Title = "Street Light Out",
                         Description = "Street light not working, making the area unsafe at night",
-                        Location = "200 Block of Elm Street",
+                        Location = LocationService.WesternCapeLocations[30],
                         Status = ServiceRequestStatus.InProgress,
                         Priority = 1,
                         Category = "Utilities",
@@ -156,7 +156,7 @@ namespace Municiple_Project_st10259527.Data
                         UserId = regularUser1.UserId,
                         Title = "Water Leak",
                         Description = "Water leaking from fire hydrant, causing water wastage",
-                        Location = "Intersection of 5th and Main",
+                        Location = LocationService.WesternCapeLocations[29],
                         Status = ServiceRequestStatus.Submitted,
                         Priority = 1,
                         Category = "Utilities",
@@ -170,10 +170,10 @@ namespace Municiple_Project_st10259527.Data
                         UserId = adminUser.UserId,
                         Title = "Broken Playground Equipment",
                         Description = "Swing set is broken and poses safety hazard to children",
-                        Location = "Central Park Playground",
+                        Location = LocationService.WesternCapeLocations[59],
                         Status = ServiceRequestStatus.Completed,
                         Priority = 2,
-                        Category = "Public Safety",
+                        Category = "Safety",
                         SubmittedAt = DateTime.Now.AddDays(-14),
                         CompletedAt = DateTime.Now.AddDays(-7)
                     },
@@ -185,10 +185,10 @@ namespace Municiple_Project_st10259527.Data
                         UserId = regularUser1.UserId,
                         Title = "Overflowing Trash Bin",
                         Description = "Public trash bin is overflowing and attracting pests",
-                        Location = "Bus stop near 300 Pine Street",
+                        Location = LocationService.WesternCapeLocations[41],
                         Status = ServiceRequestStatus.Submitted,
                         Priority = 3,
-                        Category = "Sanitation",
+                        Category = "Waste",
                         SubmittedAt = DateTime.Now.AddDays(-1)
                     },
                     
@@ -199,10 +199,10 @@ namespace Municiple_Project_st10259527.Data
                         UserId = adminUser.UserId,
                         Title = "Broken Park Bench",
                         Description = "Wooden slats on park bench are broken and need replacement",
-                        Location = "Riverside Park, near the fountain",
+                        Location = LocationService.WesternCapeLocations[60],
                         Status = ServiceRequestStatus.OnHold,
                         Priority = 3,
-                        Category = "Parks and Recreation",
+                        Category = "Parks",
                         SubmittedAt = DateTime.Now.AddDays(-21)
                     },
                     
@@ -213,10 +213,10 @@ namespace Municiple_Project_st10259527.Data
                         UserId = regularUser1.UserId,
                         Title = "Missing Stop Sign",
                         Description = "Stop sign knocked down at intersection, creating dangerous situation",
-                        Location = "Corner of 3rd and Cedar",
+                        Location = LocationService.WesternCapeLocations[42],
                         Status = ServiceRequestStatus.Submitted,
                         Priority = 1,
-                        Category = "Traffic and Signs",
+                        Category = "Safety",
                         SubmittedAt = DateTime.Now.AddDays(-3)
                     }
                 };
