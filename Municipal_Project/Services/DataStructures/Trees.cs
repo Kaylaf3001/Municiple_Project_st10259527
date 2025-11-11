@@ -347,6 +347,38 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             }
         }
 
+        // Return neighbors and weights for a node
+        public IEnumerable<(GraphNode To, int W)> Neighbors(GraphNode n)
+        {
+            var e = n?.First; while (e != null) { yield return (e.To, e.W); e = e.Next; }
+        }
+
+        // Add or update an undirected edge, keeping the minimal weight and avoiding duplicates
+        public void AddOrUpdateUndirectedEdge(GraphNode a, GraphNode b, int w)
+        {
+            if (a == null || b == null || ReferenceEquals(a, b)) return;
+
+            void Upsert(GraphNode from, GraphNode to)
+            {
+                // Try find existing edge
+                var e = from.First; Edge prev = null; while (e != null)
+                {
+                    if (ReferenceEquals(e.To, to))
+                    {
+                        // Keep minimal weight
+                        if (w < e.W) e.W = w;
+                        return;
+                    }
+                    prev = e; e = e.Next;
+                }
+                // Not found: prepend new edge
+                from.First = new Edge { To = to, W = w, Next = from.First };
+            }
+
+            Upsert(a, b);
+            Upsert(b, a);
+        }
+
         // Enumerate all nodes for visualization
         public IEnumerable<GraphNode> Nodes()
         {
@@ -399,15 +431,18 @@ namespace Municiple_Project_st10259527.Services.DataStructures
                 yield return (bestU, bestV, bestW);
             }
         }
-        
-        // Prim's MST starting from a specific node
+
+        // Prim's MST starting from a provided node
         public IEnumerable<(GraphNode, GraphNode, int)> PrimMst(GraphNode start)
         {
             var visited = new HashSet<GraphNode>();
-            if (start == null) yield break; visited.Add(start);
+            if (start == null) yield break;
+            visited.Add(start);
+
             while (true)
             {
                 GraphNode bestU = null, bestV = null; int bestW = int.MaxValue; bool found = false;
+
                 var u = head;
                 while (u != null)
                 {
@@ -422,11 +457,13 @@ namespace Municiple_Project_st10259527.Services.DataStructures
                     }
                     u = u.Next;
                 }
+
                 if (!found) yield break;
                 visited.Add(bestV);
                 yield return (bestU, bestV, bestW);
             }
         }
+        
         //===============================================================================
     }
 }

@@ -121,7 +121,7 @@ namespace Municiple_Project_st10259527.Services
                         var dtB = r?.SubmittedAt ?? DateTime.MinValue;
                         if (dtA != DateTime.MinValue && dtB != DateTime.MinValue && Math.Abs((dtA - dtB).TotalDays) <= 1)
                         {
-                            graph.AddUndirectedEdge(existing, node, w);
+                            graph.AddOrUpdateUndirectedEdge(existing, node, w);
                         }
                     }
 
@@ -129,29 +129,16 @@ namespace Municiple_Project_st10259527.Services
                     var ec = existing.Val?.Category ?? string.Empty; var rc = r?.Category ?? string.Empty;
                     if (!string.IsNullOrWhiteSpace(ec) && !string.IsNullOrWhiteSpace(rc) && ec.Equals(rc, StringComparison.OrdinalIgnoreCase))
                     {
-                        graph.AddUndirectedEdge(existing, node, 1);
+                        graph.AddOrUpdateUndirectedEdge(existing, node, 1);
                     }
 
                     // Same location connection (very tight)
                     var el = existing.Val?.Location ?? string.Empty; var rl = r?.Location ?? string.Empty;
                     if (!string.IsNullOrWhiteSpace(el) && !string.IsNullOrWhiteSpace(rl) && el.Equals(rl, StringComparison.OrdinalIgnoreCase))
                     {
-                        graph.AddUndirectedEdge(existing, node, 1);
-                    }
-
-                    // Simple dependency hint: wiring before repaint
-                    var et = (existing.Val?.Title + " " + existing.Val?.Description)?.ToLowerInvariant() ?? string.Empty;
-                    var rt = (r?.Title + " " + r?.Description)?.ToLowerInvariant() ?? string.Empty;
-                    bool wiringE = et.Contains("wiring") || et.Contains("electrical");
-                    bool repaintE = et.Contains("paint") || et.Contains("repaint");
-                    bool wiringR = rt.Contains("wiring") || rt.Contains("electrical");
-                    bool repaintR = rt.Contains("paint") || rt.Contains("repaint");
-                    if ((wiringE && repaintR) || (wiringR && repaintE))
-                    {
-                        graph.AddUndirectedEdge(existing, node, 1);
+                        graph.AddOrUpdateUndirectedEdge(existing, node, 1);
                     }
                 }
-                // No sequential linking to avoid artificial relationships
             }
             return (tree, heap, graph);
         }
