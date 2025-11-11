@@ -43,7 +43,30 @@ namespace Municiple_Project_st10259527.Controllers
             ViewData["PriorityFilter"] = priorityFilter;
             ViewData["LocationFilter"] = locationFilter;
             ViewData["StartId"] = startId;
+            ViewBag.TopUrgent = await _statusService.GetTopNUrgentAsync(5);
             return View("ManageServiceRequest", indexes);
+        }
+        //==============================================================================================
+
+        //==============================================================================================
+        // Track by Tracking Code (AVL-backed lookup)
+        //==============================================================================================
+        [HttpGet]
+        public async Task<IActionResult> Track(string code)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                TempData["TrackError"] = "Please enter a tracking code.";
+                return RedirectToAction("ManageServiceRequest");
+            }
+
+            var request = await _statusService.TrackByCodeUsingAvlAsync(code.Trim());
+            if (request == null)
+            {
+                TempData["TrackError"] = "Tracking code not found.";
+                return RedirectToAction("ManageServiceRequest");
+            }
+            return RedirectToAction("Detail", new { id = request.RequestId });
         }
         //==============================================================================================
 

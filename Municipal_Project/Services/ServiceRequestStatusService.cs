@@ -190,6 +190,20 @@ namespace Municiple_Project_st10259527.Services
             return index;
         }
         //====================================================================
+
+        public async Task<IReadOnlyList<ServiceRequestModel>> GetTopNUrgentAsync(int n)
+        {
+            var heap = new MinHeap<ServiceRequestPriority, ServiceRequestModel>();
+            await foreach (var r in _repo.GetAllAsync())
+            {
+                if (r.Status == ServiceRequestStatus.Completed) continue;
+                heap.Insert(new ServiceRequestPriority(r), r);
+            }
+            var result = new List<ServiceRequestModel>();
+            foreach (var item in heap.TopK(n)) result.Add(item);
+            return result;
+        }
+        //====================================================================
     }
 }
 //==========================End=Of=File========================================

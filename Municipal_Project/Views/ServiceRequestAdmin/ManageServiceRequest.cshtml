@@ -261,7 +261,7 @@
         }
     }
 </style>
-<div class="container page-container">
+<div class="container-fluid page-container">
     <form id="antiForgeryForm" method="post" style="display:none;">
         @Html.AntiForgeryToken()
     </form>
@@ -285,15 +285,13 @@
             </div>
             <p class="text-muted mb-0" style="font-size: 0.95rem;">Manage and prioritize service requests from residents</p>
         </div>
-        <div>
-            <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal">
-                <i class="bi bi-download me-1"></i> Export
-            </a>
-        </div>
+        <div></div>
     </div>
 
+    
+
     <div class="row g-4">
-        <div class="col-lg-8">
+        <div class="col-lg-8 pe-lg-3">
             <div class="card">
                 <div class="card-header">All Requests</div>
                 <div class="card-body">
@@ -403,51 +401,7 @@
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <!-- Export Modal -->
-<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exportModalLabel">Export Service Requests</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Export Format</label>
-                    <select class="form-select">
-                        <option>CSV (Comma Separated Values)</option>
-                        <option>Excel (XLSX)</option>
-                        <option>PDF Document</option>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Date Range</label>
-                    <div class="row g-2">
-                        <div class="col">
-                            <input type="date" class="form-control" placeholder="From">
-                        </div>
-                        <div class="col">
-                            <input type="date" class="form-control" placeholder="To">
-                        </div>
-                    </div>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="includeDetails" checked>
-                    <label class="form-check-label" for="includeDetails">
-                        Include detailed information
-                    </label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary">
-                    <i class="bi bi-download me-1"></i> Export
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+        <div class="col-lg-4 ps-lg-2">
 
 <div class="card mb-3">
     <div class="card-header d-flex align-items-center justify-content-between">
@@ -495,6 +449,61 @@
                                 </div>
                             </div>
                             }
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-lightning me-2"></i>Top 5 Urgent</span>
+                    <span class="badge bg-danger bg-opacity-10 text-danger"><i class="bi bi-exclamation-diamond"></i> Urgency</span>
+                </div>
+                <div class="card-body">
+                    @{
+                        var fromService = (ViewBag.TopUrgent as IEnumerable<Municiple_Project_st10259527.Models.ServiceRequestModel>)
+                                            ?.Where(r => r.Status != Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed)
+                                            .ToList()
+                                            ?? new List<Municiple_Project_st10259527.Models.ServiceRequestModel>();
+                        var merged = new List<Municiple_Project_st10259527.Models.ServiceRequestModel>(fromService);
+                        if (merged.Count < 5 && Model.Heap != null)
+                        {
+                            var fill = Model.Heap.TopK(5).ToList();
+                            foreach (var x in fill)
+                            {
+                                if (x.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed) continue;
+                                if (!merged.Any(m => m.RequestId == x.RequestId)) merged.Add(x);
+                                if (merged.Count >= 5) break;
+                            }
+                        }
+                        var topList = merged.Take(5).ToList();
+                        if (!topList.Any())
+                        {
+                            <div class="text-muted">No pending requests</div>
+                        }
+                        else
+                        {
+                            <div class="list-group list-group-flush">
+                                @foreach (var r in topList)
+                                {
+                                    <a asp-action="Detail" asp-route-id="@r.RequestId" class="list-group-item list-group-item-action">
+                                        <div class="d-flex align-items-center">
+                                            <span class="priority-badge priority-@r.Priority me-3">@r.Priority</span>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="fw-semibold text-truncate" style="max-width:220px">@r.Title</span>
+                                                    <span class="badge rounded-pill @Badge(r.Status)">@r.Status</span>
+                                                </div>
+                                                <div class="small text-muted">
+                                                    <i class="bi bi-tag"></i> @r.Category
+                                                    <span class="mx-1">•</span>
+                                                    <i class="bi bi-geo-alt"></i> @r.Location
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                }
+                            </div>
                         }
                     }
                 </div>
@@ -621,7 +630,7 @@
                 </div>
             </td>
             <td>
-                <span class="status-badge @Badge(r.Status)">
+                <span class="status-badge rounded-pill @Badge(r.Status)">
                     @switch (r.Status.ToString())
                     {
                         case "Submitted":

@@ -40,13 +40,13 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             else
             {
                 // traverse to last sibling
-                var n = parent.FirstChild;
+                var currentSibling = parent.FirstChild;
 
                 // add new sibling
-                while (n.NextSibling != null) n = n.NextSibling;
+                while (currentSibling.NextSibling != null) currentSibling = currentSibling.NextSibling;
 
                 // add new sibling
-                n.NextSibling = new TreeNode<T>(value);
+                currentSibling.NextSibling = new TreeNode<T>(value);
             }
         }
         //============================================================================
@@ -60,11 +60,11 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         {
             if (node == null) yield break;
             yield return node.Value;
-            var child = node.FirstChild;
-            while (child != null)
+            var childNode = node.FirstChild;
+            while (childNode != null)
             {
-                foreach (var v in Traverse(child)) yield return v;
-                child = child.NextSibling;
+                foreach (var value in Traverse(childNode)) yield return value;
+                childNode = childNode.NextSibling;
             }
         }
     }
@@ -82,6 +82,89 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         public int Height;
         public bool Red;
         public BinaryNode(T v) { Value = v; Height = 1; }
+    }
+    //===============================================================================
+
+    //===============================================================================
+    // Plain Binary Tree wrapper (level-order insert and traversals)
+    //===============================================================================
+    public class BinaryTree<T> : IEnumerable<T>
+    {
+        public BinaryNode<T> Root { get; private set; }
+
+        // Insert by level-order to keep tree as complete as possible
+        public void InsertLevelOrder(T value)
+        {
+            var newNode = new BinaryNode<T>(value);
+            if (Root == null) { Root = newNode; return; }
+
+            var q = new Queue<BinaryNode<T>>();
+            q.Enqueue(Root);
+            while (q.Count > 0)
+            {
+                var current = q.Dequeue();
+                if (current.Left == null) { current.Left = newNode; return; }
+                if (current.Right == null) { current.Right = newNode; return; }
+                q.Enqueue(current.Left);
+                q.Enqueue(current.Right);
+            }
+        }
+
+        public IEnumerable<T> InOrder()
+        {
+            foreach (var v in InOrder(Root)) yield return v;
+        }
+
+        IEnumerable<T> InOrder(BinaryNode<T> node)
+        {
+            if (node == null) yield break;
+            foreach (var v in InOrder(node.Left)) yield return v;
+            yield return node.Value;
+            foreach (var v in InOrder(node.Right)) yield return v;
+        }
+
+        public IEnumerable<T> PreOrder()
+        {
+            foreach (var v in PreOrder(Root)) yield return v;
+        }
+
+        IEnumerable<T> PreOrder(BinaryNode<T> node)
+        {
+            if (node == null) yield break;
+            yield return node.Value;
+            foreach (var v in PreOrder(node.Left)) yield return v;
+            foreach (var v in PreOrder(node.Right)) yield return v;
+        }
+
+        public IEnumerable<T> PostOrder()
+        {
+            foreach (var v in PostOrder(Root)) yield return v;
+        }
+
+        IEnumerable<T> PostOrder(BinaryNode<T> node)
+        {
+            if (node == null) yield break;
+            foreach (var v in PostOrder(node.Left)) yield return v;
+            foreach (var v in PostOrder(node.Right)) yield return v;
+            yield return node.Value;
+        }
+
+        public IEnumerable<T> LevelOrder()
+        {
+            if (Root == null) yield break;
+            var q = new Queue<BinaryNode<T>>();
+            q.Enqueue(Root);
+            while (q.Count > 0)
+            {
+                var current = q.Dequeue();
+                yield return current.Value;
+                if (current.Left != null) q.Enqueue(current.Left);
+                if (current.Right != null) q.Enqueue(current.Right);
+            }
+        }
+
+        public IEnumerator<T> GetEnumerator() { return LevelOrder().GetEnumerator(); }
+        IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
     }
     //===============================================================================
 
@@ -118,28 +201,28 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         public virtual TV Find(TK key)
         {
             // Start from the root node
-            var n = Root;
+            var current = Root;
 
             // Traverse the tree
-            while (n != null)
+            while (current != null)
             {
                 // Compare the key with the current node's key
-                var c = K.Compare(key, n.Value.Key);
-                if (c == 0) return n.Value.Val;
-                n = c < 0 ? n.Left : n.Right;
+                var cmp = K.Compare(key, current.Value.Key);
+                if (cmp == 0) return current.Value.Val;
+                current = cmp < 0 ? current.Left : current.Right;
             }
             return default;
         }
         // Recursive insert helper
         // Inserts a new node or updates an existing node with the given key and value
-        protected virtual BinaryNode<(TK, TV)> Insert(BinaryNode<(TK, TV)> n, TK k, TV v)
+        protected virtual BinaryNode<(TK, TV)> Insert(BinaryNode<(TK, TV)> node, TK key, TV value)
         {
-            if (n == null) return new BinaryNode<(TK, TV)>((k, v));
-            var c = K.Compare(k, n.Value.Item1);
-            if (c < 0) n.Left = Insert(n.Left, k, v);
-            else if (c > 0) n.Right = Insert(n.Right, k, v);
-            else n.Value = (k, v);
-            return n;
+            if (node == null) return new BinaryNode<(TK, TV)>((key, value));
+            var cmp = K.Compare(key, node.Value.Item1);
+            if (cmp < 0) node.Left = Insert(node.Left, key, value);
+            else if (cmp > 0) node.Right = Insert(node.Right, key, value);
+            else node.Value = (key, value);
+            return node;
         }
     }
     //===============================================================================
@@ -151,33 +234,33 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     public class AvlTree<TK, TV> : BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         // Height of a node
-        int H(BinaryNode<(TK, TV)> n) => n?.Height ?? 0;
+        int HeightOf(BinaryNode<(TK, TV)> node) => node?.Height ?? 0;
 
         // Balance factor of a node
-        int B(BinaryNode<(TK, TV)> n) => n == null ? 0 : H(n.Left) - H(n.Right);
+        int BalanceFactor(BinaryNode<(TK, TV)> node) => node == null ? 0 : HeightOf(node.Left) - HeightOf(node.Right);
 
         // Update height of a node
-        void U(BinaryNode<(TK, TV)> n) { if (n != null) n.Height = Math.Max(H(n.Left), H(n.Right)) + 1; }
+        void UpdateHeight(BinaryNode<(TK, TV)> node) { if (node != null) node.Height = Math.Max(HeightOf(node.Left), HeightOf(node.Right)) + 1; }
 
         // Right-Left rotation
-        BinaryNode<(TK, TV)> RL(BinaryNode<(TK, TV)> y)
-        { var x = y.Left; var T2 = x.Right; x.Right = y; y.Left = T2; U(y); U(x); return x; }
+        BinaryNode<(TK, TV)> RotateRight(BinaryNode<(TK, TV)> y)
+        { var x = y.Left; var T2 = x.Right; x.Right = y; y.Left = T2; UpdateHeight(y); UpdateHeight(x); return x; }
 
         // Left-Right rotation
-        BinaryNode<(TK, TV)> RR(BinaryNode<(TK, TV)> x)
-        { var y = x.Right; var T2 = y.Left; y.Left = x; x.Right = T2; U(x); U(y); return y; }
+        BinaryNode<(TK, TV)> RotateLeft(BinaryNode<(TK, TV)> x)
+        { var y = x.Right; var T2 = y.Left; y.Left = x; x.Right = T2; UpdateHeight(x); UpdateHeight(y); return y; }
 
         // Insert with balancing
-        protected override BinaryNode<(TK, TV)> Insert(BinaryNode<(TK, TV)> n, TK k, TV v)
+        protected override BinaryNode<(TK, TV)> Insert(BinaryNode<(TK, TV)> node, TK key, TV value)
         {
-            n = base.Insert(n, k, v);
-            U(n);
-            var bal = B(n);
-            if (bal > 1 && K.Compare(k, n.Left.Value.Item1) < 0) return RL(n);
-            if (bal < -1 && K.Compare(k, n.Right.Value.Item1) > 0) return RR(n);
-            if (bal > 1 && K.Compare(k, n.Left.Value.Item1) > 0) { n.Left = RR(n.Left); return RL(n); }
-            if (bal < -1 && K.Compare(k, n.Right.Value.Item1) < 0) { n.Right = RL(n.Right); return RR(n); }
-            return n;
+            node = base.Insert(node, key, value);
+            UpdateHeight(node);
+            var balance = BalanceFactor(node);
+            if (balance > 1 && K.Compare(key, node.Left.Value.Item1) < 0) return RotateRight(node);
+            if (balance < -1 && K.Compare(key, node.Right.Value.Item1) > 0) return RotateLeft(node);
+            if (balance > 1 && K.Compare(key, node.Left.Value.Item1) > 0) { node.Left = RotateLeft(node.Left); return RotateRight(node); }
+            if (balance < -1 && K.Compare(key, node.Right.Value.Item1) < 0) { node.Right = RotateRight(node.Right); return RotateLeft(node); }
+            return node;
         }
     }
     //===============================================================================
@@ -189,7 +272,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     public class RedBlackTree<TK, TV> : BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         // Check if a node is red
-        bool IsRed(BinaryNode<(TK, TV)> n) => n != null && n.Red;
+        bool IsRed(BinaryNode<(TK, TV)> node) => node != null && node.Red;
 
         // Left rotation
         BinaryNode<(TK, TV)> RotateLeft(BinaryNode<(TK, TV)> h)
@@ -204,17 +287,17 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         { h.Red = !h.Red; if (h.Left != null) h.Left.Red = !h.Left.Red; if (h.Right != null) h.Right.Red = !h.Right.Red; }
 
         // Insert with balancing
-        protected override BinaryNode<(TK, TV)> Insert(BinaryNode<(TK, TV)> h, TK k, TV v)
+        protected override BinaryNode<(TK, TV)> Insert(BinaryNode<(TK, TV)> node, TK key, TV value)
         {
-            if (h == null) { var n = new BinaryNode<(TK, TV)>((k, v)); n.Red = true; return n; }
-            var c = K.Compare(k, h.Value.Item1);
-            if (c < 0) h.Left = Insert(h.Left, k, v);
-            else if (c > 0) h.Right = Insert(h.Right, k, v);
-            else h.Value = (k, v);
-            if (IsRed(h.Right) && !IsRed(h.Left)) h = RotateLeft(h);
-            if (IsRed(h.Left) && IsRed(h.Left.Left)) h = RotateRight(h);
-            if (IsRed(h.Left) && IsRed(h.Right)) FlipColors(h);
-            return h;
+            if (node == null) { var created = new BinaryNode<(TK, TV)>((key, value)); created.Red = true; return created; }
+            var cmp = K.Compare(key, node.Value.Item1);
+            if (cmp < 0) node.Left = Insert(node.Left, key, value);
+            else if (cmp > 0) node.Right = Insert(node.Right, key, value);
+            else node.Value = (key, value);
+            if (IsRed(node.Right) && !IsRed(node.Left)) node = RotateLeft(node);
+            if (IsRed(node.Left) && IsRed(node.Left.Left)) node = RotateRight(node);
+            if (IsRed(node.Left) && IsRed(node.Right)) FlipColors(node);
+            return node;
         }
 
         // Override Insert to ensure root is always black
@@ -243,24 +326,24 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         public int Count => count;
 
         // Insert key-value pair into the heap
-        public void Insert(TK k, TV v)
+        public void Insert(TK key, TV value)
         {
-            if (root == null) { root = new HNode { Key = k, Val = v }; count = 1; return; }
-            var path = count + 1; var stack = new Stack<bool>();
-            while (path > 1) { stack.Push((path & 1) == 1); path >>= 1; }
-            var cur = root;
-            while (stack.Count > 1) { cur = stack.Pop() ? cur.Right : cur.Left; }
-            var node = new HNode { Key = k, Val = v, Parent = cur };
-            if (stack.Pop()) cur.Right = node; else cur.Left = node;
+            if (root == null) { root = new HNode { Key = key, Val = value }; count = 1; return; }
+            var pathIndex = count + 1; var stack = new Stack<bool>();
+            while (pathIndex > 1) { stack.Push((pathIndex & 1) == 1); pathIndex >>= 1; }
+            var current = root;
+            while (stack.Count > 1) { current = stack.Pop() ? current.Right : current.Left; }
+            var node = new HNode { Key = key, Val = value, Parent = current };
+            if (stack.Pop()) current.Right = node; else current.Left = node;
             count++;
             BubbleUp(node);
         }
 
         // Bubble up the node to maintain heap property
-        void BubbleUp(HNode n)
+        void BubbleUp(HNode node)
         {
-            while (n.Parent != null && n.Key.CompareTo(n.Parent.Key) < 0)
-            { Swap(n, n.Parent); n = n.Parent; }
+            while (node.Parent != null && node.Key.CompareTo(node.Parent.Key) < 0)
+            { Swap(node, node.Parent); node = node.Parent; }
         }
 
         // Bubble down the node to maintain heap property
@@ -273,13 +356,73 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         // Remove and return the minimum key-value pair from the heap
         public IEnumerable<TV> InOrder()
         {
-            foreach (var v in InOrder(root)) yield return v;
+            foreach (var value in InOrder(root)) yield return value;
         }
 
         // In-order traversal helper
-        IEnumerable<TV> InOrder(HNode n)
+        IEnumerable<TV> InOrder(HNode node)
         {
-            if (n == null) yield break; foreach (var v in InOrder(n.Left)) yield return v; yield return n.Val; foreach (var v in InOrder(n.Right)) yield return v;
+            if (node == null) yield break; foreach (var leftVal in InOrder(node.Left)) yield return leftVal; yield return node.Val; foreach (var rightVal in InOrder(node.Right)) yield return rightVal;
+        }
+
+        // Extract the minimum element (root) and re-heapify
+        public (TK, TV) ExtractMin()
+        {
+            if (root == null) return (default, default);
+            var min = (root.Key, root.Val);
+            if (count == 1) { root = null; count = 0; return min; }
+
+            var pathIndex = count; var stack = new Stack<bool>();
+            while (pathIndex > 1) { stack.Push((pathIndex & 1) == 1); pathIndex >>= 1; }
+            var current = root; HNode parent = null;
+            while (stack.Count > 0)
+            {
+                parent = current;
+                current = stack.Pop() ? current.Right : current.Left;
+            }
+
+            root.Key = current.Key; root.Val = current.Val;
+            if (parent.Right == current) parent.Right = null; else parent.Left = null;
+            count--;
+            BubbleDown(root);
+            return min;
+        }
+
+        void BubbleDown(HNode node)
+        {
+            while (node != null)
+            {
+                HNode smallest = node;
+                if (node.Left != null && node.Left.Key.CompareTo(smallest.Key) < 0) smallest = node.Left;
+                if (node.Right != null && node.Right.Key.CompareTo(smallest.Key) < 0) smallest = node.Right;
+                if (ReferenceEquals(smallest, node)) break;
+                Swap(node, smallest);
+                node = smallest;
+            }
+        }
+
+        public IEnumerable<TV> TopK(int k)
+        {
+            if (k <= 0 || root == null) yield break;
+
+            var temp = new MinHeap<TK, TV>();
+            var q = new Queue<HNode>();
+            q.Enqueue(root);
+            while (q.Count > 0)
+            {
+                var n = q.Dequeue();
+                temp.Insert(n.Key, n.Val);
+                if (n.Left != null) q.Enqueue(n.Left);
+                if (n.Right != null) q.Enqueue(n.Right);
+            }
+
+            int emitted = 0;
+            while (emitted < k && temp.Count > 0)
+            {
+                var pair = temp.ExtractMin();
+                yield return pair.Item2;
+                emitted++;
+            }
         }
     }
     //===============================================================================
@@ -313,16 +456,16 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         GraphNode head;
 
         // Add a new node to the graph
-        public GraphNode AddNode(T v)
+        public GraphNode AddNode(T value)
         {
-            var n = new GraphNode(v) { Next = head }; head = n; return n;
+            var node = new GraphNode(value) { Next = head }; head = node; return node;
         }
 
         // Add an undirected edge between two nodes with a given weight
-        public void AddUndirectedEdge(GraphNode a, GraphNode b, int w)
+        public void AddUndirectedEdge(GraphNode nodeA, GraphNode nodeB, int weight)
         {
-            a.First = new Edge { To = b, W = w, Next = a.First };
-            b.First = new Edge { To = a, W = w, Next = b.First };
+            nodeA.First = new Edge { To = nodeB, W = weight, Next = nodeA.First };
+            nodeB.First = new Edge { To = nodeA, W = weight, Next = nodeB.First };
         }
 
         // Depth-First Search (DFS) traversal of the graph
@@ -331,8 +474,8 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             var visited = new HashSet<GraphNode>(); var stack = new Stack<GraphNode>(); stack.Push(start);
             while (stack.Count > 0)
             {
-                var n = stack.Pop(); if (!visited.Add(n)) continue; yield return n.Val;
-                var e = n.First; while (e != null) { stack.Push(e.To); e = e.Next; }
+                var current = stack.Pop(); if (!visited.Add(current)) continue; yield return current.Val;
+                var edge = current.First; while (edge != null) { stack.Push(edge.To); edge = edge.Next; }
             }
         }
 
@@ -342,53 +485,53 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             var visited = new HashSet<GraphNode>(); var q = new Queue<GraphNode>(); q.Enqueue(start);
             while (q.Count > 0)
             {
-                var n = q.Dequeue(); if (!visited.Add(n)) continue; yield return n.Val;
-                var e = n.First; while (e != null) { q.Enqueue(e.To); e = e.Next; }
+                var current = q.Dequeue(); if (!visited.Add(current)) continue; yield return current.Val;
+                var edge = current.First; while (edge != null) { q.Enqueue(edge.To); edge = edge.Next; }
             }
         }
 
         // Return neighbors and weights for a node
-        public IEnumerable<(GraphNode To, int W)> Neighbors(GraphNode n)
+        public IEnumerable<(GraphNode To, int W)> Neighbors(GraphNode node)
         {
-            var e = n?.First; while (e != null) { yield return (e.To, e.W); e = e.Next; }
+            var edge = node?.First; while (edge != null) { yield return (edge.To, edge.W); edge = edge.Next; }
         }
 
         // Add or update an undirected edge, keeping the minimal weight and avoiding duplicates
-        public void AddOrUpdateUndirectedEdge(GraphNode a, GraphNode b, int w)
+        public void AddOrUpdateUndirectedEdge(GraphNode fromNode, GraphNode toNode, int weight)
         {
-            if (a == null || b == null || ReferenceEquals(a, b)) return;
+            if (fromNode == null || toNode == null || ReferenceEquals(fromNode, toNode)) return;
 
             void Upsert(GraphNode from, GraphNode to)
             {
                 // Try find existing edge
-                var e = from.First; Edge prev = null; while (e != null)
+                var edge = from.First; Edge prev = null; while (edge != null)
                 {
-                    if (ReferenceEquals(e.To, to))
+                    if (ReferenceEquals(edge.To, to))
                     {
                         // Keep minimal weight
-                        if (w < e.W) e.W = w;
+                        if (weight < edge.W) edge.W = weight;
                         return;
                     }
-                    prev = e; e = e.Next;
+                    prev = edge; edge = edge.Next;
                 }
                 // Not found: prepend new edge
-                from.First = new Edge { To = to, W = w, Next = from.First };
+                from.First = new Edge { To = to, W = weight, Next = from.First };
             }
 
-            Upsert(a, b);
-            Upsert(b, a);
+            Upsert(fromNode, toNode);
+            Upsert(toNode, fromNode);
         }
 
         // Enumerate all nodes for visualization
         public IEnumerable<GraphNode> Nodes()
         {
-            var n = head; while (n != null) { yield return n; n = n.Next; }
+            var node = head; while (node != null) { yield return node; node = node.Next; }
         }
 
         // Enumerate all edges (directed listing of undirected edges)
         public IEnumerable<(GraphNode From, GraphNode To, int W)> Edges()
         {
-            var n = head; while (n != null) { var e = n.First; while (e != null) { yield return (n, e.To, e.W); e = e.Next; } n = n.Next; }
+            var node = head; while (node != null) { var edge = node.First; while (edge != null) { yield return (node, edge.To, edge.W); edge = edge.Next; } node = node.Next; }
         }
 
         // Prim's Minimum Spanning Tree (MST) algorithm
@@ -396,39 +539,39 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         {
             // initialize
             var visited = new HashSet<GraphNode>();
-            var p = head; if (p == null) yield break; visited.Add(p);
+            var firstNode = head; if (firstNode == null) yield break; visited.Add(firstNode);
 
             // In this loop we repeatedly find the minimum weight edge that connects a visited node to an unvisited node
             while (true)
             {
 
                 // find the best edge
-                GraphNode bestU = null, bestV = null; int bestW = int.MaxValue; bool found = false;
-                var u = head;
+                GraphNode bestFrom = null, bestTo = null; int bestWeight = int.MaxValue; bool found = false;
+                var currentNode = head;
 
                 // iterate through all nodes
-                while (u != null)
+                while (currentNode != null)
                 {
 
                     // if the node is visited
-                    if (visited.Contains(u))
+                    if (visited.Contains(currentNode))
                     {
-                        var e = u.First;
+                        var edge = currentNode.First;
 
                         // iterate through all edges of the node
-                        while (e != null)
+                        while (edge != null)
                         {
-                            if (!visited.Contains(e.To) && e.W < bestW) { bestW = e.W; bestU = u; bestV = e.To; found = true; }
-                            e = e.Next;
+                            if (!visited.Contains(edge.To) && edge.W < bestWeight) { bestWeight = edge.W; bestFrom = currentNode; bestTo = edge.To; found = true; }
+                            edge = edge.Next;
                         }
                     }
                     // move to the next node
-                    u = u.Next;
+                    currentNode = currentNode.Next;
                 }
                 // if no edge found, break
                 if (!found) yield break;
-                visited.Add(bestV);
-                yield return (bestU, bestV, bestW);
+                visited.Add(bestTo);
+                yield return (bestFrom, bestTo, bestWeight);
             }
         }
 
@@ -441,26 +584,26 @@ namespace Municiple_Project_st10259527.Services.DataStructures
 
             while (true)
             {
-                GraphNode bestU = null, bestV = null; int bestW = int.MaxValue; bool found = false;
+                GraphNode bestFrom = null, bestTo = null; int bestWeight = int.MaxValue; bool found = false;
 
-                var u = head;
-                while (u != null)
+                var currentNode = head;
+                while (currentNode != null)
                 {
-                    if (visited.Contains(u))
+                    if (visited.Contains(currentNode))
                     {
-                        var e = u.First;
-                        while (e != null)
+                        var edge = currentNode.First;
+                        while (edge != null)
                         {
-                            if (!visited.Contains(e.To) && e.W < bestW) { bestW = e.W; bestU = u; bestV = e.To; found = true; }
-                            e = e.Next;
+                            if (!visited.Contains(edge.To) && edge.W < bestWeight) { bestWeight = edge.W; bestFrom = currentNode; bestTo = edge.To; found = true; }
+                            edge = edge.Next;
                         }
                     }
-                    u = u.Next;
+                    currentNode = currentNode.Next;
                 }
 
                 if (!found) yield break;
-                visited.Add(bestV);
-                yield return (bestU, bestV, bestW);
+                visited.Add(bestTo);
+                yield return (bestFrom, bestTo, bestWeight);
             }
         }
         

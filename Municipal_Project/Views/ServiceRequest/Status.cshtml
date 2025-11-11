@@ -7,8 +7,15 @@
 
 <style>
     .page-container {
-        min-height: calc(100vh - 200px);
-        padding-bottom: 2rem;
+        min-height: calc(100vh - 120px);
+        padding: 1.5rem 0 2rem;
+        max-width: 100%;
+        margin: 0;
+    }
+    
+    .main-content {
+        width: 100%;
+        padding: 0 1.5rem;
     }
 
     .action-card {
@@ -118,13 +125,17 @@
             }
     }
 </style>
-<div class="container page-container">
+<div class="page-container">
+    <div class="main-content">
     <div class="header-row pt-4">
         <div class="d-flex flex-column">
             <h2 class="welcome-text m-0">Service Request Status</h2>
             <p class="text-muted mb-0" style="font-size: 0.95rem;">Track and manage your service requests</p>
         </div>
-        <div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary d-flex align-items-center" href="@Url.Action("Index", "User") ">
+                <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+            </a>
             <a class="btn btn-primary d-flex align-items-center" href="@Url.Action("Create", "ServiceRequest")">
                 <i class="bi bi-plus-lg me-1"></i> New Request
             </a>
@@ -287,8 +298,28 @@
             </div>
         </div>
     </div>
+</div>
 
 @functions {
+    private string GetFriendlyStatusName(Municiple_Project_st10259527.Models.ServiceRequestStatus status)
+    {
+        switch (status)
+        {
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Submitted: 
+                return "Submitted - Awaiting Review";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.InProgress: 
+                return "In Progress";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.OnHold: 
+                return "On Hold";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed: 
+                return "Completed";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Cancelled: 
+                return "Cancelled";
+            default: 
+                return status.ToString();
+        }
+    }
+
     private void RenderNode(Municiple_Project_st10259527.Services.DataStructures.TreeNode<Municiple_Project_st10259527.Models.ServiceRequestModel> node)
     {
         if (node == null) return;
@@ -308,7 +339,7 @@
                 <td>@r.Title</td>
                 <td>@(string.IsNullOrWhiteSpace(r.Category) ? "General" : r.Category)</td>
                 <td>
-                    <span class="badge @GetStatusBadgeClass(r.Status)">@r.Status</span>
+                    <span class="badge @GetStatusBadgeClass(r.Status)">@GetFriendlyStatusName(r.Status)</span>
                     @{
                         var mq = Model?.QueueAheadIndex?.Find(r.RequestId);
                         // Only show when we have a non-zero total tracked
@@ -318,8 +349,8 @@
                         {
                             var ahead = mq.Value.Ahead;
                             var total = mq.Value.Total;
-                            <div class="small text-muted mt-1" title="Your place in the current queue for this status.">
-                                Position: @(ahead + 1) of @total
+                            <div class="small text-muted mt-1" title="Your request is number @(ahead + 1) in line out of @total total requests with this status.">
+                                <i class="bi bi-people-fill me-1"></i>@(ahead + 1) of @total in queue
                             </div>
                         }
                     }
@@ -338,12 +369,18 @@
     {
         switch (status)
         {
-            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Submitted: return "bg-warning text-dark";
-            case Municiple_Project_st10259527.Models.ServiceRequestStatus.InProgress: return "bg-info text-dark";
-            case Municiple_Project_st10259527.Models.ServiceRequestStatus.OnHold: return "bg-secondary";
-            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed: return "bg-success";
-            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Cancelled: return "bg-danger";
-            default: return "bg-secondary";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Submitted: 
+                return "bg-warning text-dark";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.InProgress: 
+                return "bg-info text-dark";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.OnHold: 
+                return "bg-secondary";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed: 
+                return "bg-success";
+            case Municiple_Project_st10259527.Models.ServiceRequestStatus.Cancelled: 
+                return "bg-danger";
+            default: 
+                return "bg-secondary";
         }
     }
 

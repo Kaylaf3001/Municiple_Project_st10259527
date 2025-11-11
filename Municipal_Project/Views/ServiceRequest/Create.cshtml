@@ -1,67 +1,175 @@
 @{
     ViewData["Title"] = "New Service Request";
+    Layout = "_Layout";
 }
+
 <style>
-    .card { border:1px solid #e2e8f0; border-radius:12px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.04); }
-    .card-header { background:#0d2b52; color:#fff; padding:16px 20px; border-top-left-radius:12px; border-top-right-radius:12px; }
-    .card-body { padding:24px; }
-    .form-label { font-weight:600; }
+    :root {
+        --primary-color: #007bff;
+        --secondary-text-color: #6c757d;
+        --border-color: #ced4da;
+        --input-focus-shadow: rgba(0, 123, 255, 0.25);
+    }
+
+    .create-service-container {
+        max-width: 600px; 
+        margin: 2rem auto;
+    }
+
+    .create-service-card {
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,.08); 
+        overflow: hidden;
+        background-color: #fff;
+    }
+
+    .create-service-header {
+        background: var(--primary-color);
+        color: #fff;
+        padding: 1.5rem 1.75rem; 
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+        .create-service-header h5 {
+            font-weight: 500;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+    .create-service-body {
+        padding: 1.75rem;
+    }
+
+    .form-section {
+        margin-bottom: 1.25rem; 
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #343a40; 
+        margin-bottom: .5rem;
+        display: block;
+    }
+
+    .form-control,
+    .form-select {
+        padding: .85rem 1rem; 
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 .2rem var(--input-focus-shadow);
+            outline: none;
+        }
+
+    textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .helper {
+        color: var(--secondary-text-color);
+        font-size: .875rem;
+        line-height: 1.5;
+    }
+
+    .actions {
+        margin-top: 1.75rem; 
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        padding: .75rem 1.25rem; 
+        font-size: 1.1rem; 
+        border-radius: 8px; 
+        font-weight: 600;
+        transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+
+        .btn-primary:hover {
+            background-color: #0056b3; 
+            border-color: #0056b3;
+        }
+
+    .text-center a {
+        color: var(--primary-color);
+        font-weight: 500;
+        margin-top: 1rem;
+        display: inline-block;
+    }
+
+    /* Icon for header */
+    .create-service-header i {
+        font-size: 1.5rem;
+    }
 </style>
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="m-0">Request a Service</h5>
+
+<div class="container py-4 create-service-container">
+    <div class="card create-service-card">
+        <div class="card-header create-service-header">
+            <h5 class="m-0"><i class="bi bi-pencil-square"></i> New Service Request</h5>
+        </div>
+        <div class="card-body create-service-body">
+            <p class="helper mb-4">Provide clear details to help us respond quickly and accurately.</p>
+            <form method="post" asp-action="Create" asp-controller="ServiceRequest">
+                @Html.AntiForgeryToken()
+
+                <div class="form-section">
+                    <label class="form-label" for="title">Title</label>
+                    <input id="title" name="title" class="form-control" placeholder="Brief summary (e.g. Large pothole on Main Street)" required />
                 </div>
-                <div class="card-body">
-                    <form method="post" asp-action="Create" asp-controller="ServiceRequest">
-                        @Html.AntiForgeryToken()
-                        <div class="mb-3">
-                            <label class="form-label">Title</label>
-                            <input name="title" class="form-control" placeholder="e.g. Pothole repair on Main Street" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <textarea name="description" rows="4" class="form-control" placeholder="Add helpful details for the team..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <input type="text"
-                                   name="Location"
-                                   placeholder="Example: Blouberg, Cape Town, Western Cape"
-                                   list="locationOptions"
-                                   autocomplete="off"
-                                   required />
-                            <datalist id="locationOptions">
-                                @foreach (var loc in ViewBag.WesternCapeLocations)
-                                {
-                                    <option value="@loc"></option>
-                                }
-                            </datalist>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Category</label>
-                            <select name="category" class="form-select">
-                                <option value="">Select a category</option>
-                                <option>Infrastructure</option>
-                                <option>Utilities</option>
-                                <option>Electrical</option>
-                                <option>Waste</option>
-                                <option>Health</option>
-                                <option>Safety</option>
-                                <option>General</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <small class="text-muted">A tracking code will be generated automatically after you submit. Priority is assigned by the municipal team.</small>
-                        </div>
-                        <div class="d-flex gap-2">
-                            <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest")">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Submit Request</button>
-                        </div>
-                    </form>
+
+                <div class="form-section">
+                    <label class="form-label" for="category">Category</label>
+                    <select id="category" name="category" class="form-select" required>
+                        <option value="">Select a category</option>
+                        <option>Infrastructure</option>
+                        <option>Utilities</option>
+                        <option>Electrical</option>
+                        <option>Waste</option>
+                        <option>Health</option>
+                        <option>Safety</option>
+                        <option>General</option>
+                    </select>
                 </div>
-            </div>
+
+                <div class="form-section">
+                    <label class="form-label" for="location">Location</label>
+                    <input id="location" type="text" name="Location" class="form-control" placeholder="Area, City, Province" list="locationOptions" autocomplete="off" required />
+                    <datalist id="locationOptions">
+                        @foreach (var loc in ViewBag.WesternCapeLocations)
+                        {
+                            <option value="@loc"></option>
+                        }
+                    </datalist>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea id="description" name="description" class="form-control" placeholder="Describe the problem and where to find it in detail" required></textarea>
+                </div>
+
+                <div class="helper mt-3">A unique tracking code will be generated for your request after you submit.</div>
+
+                <div class="actions pt-4">
+                    <button type="submit" class="btn btn-primary w-100">Submit Request</button>
+                    <div class="text-center mt-3">
+                        <a class="text-decoration-none" href="@Url.Action("Status", "ServiceRequest")">View my request status</a>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+
+<!-- Add Bootstrap Icons if not already included -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">

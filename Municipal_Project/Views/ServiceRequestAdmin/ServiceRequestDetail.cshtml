@@ -4,81 +4,212 @@
     Layout = "_AdminLayout";
 }
 
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h4 class="mb-0">Service Request #@Model.RequestId</h4>
-                        <span class="badge @(Model.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed ? "bg-success" : 
-                                         Model.Status == Municiple_Project_st10259527.Models.ServiceRequestStatus.InProgress ? "bg-info" : 
-                                         "bg-warning") text-dark">@Model.Status</span>
+<div class="container-fluid py-4">
+    <div class="row justify-content-center g-4">
+        <div class="col-12 col-xl-10">
+            <!-- Alerts -->
+            <div class="alerts-container">
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <div>@TempData["SuccessMessage"]</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <h3 class="h5">@Model.Title</h3>
-                        <p class="text-muted mb-0">Submitted on @Model.SubmittedAt.ToString("f")</p>
-                        <span class="badge bg-light text-dark">Priority @Model.Priority</span>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div>@TempData["ErrorMessage"]</div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-
-                    <div class="mb-4">
-                        <h5 class="mb-3">Details</h5>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Category:</strong> @Model.Category</p>
-                                <p><strong>Location:</strong> @Model.Location</p>
-                            </div>
-                            <div class="col-md-6">
-                                <p><strong>Status:</strong> @Model.Status</p>
-                                @if (Model.CompletedAt.HasValue)
-                                {
-                                    <p><strong>Completed On:</strong> @Model.CompletedAt.Value.ToString("f")</p>
-                                }
+                }
+            </div>
+            <!-- Main Card -->
+            <div class="card border-0 shadow-sm overflow-hidden mb-4">
+                <!-- Card Header -->
+                <div class="card-header bg-primary bg-gradient text-white py-3">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+                        <div>
+                            <h1 class="h4 mb-1 fw-bold">Service Request #@Model.RequestId</h1>
+                            <div class="d-flex align-items-center flex-wrap gap-2">
+                                <span class="badge bg-white text-primary fw-normal">
+                                    <i class="bi bi-upc-scan me-1"></i> @Model.TrackingCode
+                                </span>
+                                <span class="badge @GetStatusBadgeClass(Model.Status) text-white">
+                                    <i class="@GetStatusIcon(Model.Status) me-1"></i>@Model.Status
+                                </span>
+                                <span class="badge @GetPriorityBadgeClass(Model.Priority)">
+                                    <i class="bi bi-flag-fill me-1"></i>Priority @Model.Priority
+                                </span>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <h5 class="mb-3">Description</h5>
-                        <div class="p-3 bg-light rounded">
-                            @Model.Description
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
-                        <a asp-action="ManageServiceRequest" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left"></i> Back to List
-                        </a>
-                        <div class="btn-group">
-                            @if (Model.Status != Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed)
-                            {
-                                <form id="completeRequestForm" asp-action="CompleteRequest" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="id" value="@Model.RequestId" />
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-check-circle"></i> Mark as Completed
-                                    </button>
-                                </form>
-                            }
-                            <a asp-action="Edit" asp-route-id="@Model.RequestId" class="btn btn-primary">
-                                <i class="bi bi-pencil"></i> Edit
+                        <div class="d-flex gap-2">
+                            <a asp-action="ManageServiceRequest" class="btn btn-outline-light btn-sm">
+                                <i class="bi bi-arrow-left me-1"></i> Back to List
                             </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <!-- Left Column - Request Details -->
+                        <div class="col-lg-8">
+                            <!-- Request Header -->
+                            <div class="mb-4">
+                                <h2 class="h5 mb-2 fw-bold text-dark">@Model.Title</h2>
+                                <div class="d-flex flex-wrap align-items-center gap-2 text-muted small mb-3">
+                                    <span class="d-flex align-items-center">
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        Submitted @Model.SubmittedAt.ToString("f")
+                                    </span>
+                                    @if (Model.CompletedAt.HasValue)
+                                    {
+                                        <span class="mx-1">•</span>
+                                        <span class="d-flex align-items-center text-success">
+                                            <i class="bi bi-check2-circle me-1"></i>
+                                            Completed @Model.CompletedAt.Value.ToString("f")
+                                        </span>
+                                    }
+                                </div>
+
+                                <!-- Description -->
+                                <div class="card bg-light-subtle border-0 mb-4">
+                                    <div class="card-body p-3">
+                                        <h6 class="text-uppercase text-muted small fw-bold mb-3">Description</h6>
+                                        <div class="text-dark">@Model.Description</div>
+                                    </div>
+                                </div>
+
+                                <!-- Details Grid -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light-subtle rounded-2 h-100">
+                                            <div class="text-muted small mb-1">Category</div>
+                                            <div class="fw-medium d-flex align-items-center">
+                                                <i class="bi bi-tag-fill text-primary me-2"></i>
+                                                @Model.Category
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="p-3 bg-light-subtle rounded-2 h-100">
+                                            <div class="text-muted small mb-1">Location</div>
+                                            <div class="fw-medium d-flex align-items-center">
+                                                <i class="bi bi-geo-alt-fill text-primary me-2"></i>
+                                                @Model.Location
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Request Stats -->
+                                    <div class="col-12">
+                                        <div class="card border-0 shadow-sm">
+                                            <div class="card-header bg-light-subtle py-2">
+                                                <h6 class="mb-0 fw-bold"><i class="bi bi-speedometer2 me-2"></i>Request Stats</h6>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <ul class="list-group list-group-flush">
+                                                    @if (Model.CompletedAt.HasValue)
+                                                    {
+                                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                            <span class="text-muted small">Resolution Time</span>
+                                                            <span class="badge bg-success rounded-pill">@((Model.CompletedAt.Value - Model.SubmittedAt).Days) days</span>
+                                                        </li>
+                                                    }
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        <span class="text-muted small">Last Updated</span>
+                                                        <span class="text-muted small">@Model.SubmittedAt.ToString("MMM d, yyyy")</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Column - Actions -->
+                        <div class="col-lg-4">
+                            <!-- Status Update Card -->
+                            <div class="card border-0 shadow-sm mb-4">
+                                <div class="card-header bg-light-subtle py-3">
+                                    <h3 class="h6 mb-0 fw-bold"><i class="bi bi-sliders me-2"></i>Update Request</h3>
+                                </div>
+                                <div class="card-body">
+                                    <form id="updateForm" asp-action="Update" asp-controller="ServiceRequestAdmin" method="post" class="needs-validation" novalidate>
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@Model.RequestId" />
+                                        <input type="hidden" id="statusInput" name="status" value="@Model.Status" />
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label fw-medium small text-muted">Status</label>
+                                            <select id="statusSelect" class="form-select form-select-sm" required>
+                                                @foreach (var status in Enum.GetValues(typeof(Municiple_Project_st10259527.Models.ServiceRequestStatus)))
+                                                {
+                                                    <option value="@((int)status)" selected='@((int)status == (int)Model.Status)'>
+                                                        @status
+                                                    </option>
+                                                }
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-4">
+                                            <label class="form-label fw-medium small text-muted">Priority</label>
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-text bg-light"><i class="bi bi-flag-fill text-primary"></i></span>
+                                                <input type="number" 
+                                                       class="form-control @GetPriorityInputClass(Model.Priority)" 
+                                                       name="priority" 
+                                                       min="1" 
+                                                       max="5" 
+                                                       value="@Model.Priority" 
+                                                       required
+                                                       onchange="this.className = 'form-control ' + getPriorityClass(this.value);" />
+                                            </div>
+                                            <div class="form-text small">1 (Lowest) to 5 (Highest)</div>
+                                        </div>
+                                        
+                                        <button id="saveChangesBtn" type="button" class="btn btn-primary w-100 mb-3">
+                                            <i class="bi bi-save me-1"></i> Save Changes
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Empty space to maintain layout -->
+                            <div class="mt-4"></div>
+                        </div>
+                        
+                        <!-- Complete Request Modal -->
+                        <div class="modal fade" id="completeRequestModal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header bg-light">
+                                        <h5 class="modal-title">Complete Service Request</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure you want to mark this request as completed?</p>
+                                        <form id="completeRequestForm" asp-action="CompleteRequest" method="post" class="mt-3">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@Model.RequestId" />
+                                            <div class="d-flex justify-content-end gap-2">
+                                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="bi bi-check-circle me-1"></i> Confirm Complete
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,7 +234,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a id="viewAllLink" href="@Url.Action("ManageServiceRequest")?startId=@Model.RequestId" class="btn btn-primary">
+                <a id="viewAllLink" href="@Url.Action("ManageServiceRequest", new { startId = Model.RequestId })" class="btn btn-primary">
                     View All Related
                 </a>
             </div>
@@ -114,85 +245,121 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Auto-hide alerts after 5 seconds
         $(document).ready(function() {
-            // Auto-hide alerts
+            // Auto-hide alerts after 5 seconds
             window.setTimeout(function() {
                 $('.alert').fadeTo(500, 0).slideUp(500, function(){
                     $(this).remove(); 
                 });
             }, 5000);
 
-            // Handle form submission
+            // Status change only syncs hidden input; Save button decides flow
+            $('#statusSelect').on('change', function() {
+                $('#statusInput').val($(this).val());
+            });
+            
+            // Handle form submission from the modal (fetch and show related recommendations)
             $('#completeRequestForm').on('submit', function(e) {
                 e.preventDefault();
-                
-                var $form = $(this);
-                var $button = $form.find('button[type="submit"]');
+                const $form = $(this);
+                const $button = $form.find('button[type="submit"]');
                 $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Completing...');
-                
+
                 $.ajax({
                     url: $form.attr('action'),
                     type: 'POST',
                     data: $form.serialize(),
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success) {
-                            // Show related requests if any
-                            if (response.relatedRequests && response.relatedRequests.length > 0) {
-                                var relatedList = $('#relatedRequestsList');
-                                relatedList.empty();
-                                
-                                response.relatedRequests.forEach(function(request) {
-                                    relatedList.append(`
-                                        <a href="/ServiceRequestAdmin/Detail/${request.id}" 
-                                           class="list-group-item list-group-item-action"
-                                           target="_blank"
-                                           onclick="event.stopPropagation(); window.open(this.href, '_blank'); return false;">
-                                            <div class="d-flex w-100 justify-content-between">
-                                                <h6 class="mb-1">${escapeHtml(request.title)}</h6>
-                                                <span class="badge bg-light text-dark">Priority ${request.priority}</span>
-                                            </div>
-                                            <p class="mb-1">${escapeHtml(request.category)} • ${escapeHtml(request.location)}</p>
-                                            <div class="small text-muted d-flex align-items-center">
-                                                <span>Reason: ${escapeHtml(request.reason || 'Related')}</span>
-                                                <i class="bi bi-info-circle ms-2" data-bs-toggle="tooltip" title="${escapeHtml(request.reason || 'Related')}"></i>
-                                            </div>
-                                            <small class="text-muted">Submitted on ${request.submittedAt}</small>
-                                        </a>
-                                    `);
-                                });
-                                // Initialize tooltips for newly added items
-                                var tts = [].slice.call(document.querySelectorAll('#relatedRequestsList [data-bs-toggle="tooltip"]'));
-                                tts.forEach(function (el) { new bootstrap.Tooltip(el); });
-                                
-                                // Update the view all link
-                                $('#viewAllLink').attr('href', `/ServiceRequestAdmin/ManageServiceRequest?startId=${response.relatedRequests[0].id}`);
-                                
-                                // Show the modal
-                                var modal = new bootstrap.Modal(document.getElementById('relatedRequestsModal'));
-                                modal.show();
-                                
-                                // Redirect after modal is hidden
-                                $('#relatedRequestsModal').on('hidden.bs.modal', function () {
-                                    window.location.href = response.redirectUrl;
-                                });
-                            } else {
-                                // No related requests, just redirect
-                                window.location.href = response.redirectUrl;
-                            }
+                    dataType: 'json'
+                }).done(function(response){
+                    const modalEl = document.getElementById('relatedRequestsModal');
+                    const relatedList = $('#relatedRequestsList');
+                    relatedList.empty();
+                    if (response && response.success) {
+                        if (response.relatedRequests && response.relatedRequests.length > 0) {
+                            response.relatedRequests.forEach(function(request) {
+                                relatedList.append(`
+                                    <a href="/ServiceRequestAdmin/Detail/${request.id}" class="list-group-item list-group-item-action" target="_blank">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1">${escapeHtml(request.title)}</h6>
+                                            <span class="badge bg-light text-dark">Priority ${request.priority}</span>
+                                        </div>
+                                        <p class="mb-1">${escapeHtml(request.category)} • ${escapeHtml(request.location)}</p>
+                                        <div class="small text-muted d-flex align-items-center">
+                                            <span>Reason: ${escapeHtml(request.reason || 'Related')}</span>
+                                            <i class="bi bi-info-circle ms-2" data-bs-toggle="tooltip" title="${escapeHtml(request.reason || 'Related')}"></i>
+                                        </div>
+                                        <small class="text-muted">Submitted on ${request.submittedAt}</small>
+                                    </a>
+                                `);
+                            });
+                            // Init tooltips for new items
+                            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
                         } else {
-                            alert(response.error || 'An error occurred while completing the request.');
-                            $button.prop('disabled', false).html('<i class="bi bi-check-circle"></i> Mark as Completed');
+                            relatedList.append('<div class="list-group-item">No related requests found.</div>');
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                        alert('An error occurred while processing your request. Please try again.');
-                        $button.prop('disabled', false).html('<i class="bi bi-check-circle"></i> Mark as Completed');
+                        // Show the related modal to demonstrate data structures
+                        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+                    } else {
+                        alert('Request completed but could not fetch related recommendations.');
                     }
+                }).fail(function(){
+                    alert('An error occurred while completing the request.');
+                }).always(function(){
+                    $button.prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i> Confirm Complete');
                 });
             });
+
+            // Save button flow: if selecting Completed -> save updates then fetch recommendations; else submit
+            $('#saveChangesBtn').on('click', function(e){
+                e.preventDefault();
+                const selected = $('#statusSelect').val();
+                const completedStatusId = @((int)Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed);
+                // Sync hidden status input with current selection
+                $('#statusInput').val(selected);
+                if (parseInt(selected) === completedStatusId){
+                    const $updateForm = $('#updateForm');
+                    const updateUrl = $updateForm.attr('action');
+                    // First persist changes (including priority and status)
+                    $.ajax({ url: updateUrl, type: 'POST', data: $updateForm.serialize() })
+                        .always(function(){
+                            // Then call CompleteRequest to get related items and show the related modal
+                            $('#completeRequestForm').trigger('submit');
+                        });
+                } else {
+                    $('#updateForm').trigger('submit');
+                }
+            });
+
+            // Handle main form submission
+            $('#updateForm').on('submit', function(e) {
+                e.preventDefault();
+                const $form = $(this);
+                const $button = $('#saveChangesBtn');
+                const originalButtonText = $button.html();
+                $button.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+                // Submit the form normally (not via AJAX)
+                this.submit();
+            });
+            
+            // Handle modal close
+            $('#completeRequestModal').on('hidden.bs.modal', function () {
+                // Reset the modal state
+                $(this).removeData('new-status');
+                const $button = $('#completeRequestForm button[type="submit"]');
+                $button.prop('disabled', false).html('<i class="bi bi-check-circle me-1"></i> Confirm Complete');
+            });
+
+            // Function to update priority input border color
+            window.getPriorityClass = function(priority) {
+                switch(parseInt(priority)) {
+                    case 1: return 'border-very-low-priority';
+                    case 2: return 'border-low-priority';
+                    case 3: return 'border-medium-priority';
+                    case 4: return 'border-high-priority';
+                    case 5: return 'border-urgent-priority';
+                    default: return '';
+                }
+            };
         });
     </script>
     <script>
@@ -209,33 +376,181 @@
     </script>
 }
 
+@functions {
+    string GetStatusBadgeClass(Municiple_Project_st10259527.Models.ServiceRequestStatus status)
+    {
+        return status.ToString() switch
+        {
+            "Completed" => "bg-success",
+            "InProgress" => "bg-info",
+            "Cancelled" => "bg-danger",
+            "OnHold" => "bg-secondary",
+            _ => "bg-warning"
+        };
+    }
+    
+    string GetStatusIcon(Municiple_Project_st10259527.Models.ServiceRequestStatus status)
+    {
+        return status.ToString() switch
+        {
+            "Completed" => "bi-check-circle-fill",
+            "InProgress" => "bi-arrow-repeat",
+            "Cancelled" => "bi-x-circle-fill",
+            "OnHold" => "bi-pause-fill",
+            _ => "bi-hourglass-split"
+        };
+    }
+    
+    string GetPriorityBadgeClass(int priority)
+    {
+        return priority switch
+        {
+            1 => "bg-very-low-priority",
+            2 => "bg-low-priority",
+            3 => "bg-medium-priority",
+            4 => "bg-high-priority",
+            5 => "bg-urgent-priority",
+            _ => "bg-secondary"
+        };
+    }
+    
+    string GetPriorityInputClass(int priority)
+    {
+        return priority switch
+        {
+            1 => "border-very-low-priority",
+            2 => "border-low-priority",
+            3 => "border-medium-priority",
+            4 => "border-high-priority",
+            5 => "border-urgent-priority",
+            _ => ""
+        };
+    }
+}
+
 <style>
+    :root {
+        --bs-primary: #4e73df;
+        --bs-success: #1cc88a;
+        --bs-info: #36b9cc;
+        --bs-warning: #f6c23e;
+        --bs-danger: #e74a3b;
+        --bs-light: #f8f9fc;
+        --bs-light-subtle: #f3f6f9;
+        --bs-gray-100: #f8f9fc;
+        --bs-gray-200: #eaecf4;
+        --bs-gray-300: #dddfeb;
+        --bs-gray-400: #d1d3e2;
+        --bs-gray-500: #b7b9cc;
+        --bs-gray-600: #858796;
+        --bs-gray-700: #6e707e;
+        --bs-gray-800: #5a5c69;
+        --bs-gray-900: #3a3b45;
+    }
+    
+    body {
+        background-color: #f8f9fc;
+    }
+    
     .card {
         border: none;
-        border-radius: 10px;
-        overflow: hidden;
+        border-radius: 0.5rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.05) !important;
     }
     
     .card-header {
-        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
     
-    .card-body {
-        padding: 2rem;
+    /* Priority Badges */
+    .bg-very-low-priority { background-color: #d1e7dd; color: #0f5132; }
+    .bg-low-priority { background-color: #cff4fc; color: #055160; }
+    .bg-medium-priority { background-color: #fff3cd; color: #664d03; }
+    .bg-high-priority { background-color: #ffe3e3; color: #a71d2a; }
+    .bg-urgent-priority { background-color: #f8d7da; color: #842029; }
+    
+    /* Priority Input Borders */
+    .border-very-low-priority { border-color: #d1e7dd !important; }
+    .border-low-priority { border-color: #cff4fc !important; }
+    .border-medium-priority { border-color: #fff3cd !important; }
+    .border-high-priority { border-color: #ffe3e3 !important; }
+    .border-urgent-priority { border-color: #f8d7da !important; }
+    
+    /* Form Styling */
+    .form-control, .form-select {
+        border-radius: 0.375rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        border: 1px solid #d1d3e2;
     }
     
-    .badge {
-        font-size: 0.9rem;
-        padding: 0.4em 0.8em;
+    .form-control:focus, .form-select:focus {
+        border-color: #b7b9cc;
+        box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.1);
     }
     
+    /* Buttons */
     .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: all 0.2s;
     }
     
-    .btn i {
-        font-size: 1.1em;
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .btn-primary {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+    
+    .btn-primary:hover {
+        background-color: #2e59d9;
+        border-color: #2653d4;
+    }
+    
+    /* Alerts */
+    .alert {
+        border: none;
+        border-radius: 0.375rem;
+        padding: 1rem 1.25rem;
+    }
+    
+    /* Badges */
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+        border-radius: 0.25rem;
+    }
+    
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .card-body {
+            padding: 1.25rem;
+        }
+        
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+    
+    /* Animation for status change */
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .card {
+        animation: fadeIn 0.3s ease-out;
     }
 </style>

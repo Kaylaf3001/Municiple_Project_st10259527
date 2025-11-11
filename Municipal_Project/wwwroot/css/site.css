@@ -21,6 +21,12 @@ body {
   margin-bottom: 60px;
 }
 
+/* Ensure content clears fixed headers and footer sits at bottom */
+.page-container {
+  padding-top: 1.25rem; /* space below navbar */
+  padding-bottom: 1.5rem; /* space above footer */
+}
+
 /* --- Global UI refinements --- */
 /* Ensure badges are not clipped and look like pills */
 .badge {
