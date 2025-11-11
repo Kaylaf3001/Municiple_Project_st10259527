@@ -1,4 +1,5 @@
-@model (Municiple_Project_st10259527.Services.DataStructures.BasicTree<Municiple_Project_st10259527.Models.ServiceRequestModel> Tree, Municiple_Project_st10259527.Services.DataStructures.MinHeap<int, Municiple_Project_st10259527.Models.ServiceRequestModel> Heap, Municiple_Project_st10259527.Services.DataStructures.Graph<Municiple_Project_st10259527.Models.ServiceRequestModel> Graph)
+@using Municiple_Project_st10259527.Services.DataStructures
+@model (Municiple_Project_st10259527.Services.DataStructures.BasicTree<Municiple_Project_st10259527.Models.ServiceRequestModel> Tree, Municiple_Project_st10259527.Services.DataStructures.MinHeap<ServiceRequestPriority, Municiple_Project_st10259527.Models.ServiceRequestModel> Heap, Municiple_Project_st10259527.Services.DataStructures.Graph<Municiple_Project_st10259527.Models.ServiceRequestModel> Graph)
 
 @{
     ViewData["Title"] = "Manage Service Requests";
@@ -183,7 +184,7 @@
                 <div class="card-header">Next by Priority</div>
                 <div class="card-body">
                     @{
-                        // Model.Heap?.Peek() returns a nullable tuple: (int, ServiceRequestModel)?
+                        // Model.Heap?.Peek() returns a nullable tuple: (ServiceRequestPriority, ServiceRequestModel)?
                         var topNullable = Model.Heap?.Peek();
 
                         // Check the nullable before accessing Item1/Item2
@@ -193,11 +194,15 @@
                         }
                         else
                         {
-                            var top = topNullable.Value; // (int, ServiceRequestModel)
+                            var top = topNullable.Value; // (ServiceRequestPriority, ServiceRequestModel)
                                                          <div class="d-flex align-items-center justify-content-between">
                                                              <div>
                                                                  <div class="fw-semibold">@top.Item2.Title</div>
-                                                                 <div class="small text-muted">Priority: @top.Item1 • ID: @top.Item2.RequestId</div>
+                                                                 <div class="small text-muted">
+                                                                    Priority: @top.Item2.Priority • 
+                                                                    Submitted: <span class="local-datetime" data-utc="@top.Item2.SubmittedAt.ToString("o")">@top.Item2.SubmittedAt.ToString("g")</span> • 
+                                                                    ID: @top.Item2.RequestId
+                                                                </div>
                                                              </div>
                                                              <span class="badge bg-secondary">@top.Item2.Status</span>
                                                          </div>
@@ -425,7 +430,23 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+// Convert UTC dates to local time
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.local-datetime').forEach(function(element) {
+        const utcDate = new Date(element.getAttribute('data-utc'));
+        if (!isNaN(utcDate.getTime())) {
+            element.textContent = utcDate.toLocaleString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+    });
+
+    // Existing modal code
     const requestModal = document.getElementById('requestModal');
     requestModal.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;

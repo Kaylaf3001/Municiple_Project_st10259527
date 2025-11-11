@@ -23,8 +23,10 @@ namespace Municiple_Project_st10259527.Services
         //====================================================================
         public (int Priority, string Category) InferPriorityAndCategory(string title, string description, string preferredCategory = null)
         {
-            return RequestPriorityInferenceService.Infer(title, description, preferredCategory);
+            var result = RequestPriorityInferenceService.Infer(title, description, preferredCategory);
+            return (result.Priority, result.Category);
         }
+
         //====================================================================
 
         //====================================================================
@@ -52,7 +54,7 @@ namespace Municiple_Project_st10259527.Services
         //====================================================================
         // Building Global Indexes
         //====================================================================
-        public async Task<(BasicTree<ServiceRequestModel> Tree, MinHeap<int, ServiceRequestModel> Heap, Graph<ServiceRequestModel> Graph)> BuildGlobalIndexesAsync(
+        public async Task<(BasicTree<ServiceRequestModel> Tree, MinHeap<ServiceRequestPriority, ServiceRequestModel> Heap, Graph<ServiceRequestModel> Graph)> BuildGlobalIndexesAsync(
             string statusFilter = null,
             string categoryFilter = null,
             int? priorityFilter = null,
@@ -61,7 +63,7 @@ namespace Municiple_Project_st10259527.Services
             // Calling the data structures from the Services/DataStructures folder
             var tree = new BasicTree<ServiceRequestModel>();
             TreeNode<ServiceRequestModel> root = null;
-            var heap = new MinHeap<int, ServiceRequestModel>();
+            var heap = new MinHeap<ServiceRequestPriority, ServiceRequestModel>();
             var graph = new Graph<ServiceRequestModel>();
             Graph<ServiceRequestModel>.GraphNode prev = null;
 
@@ -96,8 +98,12 @@ namespace Municiple_Project_st10259527.Services
                 // else, add the request as a child of the root
                 else tree.AddChild(root, r);
 
-                // Insert into Heap
-                heap.Insert(r.Priority, r);
+                // Insert into Heap if not completed
+                if (r.Status != ServiceRequestStatus.Completed)
+                {
+                    var priority = new ServiceRequestPriority(r);
+                    heap.Insert(priority, r);
+                }
 
                 // Build graph
                 var node = graph.AddNode(r);

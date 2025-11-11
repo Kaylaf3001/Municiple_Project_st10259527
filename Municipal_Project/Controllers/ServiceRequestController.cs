@@ -95,12 +95,21 @@ namespace Municiple_Project_st10259527.Controllers
                 Location = string.IsNullOrWhiteSpace(location) ? null : location.Trim(),
                 Status = ServiceRequestStatus.Submitted,
                 Priority = inferred.Priority,
-                Category = string.IsNullOrWhiteSpace(category) ? inferred.Category : category
+                Category = string.IsNullOrWhiteSpace(category) ? inferred.Category : category,
+                SubmittedAt = DateTime.UtcNow 
             };
 
-            // Save to Repository
-            await _repo.AddAsync(req);
-            return RedirectToAction("Status");
+            // Save to repository
+            try
+            {
+                await _repo.AddAsync(req);
+                return RedirectToAction("Status", new { trackingCode = req.TrackingCode });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "An error occurred while saving your request. Please try again.");
+                return View();
+            }
         }
         //==============================================================================================
 

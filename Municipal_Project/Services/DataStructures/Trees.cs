@@ -21,15 +21,6 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     // I implements IEnumerable<T> for easy traversal
     // This method is used to manage hierarchical relationships between service requests
     //===============================================================================
-    /// <summary>
-    /// Basic general tree using first-child/next-sibling representation.
-    /// </summary>
-    /// <remarks>
-    /// Operations:
-    /// - SetRoot: O(1)
-    /// - AddChild: O(k) where k is number of existing children (to append at end)
-    /// - Traversal (pre-order): O(n)
-    /// </remarks>
     public class BasicTree<T> : IEnumerable<T>
     {
         // setting root
@@ -83,9 +74,6 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Binary Search Tree, AVL Tree, Red-Black Tree, Min-Heap, Graph
     //===============================================================================
-    /// <summary>
-    /// Binary node used by BinarySearchTree/AVL/Red-Black trees.
-    /// </summary>
     public class BinaryNode<T>
     {
         public T Value;
@@ -100,18 +88,13 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Ikey is used to comapare keys in the tree
     //===============================================================================
-    /// <summary>
-    /// Abstraction for comparing keys.
-    /// </summary>
     public interface IKey<TK> { int Compare(TK a, TK b); }
     //===============================================================================
 
     //===============================================================================
     // ComparableKey uses IComparable to compare keys
     //===============================================================================
-    /// <summary>
-    /// Default comparer using IComparable.
-    /// </summary>
+
     public class ComparableKey<TK> : IKey<TK> where TK : IComparable<TK>
     {
         // compare two keys
@@ -122,12 +105,6 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Binary Search Tree
     //===============================================================================
-    /// <summary>
-    /// Unbalanced Binary Search Tree.
-    /// </summary>
-    /// <remarks>
-    /// Average-case operations: Insert/Find O(log n). Worst-case O(n).
-    /// </remarks>
     public class BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         // Creating a new ComparableKey instance to compare keys
@@ -136,16 +113,8 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         // Root node of the tree
         protected BinaryNode<(TK Key, TV Val)> Root;
 
-        // Insert key-value pair into the tree
-        /// <summary>
-        /// Insert key/value. Amortized O(log n), worst O(n).
-        /// </summary>
         public virtual void Insert(TK key, TV val) { Root = Insert(Root, key, val); }
 
-        // Find value by key in the tree
-        /// <summary>
-        /// Find value by key. Amortized O(log n), worst O(n).
-        /// </summary>
         public virtual TV Find(TK key)
         {
             // Start from the root node
@@ -178,12 +147,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // AVL Tree
     //===============================================================================
-    /// <summary>
-    /// AVL Tree: self-balancing BST.
-    /// </summary>
-    /// <remarks>
-    /// Operations Insert/Find O(log n).
-    /// </remarks>
+
     public class AvlTree<TK, TV> : BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         // Height of a node
@@ -221,12 +185,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Red-Black Tree
     //===============================================================================
-    /// <summary>
-    /// Left-leaning Red-Black Tree variant.
-    /// </summary>
-    /// <remarks>
-    /// Operations Insert/Find O(log n).
-    /// </remarks>
+
     public class RedBlackTree<TK, TV> : BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         // Check if a node is red
@@ -271,12 +230,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Min-Heap
     //===============================================================================
-    /// <summary>
-    /// Min-Heap based on binary tree stored with explicit node links.
-    /// </summary>
-    /// <remarks>
-    /// Insert O(log n), Peek O(1), InOrder traversal O(n) (not heap-ordered sequence).
-    /// </remarks>
+
     public class MinHeap<TK, TV> where TK : IComparable<TK>
     {
         // Heap Node
