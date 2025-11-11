@@ -4,6 +4,37 @@
     ViewData["Title"] = "My Reports";
 }
 
+<style>
+    .table-responsive {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+        background: white;
+    }
+
+    .table {
+        margin-bottom: 0;
+        --bs-table-hover-bg: rgba(13, 43, 82, 0.03);
+    }
+
+        .table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e9ecef;
+            color: #64748b;
+        }
+
+        .table td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+            border-color: #f1f5f9;
+        }
+</style>
+
 <div class="container mt-4">
     <!-- Page Header -->
     <div class="d-flex align-items-center justify-content-between mb-4">
@@ -96,7 +127,7 @@
                             <th>Category</th>
                             <th>Date Reported</th>
                             <th>Status</th>
-                            <th class="text-center">Actions</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -114,7 +145,7 @@
                                             @report.Status
                                         </span>
                                     </td>
-                                    <td class="text-center">
+                                    <td class="text-end">
                                         <a href="@Url.Action("ViewReport", "User", new { id = report.ReportId })"
                                            class="btn btn-outline-info btn-sm"
                                            title="View report details">

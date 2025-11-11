@@ -121,35 +121,35 @@
             color: #1a1a1a;
         }
 
-        .recent-activity table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            font-size: 1.15rem;
-            table-layout: fixed;
+    /* Unified table design */
+    .table-responsive {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+        background: white;
+    }
+
+    .table {
+        margin-bottom: 0;
+        --bs-table-hover-bg: rgba(13, 43, 82, 0.03);
+    }
+
+        .table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e9ecef;
+            color: #64748b;
         }
 
-            .recent-activity table thead th {
-                background-color: #0d2b52;
-                color: white;
-                font-weight: 700;
-                padding: 15px 12px;
-                text-align: center;
-            }
-
-            .recent-activity table tbody td {
-                padding: 14px 12px;
-                vertical-align: middle;
-                text-align: center;
-            }
-
-            .recent-activity table tbody tr:nth-child(even) {
-                background-color: #f1f5f9;
-            }
-
-            .recent-activity table tbody tr:hover {
-                background-color: #e3f2fd;
-            }
+        .table td {
+            padding: 1rem 1.25rem;
+            vertical-align: middle;
+            border-color: #f1f5f9;
+        }
 
     .badge {
         padding: 0.5em 0.8em;

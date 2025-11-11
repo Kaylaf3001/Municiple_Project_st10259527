@@ -27,40 +27,44 @@
         }
 
     .table-responsive {
-        border-radius: 8px;
+        border-radius: 0.5rem;
         overflow: hidden;
-        box-shadow: 0 0 0 1px rgba(0,0,0,0.05);
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+        background: white;
     }
 
     .table {
         margin-bottom: 0;
         width: 100%;
+        --bs-table-hover-bg: rgba(13, 43, 82, 0.03);
     }
 
         .table th {
-            background-color: #0d2b52;
-            color: #fff;
+            background-color: #f8fafc;
+            color: #64748b;
             font-weight: 600;
             text-transform: uppercase;
             font-size: 0.75rem;
             letter-spacing: 0.5px;
-            padding: 1rem;
+            padding: 1rem 1.25rem;
             text-align: left;
+            border-bottom: 1px solid #e9ecef;
         }
 
         .table td {
-            padding: 1rem;
+            padding: 1rem 1.25rem;
             vertical-align: middle;
-            border-color: #edf2f7;
+            border-color: #f1f5f9;
             word-break: break-word;
         }
 
         .table tbody tr {
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.2s;
         }
 
             .table tbody tr:hover {
                 background-color: #f8fafc;
+                transform: translateX(4px);
             }
 
     .badge {
@@ -130,24 +134,53 @@
     <div class="row g-4">
         <div class="col-lg-8">
             <div class="recent-activity">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <div class="btn-group btn-group-sm" role="group">
-                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest")">All</a>
-                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest", new { statusFilter = "Submitted", categoryFilter = ViewData["CategoryFilter"] })">Submitted</a>
-                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest", new { statusFilter = "InProgress", categoryFilter = ViewData["CategoryFilter"] })">In Progress</a>
-                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest", new { statusFilter = "OnHold", categoryFilter = ViewData["CategoryFilter"] })">On Hold</a>
-                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest", new { statusFilter = "Completed", categoryFilter = ViewData["CategoryFilter"] })">Completed</a>
-                        <a class="btn btn-outline-secondary" href="@Url.Action("Status","ServiceRequest", new { statusFilter = "Cancelled", categoryFilter = ViewData["CategoryFilter"] })">Cancelled</a>
+                <!-- Add filter form -->
+                <form method="get" asp-action="Status" asp-controller="ServiceRequest" class="mb-4">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label small text-muted mb-1">Status</label>
+                            <select name="statusFilter" class="form-select form-select-sm">
+                                <option value="" selected>All Statuses</option>
+                                @foreach (var status in Enum.GetValues(typeof(ServiceRequestStatus)))
+                                {
+                                    <option value="@status" selected='@(Context.Request.Query["statusFilter"] == status.ToString())'>
+                                        @status
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small text-muted mb-1">Category</label>
+                            <select name="categoryFilter" class="form-select form-select-sm">
+                                <option value="" selected>All Categories</option>
+                                @foreach (var category in (Model?.RequestsTree != null ? Model.RequestsTree.Select(n => n?.Category).Where(c => !string.IsNullOrEmpty(c)).Distinct() : Enumerable.Empty<string>()))
+                                {
+                                    if (!string.IsNullOrEmpty(category))
+                                    {
+                                        <option value="@category" selected='@(Context.Request.Query["categoryFilter"] == category)'>
+                                            @category
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                <i class="bi bi-funnel"></i> Filter
+                            </button>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="@Url.Action("Status", "ServiceRequest")" class="btn btn-outline-secondary btn-sm w-100">
+                                <i class="bi bi-x-circle"></i> Clear
+                            </a>
+                        </div>
                     </div>
-                    <form method="get" asp-action="Status" asp-controller="ServiceRequest" class="d-flex align-items-center gap-2">
-                        <input type="hidden" name="statusFilter" value="@ViewData["StatusFilter"]" />
-                        <input name="categoryFilter" class="form-control form-control-sm" style="max-width:200px" placeholder="Category filter" value="@ViewData["CategoryFilter"]" />
-                        <button class="btn btn-sm btn-outline-primary" type="submit">Filter</button>
-                    </form>
-                </div>
+                </form>
+
+                
                 <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
                             <tr>
                                 <th style="width: 180px;">Tracking Code</th>
                                 <th>Title</th>

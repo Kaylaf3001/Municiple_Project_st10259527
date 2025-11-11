@@ -20,3 +20,48 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* --- Global UI refinements --- */
+/* Ensure badges are not clipped and look like pills */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  border-radius: 999px;
+}
+
+/* Table badges sizing for consistency */
+.table .badge {
+  padding: 0.35rem 0.6rem;
+  font-size: 0.75rem;
+}
+
+/* Prevent select text/arrow overlap and clipping */
+.form-select {
+  padding-right: 2.25rem; /* space for dropdown caret */
+  background-position: right 0.6rem center; /* caret position */
+  background-size: 16px 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  min-height: 2.25rem;
+}
+
+/* Inputs consistent sizing */
+.form-control {
+  min-height: 2.25rem;
+}
+
+/* Tables: align content nicely */
+.table th,
+.table td {
+  vertical-align: middle;
+}
+
+/* Responsive table container with subtle framing */
+.table-responsive {
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.03);
+  background: #fff;
+}
