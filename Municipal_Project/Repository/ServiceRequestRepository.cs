@@ -122,13 +122,54 @@ namespace Municiple_Project_st10259527.Repository
         //==============================================================================================
         public async IAsyncEnumerable<ServiceRequestModel> GetByStatusAsync(ServiceRequestStatus status)
         {
-            var cur = head;
-            while (cur != null)
+            await Task.CompletedTask; // For async compatibility
+            var node = head;
+            while (node != null)
             {
-                if (cur.Value.Status == status)
-                    yield return cur.Value;
-                cur = cur.Next;
+                if (node.Value.Status == status)
+                    yield return node.Value;
+                node = node.Next;
             }
+        }
+
+        //==============================================================================================
+        // Update a service request
+        //==============================================================================================
+        async Task IServiceRequestRepository.UpdateAsync(ServiceRequestModel request)
+        {
+            await Task.Run(() =>
+            {
+                lock (sync)
+                {
+                    var node = head;
+                    while (node != null)
+                    {
+                        if (node.Value.RequestId == request.RequestId)
+                        {
+                            // Update all properties except RequestId and TrackingCode
+                            var trackingCode = node.Value.TrackingCode;
+                            var submittedAt = node.Value.SubmittedAt;
+                            
+                            // Copy all properties from the updated request
+                            node.Value = request;
+                            
+                            // Preserve the original tracking code and submission date
+                            node.Value.TrackingCode = trackingCode;
+                            node.Value.SubmittedAt = submittedAt;
+                            
+                            // If the request is being marked as completed, set the completion time
+                            if (request.Status == ServiceRequestStatus.Completed && node.Value.CompletedAt == null)
+                            {
+                                node.Value.CompletedAt = DateTime.UtcNow;
+                            }
+                            
+                            return;
+                        }
+                        node = node.Next;
+                    }
+                    throw new KeyNotFoundException($"Service request with ID {request.RequestId} not found");
+                }
+            });
         }
         //==============================================================================================
 

@@ -41,6 +41,8 @@ namespace Municiple_Project_st10259527.Models
         public int Priority { get; set; } = 0; // lower is more urgent
         
         public string TrackingCode { get; set; } = Guid.NewGuid().ToString("N").ToUpperInvariant();
+        
+        public DateTime? CompletedAt { get; set; }
 
         [StringLength(50)]
         public string Category { get; set; }

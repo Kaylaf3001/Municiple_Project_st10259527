@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Municiple_Project_st10259527.Repository;
 using Municiple_Project_st10259527.Services;
+using Municiple_Project_st10259527.Data;
 using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,8 +42,17 @@ app.UseDeveloperExceptionPage();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.Migrate();
+        SeedData.Initialize(scope.ServiceProvider);
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
 }
 
 app.UseHttpsRedirection();

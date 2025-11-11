@@ -151,7 +151,6 @@
                             <button class="btn btn-sm btn-outline-primary" type="submit">Filter</button>
                         </form>
                     </div>
-            }
                     <div class="table-responsive">
                         <table class="table table-hover align-middle" style="table-layout: fixed;">
                             <thead>
@@ -195,148 +194,76 @@
                         else
                         {
                             var top = topNullable.Value; // (ServiceRequestPriority, ServiceRequestModel)
-                                                         <div class="d-flex align-items-center justify-content-between">
-                                                             <div>
-                                                                 <div class="fw-semibold">@top.Item2.Title</div>
-                                                                 <div class="small text-muted">
-                                                                    Priority: @top.Item2.Priority • 
-                                                                    Submitted: <span class="local-datetime" data-utc="@top.Item2.SubmittedAt.ToString("o")">@top.Item2.SubmittedAt.ToString("g")</span> • 
-                                                                    ID: @top.Item2.RequestId
-                                                                </div>
-                                                             </div>
-                                                             <span class="badge bg-secondary">@top.Item2.Status</span>
-                                                         </div>
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <div class="fw-semibold">@top.Item2.Title</div>
+                                    <div class="small text-muted">
+                                        Priority: @top.Item2.Priority • 
+                                        Submitted: <span class="local-datetime" data-utc="@top.Item2.SubmittedAt.ToString("o")">@top.Item2.SubmittedAt.ToString("g")</span> • 
+                                        ID: @top.Item2.RequestId
+                                    </div>
+                                </div>
+                                <span class="badge bg-secondary">@top.Item2.Status</span>
+                            </div>
                         }
                     }
                 </div>
             </div>
-            @if ((ViewData["StartId"] as int?) > 0)
-            {
+
+            <!-- Related Service Requests Card -->
             <div class="card mb-3" style="min-width: 320px;">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <span>
-                        Related Requests
-                        @{
-                            var anchorTitle = "";
-                            var sidObj = ViewData["StartId"];
-                            int sid = (sidObj is int) ? (int)sidObj : (sidObj is int? ? ((int?)sidObj).GetValueOrDefault() : 0);
-                            if (sid > 0 && Model.Graph != null)
-                            {
-                                var n = Model.Graph.Nodes()?.FirstOrDefault();
-                                while (n != null)
-                                {
-                                    if (n.Val?.RequestId == sid) { anchorTitle = n.Val.Title; break; }
-                                    n = n.Next;
-                                }
-                            }
-                            if (!string.IsNullOrWhiteSpace(anchorTitle))
-                            {
-                                <span class="small text-light ms-2">(from: @anchorTitle)</span>
-                            }
-                        }
-                    </span>
-                    <i class="bi bi-info-circle" title="Quick view of other requests that are connected by similar status/priority. Handy for batching."></i>
-                </div>
+                <div class="card-header">Related Service Requests</div>
                 <div class="card-body">
-                    <form method="get" asp-action="ManageServiceRequest" asp-controller="ServiceRequestAdmin" class="d-flex align-items-center gap-2 mb-2">
-                        <input type="hidden" name="statusFilter" value="@ViewData["StatusFilter"]" />
-                        <input type="hidden" name="categoryFilter" value="@ViewData["CategoryFilter"]" />
-                        <input type="hidden" name="priorityFilter" value="@ViewData["PriorityFilter"]" />
-                        <input name="locationFilter" class="form-control form-control-sm" style="max-width:200px" placeholder="Start area (e.g. Building A)" value="@ViewData["LocationFilter"]" />
-                        <input type="hidden" name="startId" value="@ViewData["StartId"]" />
-                        <button class="btn btn-sm btn-outline-primary" type="submit" title="Seed related items from this area">Start</button>
-                    </form>
                     @{
-                        var seed = (ViewData["LocationFilter"] as string) ?? string.Empty;
-                        Municiple_Project_st10259527.Services.DataStructures.Graph<Municiple_Project_st10259527.Models.ServiceRequestModel>.GraphNode start = null;
-                        var sidObj2 = ViewData["StartId"];
-                        int sid2 = (sidObj2 is int) ? (int)sidObj2 : (sidObj2 is int? ? ((int?)sidObj2).GetValueOrDefault() : 0);
-                        if (sid2 > 0)
+                        var mstEdges = Model.Graph?.PrimMst();
+                        if (mstEdges == null || !mstEdges.Any())
                         {
-                            var n = Model.Graph?.Nodes()?.FirstOrDefault();
-                            while (n != null)
-                            {
-                                if (n.Val?.RequestId == sid2) { start = n; break; }
-                                n = n.Next;
-                            }
-                        }
-                        if (start == null && !string.IsNullOrWhiteSpace(seed))
-                        {
-                            var n = Model.Graph?.Nodes()?.FirstOrDefault();
-                            while (n != null)
-                            {
-                                var loc = n.Val?.Location ?? string.Empty;
-                                if (!string.IsNullOrWhiteSpace(loc) && loc.IndexOf(seed, StringComparison.OrdinalIgnoreCase) >= 0) { start = n; break; }
-                                n = n.Next;
-                            }
-                        }
-                        if (start == null)
-                        {
-                            start = Model.Graph?.Nodes()?.FirstOrDefault();
-                        }
-                        if (start == null)
-                        {
-                            <div class="text-muted">No relationships to show yet</div>;
+                            <div class="text-muted">No related requests found</div>
                         }
                         else
                         {
-                            <div class="small text-muted mb-2">Showing up to 10 related items</div>
-                            var shown = 0;
-                            foreach (var r in Model.Graph.Bfs(start))
-                            {
-                                shown++;
-                                if (shown > 10) { break; }
-                                <div class="d-flex align-items-center justify-content-between small py-1">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-node-plus text-secondary"></i>
-                                        <span class="text-truncate" title="@r.Title">@r.Title</span>
+                            <div class="d-flex flex-column gap-3">
+                                @foreach (var edge in mstEdges.Take(5)) // Show top 5 related requests
+                                {
+                                    var from = edge.Item1.Val;
+                                    var to = edge.Item2.Val;
+                                    var weight = edge.Item3;
+                                    var reason = GetConnectionReason(from, to, weight);
+                                    
+                                    <div class="border-bottom pb-2">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div class="fw-semibold">@from.Title</div>
+                                                <div class="small text-muted">ID: @from.RequestId • @from.Category</div>
+                                            </div>
+                                            <span class="badge @Badge(from.Status)">@from.Status</span>
+                                        </div>
+                                        <div class="d-flex justify-content-center my-1">
+                                            <i class="bi bi-arrow-down text-muted"></i>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <div class="fw-semibold">@to.Title</div>
+                                                <div class="small text-muted">ID: @to.RequestId • @to.Category</div>
+                                            </div>
+                                            <span class="badge @Badge(to.Status)">@to.Status</span>
+                                        </div>
+                                        <div class="small text-muted mt-1">
+                                            <i class="bi @GetReasonIcon(reason)"></i> @reason
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <a asp-action="Detail" asp-route-id="@to.RequestId" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View
+                                            </a>
+                                        </div>
                                     </div>
-                                    <span class="badge @Badge(r.Status)">@r.Status</span>
-                                </div>
-                            }
-                            if (shown == 0)
-                            {
-                                <div class="text-muted">No related items found</div>
-                            }
-                        }
-                    }
-                    <div class="mt-2 small text-muted">Tip: Work on a cluster of similar items together to save time.</div>
-                </div>
-            </div>
-            }
-
-            <div class="card" style="min-width: 320px;">
-                <div class="card-header d-flex align-items-center justify-content-between">
-                    <span>Closest Links (Minimal Set)</span>
-                    <i class="bi bi-info-circle" title="A simple view of the closest connections between requests. Lower weight = more similar."></i>
-                </div>
-                <div class="card-body">
-                    @if (Model.Graph == null)
-                    {
-                        <div class="text-muted">No link data available</div>
-                    }
-                    else
-                    {
-                        var any = false;
-                        foreach (var e in Model.Graph.PrimMst())
-                        {
-                            any = true;
-                            <div class="d-flex align-items-center justify-content-between small py-1">
-                                <div class="d-flex align-items-center gap-2 text-truncate">
-                                    <i class="bi bi-diagram-2 text-secondary"></i>
-                                    <span class="text-truncate" title="@e.Item1.Val.Title">@e.Item1.Val.Title</span>
-                                    <span class="mx-2">→</span>
-                                    <span class="text-truncate" title="@e.Item2.Val.Title">@e.Item2.Val.Title</span>
-                                </div>
-                                <span class="ms-2 badge bg-light text-dark" title="Lower is closer">weight @e.Item3</span>
+                                }
+                            </div>
+                            <div class="mt-2 small text-muted">
+                                <i class="bi bi-lightbulb"></i> <strong>Tip:</strong> Consider processing related requests together to save time on travel and setup.
                             </div>
                         }
-                        if (!any)
-                        {
-                            <div class="text-muted">No strong links found</div>
-                        }
                     }
-                    <div class="mt-2 small text-muted">Tip: Use these links to form a small action group.</div>
                 </div>
             </div>
         </div>
@@ -344,6 +271,35 @@
 </div>
 
 @functions {
+    private string GetConnectionReason(Municiple_Project_st10259527.Models.ServiceRequestModel r1, Municiple_Project_st10259527.Models.ServiceRequestModel r2, int weight)
+    {
+        if (r1.Status == r2.Status)
+            return $"Both are {r1.Status} status";
+            
+        if (r1.Category == r2.Category && !string.IsNullOrEmpty(r1.Category))
+            return $"Same category: {r1.Category}";
+            
+        if (r1.Location == r2.Location && !string.IsNullOrEmpty(r1.Location))
+            return $"Same location: {r1.Location}";
+            
+        if (((r1.Title + " " + r1.Description).Contains("electrical", StringComparison.OrdinalIgnoreCase) && 
+             (r2.Title + " " + r2.Description).Contains("paint", StringComparison.OrdinalIgnoreCase)) ||
+            ((r2.Title + " " + r2.Description).Contains("electrical", StringComparison.OrdinalIgnoreCase) && 
+             (r1.Title + " " + r1.Description).Contains("paint", StringComparison.OrdinalIgnoreCase)))
+            return "Electrical work before painting";
+            
+        return "Related requests";
+    }
+    
+    private string GetReasonIcon(string reason)
+    {
+        if (reason.Contains("status")) return "bi-arrow-repeat";
+        if (reason.Contains("category")) return "bi-tag";
+        if (reason.Contains("location")) return "bi-geo-alt";
+        if (reason.Contains("before")) return "bi-arrow-right-circle";
+        return "bi-link";
+    }
+
     private string Badge(Municiple_Project_st10259527.Models.ServiceRequestStatus status)
     {
         return status switch
@@ -366,68 +322,23 @@
             <td>@r.Title</td>
             <td><span class="badge @Badge(r.Status)">@r.Status</span></td>
             <td><span class="badge bg-light text-dark">Priority @r.Priority</span></td>
-            <td>
-                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#requestModal" data-id="@r.RequestId" data-title="@r.Title" data-description="@r.Description" data-location="@r.Location" data-category="@r.Category" data-status="@r.Status" data-priority="@r.Priority" data-userid="@r.UserId">
-                    View
-                </button>
-                <a class="btn btn-sm btn-outline-secondary"
-                   href="@Url.Action("ManageServiceRequest","ServiceRequestAdmin", new { 
-                        startId = r.RequestId,
-                        statusFilter = ViewData["StatusFilter"],
-                        categoryFilter = ViewData["CategoryFilter"],
-                        priorityFilter = ViewData["PriorityFilter"],
-                        locationFilter = ViewData["LocationFilter"]
-                   })"
-                   title="See related to this request">
-                    Related
+            <td class="d-flex gap-1">
+                <a asp-action="Detail" asp-route-id="@r.RequestId" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye"></i> View
                 </a>
+                @if (r.Status != Municiple_Project_st10259527.Models.ServiceRequestStatus.Completed && 
+                     r.Status != Municiple_Project_st10259527.Models.ServiceRequestStatus.Cancelled)
+                {
+                    <button class="btn btn-sm btn-success" onclick="completeRequest(@r.RequestId)" title="Mark as completed">
+                        <i class="bi bi-check-circle"></i>
+                    </button>
+                }
             </td>
         </tr>
         await RenderNodeSimple(node.FirstChild);
         await RenderNodeSimple(node.NextSibling);
     }
 }
-
-<!-- Modal -->
-<div class="modal fade" id="requestModal" tabindex="-1" aria-labelledby="requestModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="requestModalLabel">Request Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="modal-form" method="post" action="@Url.Action("Update","ServiceRequestAdmin")">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="id" id="form-id" />
-                    <input type="hidden" name="priority" id="form-priority" />
-                    <dl class="row">
-                        <dt class="col-sm-3">ID</dt><dd class="col-sm-9" id="modal-id"></dd>
-                        <dt class="col-sm-3">Title</dt><dd class="col-sm-9" id="modal-title"></dd>
-                        <dt class="col-sm-3">Description</dt><dd class="col-sm-9" id="modal-description"></dd>
-                        <dt class="col-sm-3">Location</dt><dd class="col-sm-9" id="modal-location"></dd>
-                        <dt class="col-sm-3">Category</dt><dd class="col-sm-9" id="modal-category"></dd>
-                        <dt class="col-sm-3">Status</dt>
-                        <dd class="col-sm-9">
-                            <select id="modal-status-select" class="form-select form-select-sm" name="status">
-                                <option value="Submitted">Submitted</option>
-                                <option value="InProgress">In Progress</option>
-                                <option value="OnHold">On Hold</option>
-                                <option value="Completed">Completed</option>
-                                <option value="Cancelled">Cancelled</option>
-                            </select>
-                        </dd>
-                        <dt class="col-sm-3">Priority</dt><dd class="col-sm-9" id="modal-priority"></dd>
-                        <dt class="col-sm-3">User ID</dt><dd class="col-sm-9" id="modal-userid"></dd>
-                    </dl>
-                    <div class="d-flex justify-content-end mt-3">
-                        <button type="submit" class="btn btn-sm btn-primary">Save Changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
 // Convert UTC dates to local time
@@ -469,5 +380,189 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // No extra JS submit handler needed; form posts directly with anti-forgery token
     });
+
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
 });
+
+// Function to handle the complete button click
+async function completeRequest(id) {
+    if (!confirm('Are you sure you want to mark this request as completed?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('@Url.Action("CompleteRequest", "ServiceRequestAdmin")', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: `id=${id}`
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success message
+            showToast('Request completed successfully!', 'success');
+            
+            // Show related requests if any
+            if (result.relatedRequests && result.relatedRequests.length > 0) {
+                const relatedList = document.getElementById('relatedRequestsList');
+                relatedList.innerHTML = `
+                    <p class="mb-3">Here are some related requests you might want to work on next:</p>
+                    <div class="row g-3">
+                        ${result.relatedRequests.map((req, index) => `
+                            <div class="col-md-6">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="card-title mb-0">${escapeHtml(req.title)}</h6>
+                                            <span class="badge ${getStatusBadgeClass(req.status)}">${req.status}</span>
+                                        </div>
+                                        <div class="small text-muted mb-2">ID: ${req.id}</div>
+                                        <div class="mb-2">
+                                            <i class="bi bi-tag me-1"></i> ${escapeHtml(req.category)}<br>
+                                            <i class="bi bi-geo-alt me-1"></i> ${escapeHtml(req.location)}<br>
+                                            <i class="bi bi-flag me-1"></i> Priority: ${req.priority}
+                                        </div>
+                                        <a href="/ServiceRequestAdmin/ManageServiceRequest?requestId=${req.id}" 
+                                           class="btn btn-sm btn-outline-primary w-100">
+                                            <i class="bi bi-arrow-right-circle me-1"></i> View Request
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                // Show the modal
+                const modal = new bootstrap.Modal(document.getElementById('relatedRequestsModal'));
+                modal.show();
+            }
+            
+            // Refresh the page after a short delay to show the modal
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
+        } else {
+            showToast(result.error || 'Error completing request', 'danger');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('An error occurred while processing your request.', 'danger');
+    }
+}
+
+// Helper function to get badge class based on status
+function getStatusBadgeClass(status) {
+    const statusMap = {
+        'Submitted': 'bg-warning text-dark',
+        'InProgress': 'bg-info text-dark',
+        'OnHold': 'bg-secondary',
+        'Completed': 'bg-success',
+        'Cancelled': 'bg-danger'
+    };
+    return statusMap[status] || 'bg-secondary';
+}
+
+// Helper function to escape HTML
+function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe
+        .toString()
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// Helper function to show toast messages
+function showToast(message, type = 'success') {
+    const toastContainer = document.getElementById('toastContainer') || document.body;
+    const toastId = 'toast-' + Date.now();
+    
+    const toast = document.createElement('div');
+    toast.id = toastId;
+    toast.className = `toast align-items-center text-white bg-${type} border-0 fade show`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                ${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Auto-remove toast after 5 seconds
+    setTimeout(() => {
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.hide();
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+        });
+    }, 5000);
+}
 </script>
+
+<!-- Related Requests Modal -->
+<div class="modal fade" id="relatedRequestsModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Related Service Requests</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="relatedRequestsList">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Finding related requests...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toastContainer" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <!-- Toasts will be inserted here by JavaScript -->
+</div>
+
+<style>
+    /* Toast styles */
+    .toast {
+        min-width: 250px;
+        margin-bottom: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>

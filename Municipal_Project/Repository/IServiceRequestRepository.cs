@@ -17,6 +17,7 @@ namespace Municiple_Project_st10259527.Repository
         IAsyncEnumerable<ServiceRequestModel> GetByStatusAsync(ServiceRequestStatus status);
         Task UpdateStatusAsync(int id, ServiceRequestStatus status);
         Task UpdateStatusAndPriorityAsync(int id, ServiceRequestStatus status, int priority);
+        Task UpdateAsync(ServiceRequestModel request);
     }
     //=================================================================
 }

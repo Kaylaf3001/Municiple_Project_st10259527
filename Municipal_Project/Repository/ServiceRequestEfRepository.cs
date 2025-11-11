@@ -119,6 +119,40 @@ namespace Municiple_Project_st10259527.Repository
             }
         }
         //==============================================================================================
+
+        //==============================================================================================
+        // Update a service request
+        //==============================================================================================
+        public async Task UpdateAsync(ServiceRequestModel request)
+        {
+            var existingRequest = await _db.ServiceRequests.FindAsync(request.RequestId);
+            if (existingRequest != null)
+            {
+                // Update all properties except RequestId and TrackingCode
+                var trackingCode = existingRequest.TrackingCode;
+                var submittedAt = existingRequest.SubmittedAt;
+                
+                // Copy all properties from the updated request
+                _db.Entry(existingRequest).CurrentValues.SetValues(request);
+                
+                // Preserve the original tracking code and submission date
+                existingRequest.TrackingCode = trackingCode;
+                existingRequest.SubmittedAt = submittedAt;
+                
+                // If the request is being marked as completed, set the completion time
+                if (request.Status == ServiceRequestStatus.Completed && existingRequest.CompletedAt == null)
+                {
+                    existingRequest.CompletedAt = DateTime.UtcNow;
+                }
+                
+                await _db.SaveChangesAsync();
+            }
+            else
+            {
+                throw new KeyNotFoundException($"Service request with ID {request.RequestId} not found");
+            }
+        }
+        //==============================================================================================
     }
     //==============================================================================================
 }
