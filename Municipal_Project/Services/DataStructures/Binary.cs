@@ -4,6 +4,9 @@ using System.Collections;
 
 namespace Municiple_Project_st10259527.Services.DataStructures
 {
+    //==============================================================================================
+    // Binary Tree Implementation
+    //==============================================================================================
     public class BinaryNode<T>
     {
         public T Value;
@@ -13,11 +16,16 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         public bool Red;
         public BinaryNode(T v) { Value = v; Height = 1; }
     }
+    //==============================================================================================
 
+    //==============================================================================================
+    // Binary Tree Class
+    //==============================================================================================
     public class Binary<T> : IEnumerable<T>
     {
         public BinaryNode<T> Root { get; private set; }
 
+        // Insert a new value in level order
         public void InsertLevelOrder(T value)
         {
             var newNode = new BinaryNode<T>(value);
@@ -35,11 +43,13 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             }
         }
 
+        // Traversal Methods
         public IEnumerable<T> InOrder()
         {
             foreach (var v in InOrder(Root)) yield return v;
         }
 
+        // In-order traversal
         IEnumerable<T> InOrder(BinaryNode<T> node)
         {
             if (node == null) yield break;
@@ -48,11 +58,13 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             foreach (var v in InOrder(node.Right)) yield return v;
         }
 
+        // Pre-order traversal
         public IEnumerable<T> PreOrder()
         {
             foreach (var v in PreOrder(Root)) yield return v;
         }
 
+        // Pre-order traversal
         IEnumerable<T> PreOrder(BinaryNode<T> node)
         {
             if (node == null) yield break;
@@ -61,11 +73,13 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             foreach (var v in PreOrder(node.Right)) yield return v;
         }
 
+        // Post-order traversal
         public IEnumerable<T> PostOrder()
         {
             foreach (var v in PostOrder(Root)) yield return v;
         }
 
+        // Post-order traversal
         IEnumerable<T> PostOrder(BinaryNode<T> node)
         {
             if (node == null) yield break;
@@ -74,6 +88,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             yield return node.Value;
         }
 
+        // Level-order traversal
         public IEnumerable<T> LevelOrder()
         {
             if (Root == null) yield break;
