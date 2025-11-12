@@ -136,5 +136,12 @@ This web application enables municipalities to efficiently manage service reques
 - **How to add more sample data?** Edit `Data/SeedData.cs` and restart the app.
 
 ## Admin Login
-- admin@example.com
+- admin@municipality.gov.za
 - Admin@123
+
+## User Login
+- john.doe@example.com
+- User@123
+
+- jane.smith@example.com
+- User@123
