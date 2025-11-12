@@ -116,11 +116,10 @@ This web application enables municipalities to efficiently manage service reques
 ## Admin Guide
 - **Login:** Use pre-seeded admin credentials or register as an admin.
 - **Dashboard:** View analytics, recent activity, and quick links.
-- **Manage Service Requests:** Review, filter, and update statuses; assign priorities/categories if needed.
+- **Manage Service Requests:** Review, filter, and update statuses; assign priorities if needed.
 - **Manage Reports:** Approve, reject, or mark reports as completed.
 - **Create/Edit Events:** Add new events, edit existing ones, and categorize.
 - **Create/Edit Announcements:** Publish important municipal news.
-- **User Management:** (If implemented) View and manage user accounts.
 
 ### Example Admin Workflow
 1. Log in to the admin dashboard.
