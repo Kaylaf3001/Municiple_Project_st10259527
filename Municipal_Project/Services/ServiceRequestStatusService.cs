@@ -32,11 +32,11 @@ namespace Municiple_Project_st10259527.Services
         //====================================================================
         // Calling Data Structures to Build Indexes
         //====================================================================
-        public async Task<(BasicTree<ServiceRequestModel> Tree, MinHeap<int, ServiceRequestModel> Heap)> BuildIndexesAsync(int userId)
+        public async Task<(Basic<ServiceRequestModel> Tree, MinHeap<int, ServiceRequestModel> Heap)> BuildIndexesAsync(int userId)
         {
             // Calling the data structures from the Services/DataStructures folder
-            var tree = new BasicTree<ServiceRequestModel>();
-            TreeNode<ServiceRequestModel> root = null;
+            var tree = new Basic<ServiceRequestModel>();
+            Node<ServiceRequestModel> root = null;
             var heap = new MinHeap<int, ServiceRequestModel>();
 
             // Build only what the user page needs: tree + heap
@@ -54,15 +54,15 @@ namespace Municiple_Project_st10259527.Services
         //====================================================================
         // Building Global Indexes
         //====================================================================
-        public async Task<(BasicTree<ServiceRequestModel> Tree, MinHeap<ServiceRequestPriority, ServiceRequestModel> Heap, Graph<ServiceRequestModel> Graph)> BuildGlobalIndexesAsync(
+        public async Task<(Basic<ServiceRequestModel> Tree, MinHeap<ServiceRequestPriority, ServiceRequestModel> Heap, Graph<ServiceRequestModel> Graph)> BuildGlobalIndexesAsync(
             string statusFilter = null,
             string categoryFilter = null,
             int? priorityFilter = null,
             string locationFilter = null)
         {
             // Calling the data structures from the Services/DataStructures folder
-            var tree = new BasicTree<ServiceRequestModel>();
-            TreeNode<ServiceRequestModel> root = null;
+            var tree = new Basic<ServiceRequestModel>();
+            Node<ServiceRequestModel> root = null;
             var heap = new MinHeap<ServiceRequestPriority, ServiceRequestModel>();
             var graph = new Graph<ServiceRequestModel>();
 
@@ -152,7 +152,7 @@ namespace Municiple_Project_st10259527.Services
             if (string.IsNullOrWhiteSpace(trackingCode)) return null;
 
             // Build an AVL index keyed by TrackingCode
-            var avl = new AvlTree<string, ServiceRequestModel>();
+            var avl = new Avl<string, ServiceRequestModel>();
             await foreach (var r in _repo.GetAllAsync())
             {
                 avl.Insert(r.TrackingCode, r);
@@ -166,9 +166,9 @@ namespace Municiple_Project_st10259527.Services
         //====================================================================
         // Compute per-request queue metrics: how many requests ahead in same status
         //====================================================================
-        public async Task<RedBlackTree<int, (int Ahead, int Total)>> BuildQueueAheadIndexAsync(int userId)
+        public async Task<RedBlack<int, (int Ahead, int Total)>> BuildQueueAheadIndexAsync(int userId)
         {
-            var index = new RedBlackTree<int, (int, int)>();
+            var index = new RedBlack<int, (int, int)>();
 
             // For each of the user's requests compute metrics without materializing lists
             await foreach (var myReq in _repo.GetByUserAsync(userId))

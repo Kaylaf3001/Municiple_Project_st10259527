@@ -106,10 +106,10 @@ namespace Municiple_Project_st10259527.Controllers
 
                 // Get related requests using minimum spanning tree
                 var indexes = await _statusService.BuildGlobalIndexesAsync();
-                var relatedRequests = new List<ServiceRequestModel>();
+                IEnumerable<ServiceRequestModel> relatedRequests = Enumerable.Empty<ServiceRequestModel>();
                 var currentNode = indexes.Graph?.Nodes().FirstOrDefault(n => n.Val.RequestId == id);
 
-                List<(ServiceRequestModel Model, int Weight)> relatedWithWeights = new();
+                IEnumerable<(ServiceRequestModel Model, int Weight)> relatedWithWeights = Enumerable.Empty<(ServiceRequestModel, int)>();
                 if (currentNode != null)
                 {
                     // Always use MST-adjacent edges for recommendations per rubric
@@ -121,10 +121,9 @@ namespace Municiple_Project_st10259527.Controllers
                         .OrderBy(x => x.Weight)
                         .ThenBy(x => x.Model.Priority)
                         .ThenBy(x => x.Model.SubmittedAt)
-                        .Take(3)
-                        .ToList();
+                        .Take(3);
 
-                    relatedRequests = relatedWithWeights.Select(x => x.Model).ToList();
+                    relatedRequests = relatedWithWeights.Select(x => x.Model);
                 }
 
                 var relatedPayload = relatedRequests.Select(r =>
@@ -145,7 +144,7 @@ namespace Municiple_Project_st10259527.Controllers
                         weight = w,
                         reason = reason
                     };
-                }).ToList();
+                });
 
                 return Json(new {
                     success = true,

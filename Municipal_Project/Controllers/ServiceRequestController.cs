@@ -60,6 +60,7 @@ namespace Municiple_Project_st10259527.Controllers
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (userId == null) return RedirectToAction("Login", "User");
+
             // Populate location suggestions for the datalist
             ViewBag.WesternCapeLocations = LocationService.WesternCapeLocations.Values;
             return View();

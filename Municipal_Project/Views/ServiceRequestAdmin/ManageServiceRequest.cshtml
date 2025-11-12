@@ -1,6 +1,6 @@
 @using Municiple_Project_st10259527.Services.DataStructures
 @using System.Linq
-@model (Municiple_Project_st10259527.Services.DataStructures.BasicTree<Municiple_Project_st10259527.Models.ServiceRequestModel> Tree, Municiple_Project_st10259527.Services.DataStructures.MinHeap<ServiceRequestPriority, Municiple_Project_st10259527.Models.ServiceRequestModel> Heap, Municiple_Project_st10259527.Services.DataStructures.Graph<Municiple_Project_st10259527.Models.ServiceRequestModel> Graph)
+@model (Municiple_Project_st10259527.Services.DataStructures.Basic<Municiple_Project_st10259527.Models.ServiceRequestModel> Tree, Municiple_Project_st10259527.Services.DataStructures.MinHeap<ServiceRequestPriority, Municiple_Project_st10259527.Models.ServiceRequestModel> Heap, Municiple_Project_st10259527.Services.DataStructures.Graph<Municiple_Project_st10259527.Models.ServiceRequestModel> Graph)
 
 @{
     ViewData["Title"] = "Manage Service Requests";
@@ -613,7 +613,7 @@
         };
     }
 
-    private async Task RenderNodeSimple(Municiple_Project_st10259527.Services.DataStructures.TreeNode<Municiple_Project_st10259527.Models.ServiceRequestModel> node)
+    private async Task RenderNodeSimple(Municiple_Project_st10259527.Services.DataStructures.Node<Municiple_Project_st10259527.Models.ServiceRequestModel> node)
     {
         if (node == null) return;
         var r = node.Value;
