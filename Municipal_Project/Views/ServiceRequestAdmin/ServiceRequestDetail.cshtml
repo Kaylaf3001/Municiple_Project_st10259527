@@ -57,12 +57,10 @@
                     </div>
                 </div>
 
-                <!-- Card Body -->
+
                 <div class="card-body p-4">
                     <div class="row g-4">
-                        <!-- Left Column - Request Details -->
                         <div class="col-lg-8">
-                            <!-- Request Header -->
                             <div class="mb-4">
                                 <h2 class="h5 mb-2 fw-bold text-dark">@Model.Title</h2>
                                 <div class="d-flex flex-wrap align-items-center gap-2 text-muted small mb-3">
@@ -80,15 +78,12 @@
                                     }
                                 </div>
 
-                                <!-- Description -->
                                 <div class="card bg-light-subtle border-0 mb-4">
                                     <div class="card-body p-3">
                                         <h6 class="text-uppercase text-muted small fw-bold mb-3">Description</h6>
                                         <div class="text-dark">@Model.Description</div>
                                     </div>
                                 </div>
-
-                                <!-- Details Grid -->
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-6">
                                         <div class="p-3 bg-light-subtle rounded-2 h-100">
@@ -109,7 +104,6 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Request Stats -->
                                     <div class="col-12">
                                         <div class="card border-0 shadow-sm">
                                             <div class="card-header bg-light-subtle py-2">
@@ -135,9 +129,7 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Right Column - Actions -->
                         <div class="col-lg-4">
-                            <!-- Status Update Card -->
                             <div class="card border-0 shadow-sm mb-4">
                                 <div class="card-header bg-light-subtle py-3">
                                     <h3 class="h6 mb-0 fw-bold"><i class="bi bi-sliders me-2"></i>Update Request</h3>
@@ -183,11 +175,9 @@
                                 </div>
                             </div>
                             
-                            <!-- Empty space to maintain layout -->
                             <div class="mt-4"></div>
                         </div>
                         
-                        <!-- Complete Request Modal -->
                         <div class="modal fade" id="completeRequestModal" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -218,7 +208,6 @@
     </div>
 </div>
 
-<!-- Related Requests Modal -->
 <div class="modal fade" id="relatedRequestsModal" tabindex="-1" aria-labelledby="relatedRequestsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -229,7 +218,7 @@
             <div class="modal-body">
                 <p>You might want to check these related service requests next:</p>
                 <div id="relatedRequestsList" class="list-group">
-                    <!-- Related requests will be inserted here by JavaScript -->
+       
                 </div>
             </div>
             <div class="modal-footer">

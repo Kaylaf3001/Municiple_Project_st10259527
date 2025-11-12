@@ -2,13 +2,24 @@ using System;
 
 namespace Municiple_Project_st10259527.Services.DataStructures
 {
+    //==============================================================================================
+    // Binary Tree Node Definition
+    //==============================================================================================
     public interface IKey<TK> { int Compare(TK a, TK b); }
+    //==============================================================================================
 
+    //==============================================================================================
+    // Binary Search Tree and its Variants
+    //==============================================================================================
     public class ComparableKey<TK> : IKey<TK> where TK : IComparable<TK>
     {
         public int Compare(TK a, TK b) => a.CompareTo(b);
     }
+    //==============================================================================================
 
+    //==============================================================================================
+    // Binary Search Tree Implementation
+    //==============================================================================================
     public class BinarySearch<TK, TV> where TK : IComparable<TK>
     {
         protected readonly IKey<TK> K = new ComparableKey<TK>();
@@ -28,6 +39,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             return default;
         }
 
+        // Recursive Insert
         protected virtual BinaryNode<(TK, TV)> Insert(BinaryNode<(TK, TV)> node, TK key, TV value)
         {
             if (node == null) return new BinaryNode<(TK, TV)>((key, value));
@@ -38,7 +50,11 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             return node;
         }
     }
+    //==============================================================================================
 
+    //==============================================================================================
+    // AVL Tree Implementation
+    //==============================================================================================
     public class Avl<TK, TV> : BinarySearch<TK, TV> where TK : IComparable<TK>
     {
         int HeightOf(BinaryNode<(TK, TV)> node) => node?.Height ?? 0;
@@ -51,6 +67,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         BinaryNode<(TK, TV)> RotateLeft(BinaryNode<(TK, TV)> x)
         { var y = x.Right; var T2 = y.Left; y.Left = x; x.Right = T2; UpdateHeight(x); UpdateHeight(y); return y; }
 
+        // Recursive Insert
         protected override BinaryNode<(TK, TV)> Insert(BinaryNode<(TK, TV)> node, TK key, TV value)
         {
             node = base.Insert(node, key, value);
@@ -63,7 +80,11 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             return node;
         }
     }
+    //==============================================================================================
 
+    //==============================================================================================
+    // Red-Black Tree Implementation
+    //==============================================================================================
     public class RedBlack<TK, TV> : BinarySearch<TK, TV> where TK : IComparable<TK>
     {
         bool IsRed(BinaryNode<(TK, TV)> node) => node != null && node.Red;
@@ -77,6 +98,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         void FlipColors(BinaryNode<(TK, TV)> h)
         { h.Red = !h.Red; if (h.Left != null) h.Left.Red = !h.Left.Red; if (h.Right != null) h.Right.Red = !h.Right.Red; }
 
+        // Recursive Insert
         protected override BinaryNode<(TK, TV)> Insert(BinaryNode<(TK, TV)> node, TK key, TV value)
         {
             if (node == null) { var created = new BinaryNode<(TK, TV)>((key, value)); created.Red = true; return created; }
@@ -90,10 +112,13 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             return node;
         }
 
+        // Public Insert Method
         public override void Insert(TK key, TV val)
         {
             Root = Insert(Root, key, val);
             if (Root != null) Root.Red = false;
         }
     }
+    //==============================================================================================
 }
+//==================================End=Of=File=========================================

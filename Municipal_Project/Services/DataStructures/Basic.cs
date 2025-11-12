@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Municiple_Project_st10259527.Services.DataStructures
 {
+    //=============================================================================
+    // Tree structure where each node can have multiple children
+    //=============================================================================
     public class Node<T>
     {
         public T Value { get; set; }
@@ -11,7 +14,11 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         public Node<T> NextSibling { get; set; }
         public Node(T value) { Value = value; }
     }
+    //=============================================================================
 
+    //=============================================================================
+    // Basic tree implementation, with methods to add nodes and traverse the tree
+    //=============================================================================
     public class Basic<T> : IEnumerable<T>
     {
         public Node<T> Root { get; private set; }
@@ -28,7 +35,11 @@ namespace Municiple_Project_st10259527.Services.DataStructures
                 currentSibling.NextSibling = new Node<T>(value);
             }
         }
+        //=============================================================================
 
+        //=============================================================================
+        // Pre-order traversal of the tree
+        //=============================================================================
         public IEnumerator<T> GetEnumerator() { return Traverse(Root).GetEnumerator(); }
         IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
 
@@ -43,5 +54,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
                 childNode = childNode.NextSibling;
             }
         }
+        //=============================================================================
     }
 }
+//==================================End=Of=File=========================================

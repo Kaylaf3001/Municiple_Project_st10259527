@@ -42,8 +42,6 @@ namespace Municiple_Project_st10259527.Services.DataStructures
                 q.Enqueue(current.Right);
             }
         }
-
-        // Traversal Methods
         public IEnumerable<T> InOrder()
         {
             foreach (var v in InOrder(Root)) yield return v;
@@ -106,4 +104,6 @@ namespace Municiple_Project_st10259527.Services.DataStructures
         public IEnumerator<T> GetEnumerator() { return LevelOrder().GetEnumerator(); }
         IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
     }
+    //==============================================================================================
 }
+//==================================End=Of=File=========================================

@@ -3,13 +3,25 @@ using System.Collections.Generic;
 
 namespace Municiple_Project_st10259527.Services.DataStructures
 {
+    //=============================================================================
+    // Min-Heap Implementation
+    //=============================================================================
     public class MinHeap<TK, TV> where TK : IComparable<TK>
     {
+        //=============================================================================
+        // Heap Node Definition
+        //=============================================================================
+        #region
         class HNode { public TK Key; public TV Val; public HNode Parent; public HNode Left; public HNode Right; }
 
         HNode root; int count;
         public int Count => count;
+        #endregion
+        //=============================================================================
 
+        //=============================================================================
+        // Insert Key-Value Pair into Min-Heap
+        //=============================================================================
         public void Insert(TK key, TV value)
         {
             if (root == null) { root = new HNode { Key = key, Val = value }; count = 1; return; }
@@ -22,28 +34,52 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             count++;
             BubbleUp(node);
         }
+        //=============================================================================
 
+        //=============================================================================
+        // Bubble Up to Maintain Heap Property
+        //=============================================================================
         void BubbleUp(HNode node)
         {
             while (node.Parent != null && node.Key.CompareTo(node.Parent.Key) < 0)
             { Swap(node, node.Parent); node = node.Parent; }
         }
+        //=============================================================================
 
+        //=============================================================================
+        // Swap Keys and Values of Two Nodes
+        //=============================================================================
         void Swap(HNode a, HNode b)
         { var tk = a.Key; var tv = a.Val; a.Key = b.Key; a.Val = b.Val; b.Key = tk; b.Val = tv; }
+        //=============================================================================
 
+        //=============================================================================
+        // Peek at Minimum Key-Value Pair without Removal
+        //=============================================================================
         public (TK, TV) Peek() { if (root == null) return (default, default); return (root.Key, root.Val); }
+        //=============================================================================
 
+        //=============================================================================
+        // In-Order Traversal of Heap
+        //=============================================================================
         public IEnumerable<TV> InOrder()
         {
             foreach (var value in InOrder(root)) yield return value;
         }
+        //=============================================================================
 
+        //=============================================================================
+        // Recursive In-Order Traversal Helper
+        //=============================================================================
         IEnumerable<TV> InOrder(HNode node)
         {
             if (node == null) yield break; foreach (var leftVal in InOrder(node.Left)) yield return leftVal; yield return node.Val; foreach (var rightVal in InOrder(node.Right)) yield return rightVal;
         }
+        //=============================================================================
 
+        //=============================================================================
+        // Extract Minimum Key-Value Pair from Heap
+        //=============================================================================
         public (TK, TV) ExtractMin()
         {
             if (root == null) return (default, default);
@@ -65,7 +101,11 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             BubbleDown(root);
             return min;
         }
+        //=============================================================================
 
+        //=============================================================================
+        // Bubble Down to Maintain Heap Property
+        //=============================================================================
         void BubbleDown(HNode node)
         {
             while (node != null)
@@ -78,7 +118,11 @@ namespace Municiple_Project_st10259527.Services.DataStructures
                 node = smallest;
             }
         }
+        //=============================================================================
 
+        //=============================================================================
+        // Get Top K Minimum Values from Heap
+        //=============================================================================
         public IEnumerable<TV> TopK(int k)
         {
             if (k <= 0 || root == null) yield break;
@@ -102,5 +146,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
                 emitted++;
             }
         }
+        //=============================================================================
     }
 }
+//==================================End=Of=File=========================================
