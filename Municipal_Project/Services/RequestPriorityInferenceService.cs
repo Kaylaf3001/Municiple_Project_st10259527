@@ -40,6 +40,7 @@ namespace Municiple_Project_st10259527.Services
 
             return (priority, category, $"Priority {priority} due to: {reasonSummary}");
         }
+        //====================================================================
 
         //====================================================================
         // CRITICAL HAZARDS — Priority 1 (weight = 5 each)
@@ -62,6 +63,7 @@ namespace Municiple_Project_st10259527.Services
 
             return score;
         }
+        //====================================================================
 
         //====================================================================
         // URGENCY — Priority 1–2 (weights = 1–3)
@@ -78,6 +80,7 @@ namespace Municiple_Project_st10259527.Services
 
             return score;
         }
+        //====================================================================
 
         //====================================================================
         // LOCATION — Priority 2–3 (weights = 1–3)
@@ -94,6 +97,7 @@ namespace Municiple_Project_st10259527.Services
 
             return score;
         }
+        //====================================================================
 
         //====================================================================
         // INFRASTRUCTURE — Priority 2 (weights = 2–4)
@@ -114,6 +118,7 @@ namespace Municiple_Project_st10259527.Services
 
             return score;
         }
+        //====================================================================
 
         //====================================================================
         // ENVIRONMENTAL — Priority 2 (weights = 2–3)
@@ -131,6 +136,7 @@ namespace Municiple_Project_st10259527.Services
 
             return score;
         }
+        //====================================================================
 
         //====================================================================
         // SECURITY — Priority 2 (weights = 2–3)
@@ -146,6 +152,7 @@ namespace Municiple_Project_st10259527.Services
 
             return score;
         }
+        //====================================================================
 
         //====================================================================
         // DEMOTIONS — Reduce score for low-urgency contexts
@@ -187,5 +194,6 @@ namespace Municiple_Project_st10259527.Services
 
             return "General";
         }
+        //====================================================================
     }
 }
