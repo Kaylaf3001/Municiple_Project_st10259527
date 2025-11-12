@@ -112,11 +112,10 @@ namespace Municiple_Project_st10259527.Controllers
                 IEnumerable<(ServiceRequestModel Model, int Weight)> relatedWithWeights = Enumerable.Empty<(ServiceRequestModel, int)>();
                 if (currentNode != null)
                 {
-                    // Always use MST-adjacent edges for recommendations per rubric
-                    var mstEdges = indexes.Graph.PrimMst(currentNode);
-                    relatedWithWeights = mstEdges
-                        .Where(e => e.Item1 == currentNode || e.Item2 == currentNode)
-                        .Select(e => (Model: (e.Item1 == currentNode ? e.Item2.Val : e.Item1.Val), Weight: e.Item3))
+                    // Use direct neighbors from the full graph for recommendations
+                    var neighborEdges = indexes.Graph.Neighbors(currentNode);
+                    relatedWithWeights = neighborEdges
+                        .Select(n => (Model: n.To.Val, Weight: n.W))
                         .Where(x => x.Model != null && x.Model.Status != ServiceRequestStatus.Completed)
                         .OrderBy(x => x.Weight)
                         .ThenBy(x => x.Model.Priority)
