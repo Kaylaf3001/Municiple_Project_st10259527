@@ -55,6 +55,7 @@ namespace Municiple_Project_st10259527.Data
                 // Create events
                 var events = new[]
                 {
+                    // --- Existing entries above ---
                     new EventModel
                     {
                         EventId = 1,
@@ -76,7 +77,10 @@ namespace Municiple_Project_st10259527.Data
                         Description = "Help clean up our local park and make it beautiful again!",
                         Status = "Scheduled",
                         UserId = regularUser1.UserId
-                    }
+                    },
+                    new EventModel { EventId = 3, Title = "Fire Safety Workshop", Location = LocationService.WesternCapeLocations[14], Date = DateTime.Now.AddDays(21), Category = "Safety", Description = "Learn about fire prevention and safety.", Status = "Scheduled", UserId = adminUser.UserId },
+                    new EventModel { EventId = 4, Title = "Youth Sports Day", Location = LocationService.WesternCapeLocations[22], Date = DateTime.Now.AddDays(28), Category = "Recreation", Description = "Annual sports event for local youth.", Status = "Scheduled", UserId = regularUser2.UserId },
+                    new EventModel { EventId = 5, Title = "Senior Health Fair", Location = LocationService.WesternCapeLocations[35], Date = DateTime.Now.AddDays(10), Category = "Health", Description = "Free health screenings for seniors.", Status = "Scheduled", UserId = regularUser1.UserId }
                 };
 
                 context.Events.AddRange(events);
@@ -84,6 +88,7 @@ namespace Municiple_Project_st10259527.Data
                 // Create announcements
                 var announcements = new[]
                 {
+                    // --- Existing entries above ---
                     new AnnouncementModel
                     {
                         AnnouncementId = 1,
@@ -103,7 +108,10 @@ namespace Municiple_Project_st10259527.Data
                         Location = "Main Street",
                         Status = "Published",
                         UserId = adminUser.UserId
-                    }
+                    },
+                    new AnnouncementModel { AnnouncementId = 3, Title = "Library Renovation", Date = DateTime.Now.AddDays(3), Description = "The city library will be closed for renovations from 2025-12-10 to 2025-12-20.", Location = LocationService.WesternCapeLocations[9], Status = "Published", UserId = adminUser.UserId },
+                    new AnnouncementModel { AnnouncementId = 4, Title = "New Recycling Program", Date = DateTime.Now.AddDays(5), Description = "A new recycling program will be launched next month.", Location = LocationService.WesternCapeLocations[40], Status = "Published", UserId = adminUser.UserId },
+                    new AnnouncementModel { AnnouncementId = 5, Title = "Community Garden Opening", Date = DateTime.Now.AddDays(7), Description = "Join us for the opening of the new community garden.", Location = LocationService.WesternCapeLocations[60], Status = "Published", UserId = adminUser.UserId }
                 };
 
                 context.Announcements.AddRange(announcements);
@@ -111,6 +119,7 @@ namespace Municiple_Project_st10259527.Data
                 // Create service requests
                 var serviceRequests = new[]
                 {
+                    // --- Existing entries above ---
                     // Road Maintenance
                     new ServiceRequestModel
                     {
@@ -218,7 +227,14 @@ namespace Municiple_Project_st10259527.Data
                         Priority = 1,
                         Category = "Safety",
                         SubmittedAt = DateTime.Now.AddDays(-3)
-                    }
+                    },
+                    new ServiceRequestModel { RequestId = 9, UserId = regularUser2.UserId, Title = "Graffiti Removal", Description = "Graffiti on public wall", Location = LocationService.WesternCapeLocations[2], Status = ServiceRequestStatus.InProgress, Priority = 2, Category = "Sanitation", SubmittedAt = DateTime.Now.AddDays(-6) },
+                    new ServiceRequestModel { RequestId = 10, UserId = regularUser1.UserId, Title = "Tree Trimming", Description = "Overgrown tree branches blocking streetlight", Location = LocationService.WesternCapeLocations[10], Status = ServiceRequestStatus.Submitted, Priority = 3, Category = "Parks", SubmittedAt = DateTime.Now.AddDays(-8) },
+                    new ServiceRequestModel { RequestId = 11, UserId = regularUser2.UserId, Title = "Flooded Sidewalk", Description = "Sidewalk flooded after rain", Location = LocationService.WesternCapeLocations[20], Status = ServiceRequestStatus.OnHold, Priority = 2, Category = "Infrastructure", SubmittedAt = DateTime.Now.AddDays(-12) },
+                    new ServiceRequestModel { RequestId = 12, UserId = regularUser1.UserId, Title = "Illegal Dumping", Description = "Trash dumped in vacant lot", Location = LocationService.WesternCapeLocations[50], Status = ServiceRequestStatus.Submitted, Priority = 2, Category = "Sanitation", SubmittedAt = DateTime.Now.AddDays(-2) },
+                    new ServiceRequestModel { RequestId = 13, UserId = regularUser2.UserId, Title = "Broken Water Meter", Description = "Water meter cover missing", Location = LocationService.WesternCapeLocations[55], Status = ServiceRequestStatus.Completed, Priority = 1, Category = "Utilities", SubmittedAt = DateTime.Now.AddDays(-15), CompletedAt = DateTime.Now.AddDays(-10) },
+                    new ServiceRequestModel { RequestId = 14, UserId = regularUser1.UserId, Title = "Blocked Drain", Description = "Drain blocked by leaves", Location = LocationService.WesternCapeLocations[65], Status = ServiceRequestStatus.Submitted, Priority = 3, Category = "Water/Sewer", SubmittedAt = DateTime.Now.AddDays(-4) },
+                    new ServiceRequestModel { RequestId = 15, UserId = regularUser2.UserId, Title = "Playground Vandalism", Description = "Playground equipment damaged", Location = LocationService.WesternCapeLocations[71], Status = ServiceRequestStatus.InProgress, Priority = 1, Category = "Safety", SubmittedAt = DateTime.Now.AddDays(-7) }
                 };
 
                 context.ServiceRequests.AddRange(serviceRequests);
