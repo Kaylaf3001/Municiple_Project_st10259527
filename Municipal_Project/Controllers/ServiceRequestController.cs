@@ -36,12 +36,15 @@ namespace Municiple_Project_st10259527.Controllers
             // Build Data Structures
             var indexes = await _statusService.BuildIndexesAsync(userId.Value);
             var queueAhead = await _statusService.BuildQueueAheadIndexAsync(userId.Value);
+            var binaries = await _statusService.BuildActiveCompletedBinaryAsync(userId.Value);
             var vm = new ServiceRequestStatusViewModel
             {
                 UserId = userId.Value,
                 RequestsTree = indexes.Tree,
                 PriorityHeap = indexes.Heap,
-                QueueAheadIndex = queueAhead
+                QueueAheadIndex = queueAhead,
+                ActiveBinary = binaries.Active,
+                CompletedBinary = binaries.Completed
             };
 
             // Pass filters to the view (read-only values; filtering is done during tree traversal)

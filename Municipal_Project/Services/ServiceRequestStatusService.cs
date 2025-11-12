@@ -52,6 +52,30 @@ namespace Municiple_Project_st10259527.Services
         //====================================================================
 
         //====================================================================
+        // Build Binary snapshots for Active vs Completed (per user)
+        //====================================================================
+        public async Task<(Binary<ServiceRequestModel> Active, Binary<ServiceRequestModel> Completed)> BuildActiveCompletedBinaryAsync(int userId)
+        {
+            var active = new Binary<ServiceRequestModel>();
+            var completed = new Binary<ServiceRequestModel>();
+
+            await foreach (var r in _repo.GetByUserAsync(userId))
+            {
+                if (r.Status == ServiceRequestStatus.Completed || r.Status == ServiceRequestStatus.Cancelled)
+                {
+                    completed.InsertLevelOrder(r);
+                }
+                else
+                {
+                    active.InsertLevelOrder(r);
+                }
+            }
+
+            return (active, completed);
+        }
+        //====================================================================
+
+        //====================================================================
         // Building Global Indexes
         //====================================================================
         public async Task<(Basic<ServiceRequestModel> Tree, MinHeap<ServiceRequestPriority, ServiceRequestModel> Heap, Graph<ServiceRequestModel> Graph)> BuildGlobalIndexesAsync(

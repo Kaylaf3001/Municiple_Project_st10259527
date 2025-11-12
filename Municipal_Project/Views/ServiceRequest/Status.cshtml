@@ -253,6 +253,68 @@
                 </div>
 
                 <div class="action-card">
+                    <h5 class="mb-3">My Requests Overview</h5>
+                    <ul class="nav nav-tabs" id="reqTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="active-tab" data-bs-toggle="tab" data-bs-target="#active-tab-pane" type="button" role="tab" aria-controls="active-tab-pane" aria-selected="true">Active</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed-tab-pane" type="button" role="tab" aria-controls="completed-tab-pane" aria-selected="false">Completed</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content pt-3" id="reqTabsContent">
+                        <div class="tab-pane fade show active" id="active-tab-pane" role="tabpanel" aria-labelledby="active-tab" tabindex="0">
+                            @{
+                                var activeList = Model?.ActiveBinary == null ? Enumerable.Empty<Municiple_Project_st10259527.Models.ServiceRequestModel>() : Model.ActiveBinary.LevelOrder();
+                            }
+                            @if (!activeList.Any())
+                            {
+                                <div class="text-muted small">No active requests</div>
+                            }
+                            else
+                            {
+                                <div class="list-group list-group-flush">
+                                    @foreach (var r in activeList.Take(8))
+                                    {
+                                        <div class="list-group-item px-0 d-flex align-items-start justify-content-between">
+                                            <div class="me-2">
+                                                <div class="fw-semibold">@r.Title</div>
+                                                <div class="small text-muted">@r.Category • @r.SubmittedAt.ToString("g")</div>
+                                            </div>
+                                            <span class="badge @GetStatusBadgeClass(r.Status)">@r.Status</span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                        <div class="tab-pane fade" id="completed-tab-pane" role="tabpanel" aria-labelledby="completed-tab" tabindex="0">
+                            @{
+                                var completedList = Model?.CompletedBinary == null ? Enumerable.Empty<Municiple_Project_st10259527.Models.ServiceRequestModel>() : Model.CompletedBinary.LevelOrder();
+                            }
+                            @if (!completedList.Any())
+                            {
+                                <div class="text-muted small">No completed requests</div>
+                            }
+                            else
+                            {
+                                <div class="list-group list-group-flush">
+                                    @foreach (var r in completedList.Take(8))
+                                    {
+                                        <div class="list-group-item px-0 d-flex align-items-start justify-content-between">
+                                            <div class="me-2">
+                                                <div class="fw-semibold">@r.Title</div>
+                                                <div class="small text-muted">@r.Category • @r.SubmittedAt.ToString("g")</div>
+                                            </div>
+                                            <span class="badge @GetStatusBadgeClass(r.Status)">@r.Status</span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-card">
                     <h5 class="mb-3">Next issue to be dealt with</h5>
                     @if (Model?.PriorityHeap == null || Model.PriorityHeap.Count == 0)
                     {

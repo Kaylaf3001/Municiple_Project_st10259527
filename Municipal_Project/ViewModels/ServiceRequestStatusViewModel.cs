@@ -12,6 +12,8 @@ namespace Municiple_Project_st10259527.ViewModels
         public Basic<ServiceRequestModel> RequestsTree { get; set; }
         public MinHeap<int, ServiceRequestModel> PriorityHeap { get; set; }
         public RedBlack<int, (int Ahead, int Total)> QueueAheadIndex { get; set; }
+        public Binary<ServiceRequestModel> ActiveBinary { get; set; }
+        public Binary<ServiceRequestModel> CompletedBinary { get; set; }
     }
     //===========================================================================
 }
