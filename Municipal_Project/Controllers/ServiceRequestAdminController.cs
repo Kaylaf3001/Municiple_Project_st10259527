@@ -158,6 +158,7 @@ namespace Municiple_Project_st10259527.Controllers
                 return Json(new { success = false, error = "An error occurred while completing the request." });
             }
         }
+        //==============================================================================================
 
         //==============================================================================================
         // Update Service Request Status
@@ -169,6 +170,7 @@ namespace Municiple_Project_st10259527.Controllers
             await _repo.UpdateStatusAndPriorityAsync(id, status, priority);
             return RedirectToAction("ManageServiceRequest");
         }
+        //==============================================================================================
 
         //==============================================================================================
         // Complete Service Request
@@ -182,6 +184,7 @@ namespace Municiple_Project_st10259527.Controllers
             }
             return RedirectToAction("ManageServiceRequest");
         }
+        //==============================================================================================
 
         //==============================================================================================
         // Helpers
@@ -209,6 +212,7 @@ namespace Municiple_Project_st10259527.Controllers
                 return "Electrical work before painting";
             return "Related";
         }
+        //==============================================================================================
 
         //==============================================================================================
         // Cancel Service Request

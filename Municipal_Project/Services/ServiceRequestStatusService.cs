@@ -161,9 +161,7 @@ namespace Municiple_Project_st10259527.Services
             // Use tree-based find (O(log n))
             return avl.Find(trackingCode);
         }
-        //====================================================================
-
-        
+        //====================================================================       
 
         //====================================================================
         // Compute per-request queue metrics: how many requests ahead in same status
@@ -191,6 +189,9 @@ namespace Municiple_Project_st10259527.Services
         }
         //====================================================================
 
+        //====================================================================
+        // Get Top N Urgent Requests using Min-Heap
+        //====================================================================
         public async Task<IReadOnlyList<ServiceRequestModel>> GetTopNUrgentAsync(int n)
         {
             var heap = new MinHeap<ServiceRequestPriority, ServiceRequestModel>();

@@ -50,7 +50,6 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             }
         }
         //============================================================================
-
         // IEnumerable implementation for tree traversal
         public IEnumerator<T> GetEnumerator() { return Traverse(Root).GetEnumerator(); }
         IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
@@ -110,11 +109,16 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             }
         }
 
+        //============================================================================
+        // Traversals
+        //============================================================================
         public IEnumerable<T> InOrder()
         {
             foreach (var v in InOrder(Root)) yield return v;
         }
+        // ============================================================================
 
+        //============================================================================
         IEnumerable<T> InOrder(BinaryNode<T> node)
         {
             if (node == null) yield break;
@@ -122,12 +126,16 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             yield return node.Value;
             foreach (var v in InOrder(node.Right)) yield return v;
         }
+        //============================================================================
 
+        //============================================================================
         public IEnumerable<T> PreOrder()
         {
             foreach (var v in PreOrder(Root)) yield return v;
         }
+        //============================================================================
 
+        //============================================================================
         IEnumerable<T> PreOrder(BinaryNode<T> node)
         {
             if (node == null) yield break;
@@ -135,12 +143,16 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             foreach (var v in PreOrder(node.Left)) yield return v;
             foreach (var v in PreOrder(node.Right)) yield return v;
         }
+        //============================================================================
 
+        //============================================================================
         public IEnumerable<T> PostOrder()
         {
             foreach (var v in PostOrder(Root)) yield return v;
         }
+        //============================================================================
 
+        //============================================================================
         IEnumerable<T> PostOrder(BinaryNode<T> node)
         {
             if (node == null) yield break;
@@ -148,7 +160,9 @@ namespace Municiple_Project_st10259527.Services.DataStructures
             foreach (var v in PostOrder(node.Right)) yield return v;
             yield return node.Value;
         }
+        //============================================================================
 
+        //============================================================================
         public IEnumerable<T> LevelOrder()
         {
             if (Root == null) yield break;
@@ -162,6 +176,7 @@ namespace Municiple_Project_st10259527.Services.DataStructures
                 if (current.Right != null) q.Enqueue(current.Right);
             }
         }
+        //============================================================================
 
         public IEnumerator<T> GetEnumerator() { return LevelOrder().GetEnumerator(); }
         IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
@@ -230,7 +245,6 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // AVL Tree
     //===============================================================================
-
     public class AvlTree<TK, TV> : BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         // Height of a node
@@ -268,7 +282,6 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Red-Black Tree
     //===============================================================================
-
     public class RedBlackTree<TK, TV> : BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         // Check if a node is red
@@ -431,15 +444,6 @@ namespace Municiple_Project_st10259527.Services.DataStructures
     //===============================================================================
     // Graph
     //===============================================================================
-    /// <summary>
-    /// Adjacency list graph with lightweight node and edge structures.
-    /// </summary>
-    /// <remarks>
-    /// - AddNode O(1)
-    /// - AddUndirectedEdge O(1)
-    /// - DFS/BFS O(V+E)
-    /// - PrimMst O(V * E) in this simple implementation
-    /// </remarks>
     public class Graph<T>
     {
         // Edge class representing a connection between nodes
