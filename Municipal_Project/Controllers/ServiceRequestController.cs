@@ -86,6 +86,7 @@ namespace Municiple_Project_st10259527.Controllers
 
             // Infer priority and category (admins can adjust later)
             var inferred = _statusService.InferPriorityAndCategory(title, description, category);
+            var createPriority = inferred.Priority < 1 ? 1 : (inferred.Priority > 3 ? 3 : inferred.Priority);
 
             // Create and Save Service Request
             var req = new ServiceRequestModel
@@ -95,7 +96,7 @@ namespace Municiple_Project_st10259527.Controllers
                 Description = description?.Trim(),
                 Location = string.IsNullOrWhiteSpace(location) ? null : location.Trim(),
                 Status = ServiceRequestStatus.Submitted,
-                Priority = inferred.Priority,
+                Priority = createPriority,
                 Category = string.IsNullOrWhiteSpace(category) ? inferred.Category : category,
                 SubmittedAt = DateTime.UtcNow 
             };

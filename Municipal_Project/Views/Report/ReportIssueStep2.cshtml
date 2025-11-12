@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Report Issue - Category";
     Layout = null;
 }
@@ -137,11 +137,12 @@
             <div class="form-group">
                 <select name="Category" id="categorySelect" required>
                     <option value="" selected disabled>Select a category</option>
-                    <option value="General">General</option>
                     <option value="Infrastructure">Infrastructure</option>
-                    <option value="Health">Health</option>
                     <option value="Safety">Safety</option>
-                    <option value="Environment">Environment</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Electrical">Electrical</option>
+                    <option value="Waste">Waste</option>
+                    <option value="Health and Safety">Health and Safety</option>
                 </select>
             </div>
 
@@ -164,11 +165,12 @@
             const infoDesc = document.getElementById("category-description");
 
             const categoryInfo = {
-                "General": "General issues include anything not covered by other categories.",
                 "Infrastructure": "Infrastructure issues relate to roads, buildings, and public facilities.",
-                "Health": "Health category covers medical facilities, sanitation, and public health concerns.",
                 "Safety": "Safety issues involve crime, hazards, or emergency services.",
-                "Environment": "Environmental concerns include pollution, waste management, and conservation."
+                "Utilities": "Utilities issues include water, sewage, and related municipal services.",
+                "Electrical": "Electrical issues include power outages, faulty street lights, and wiring hazards.",
+                "Waste": "Waste issues include garbage collection, illegal dumping, and recycling concerns.",
+                "Health and Safety": "Health and Safety covers public health concerns and safety hazards."
             };
 
             categorySelect.addEventListener("change", function() {

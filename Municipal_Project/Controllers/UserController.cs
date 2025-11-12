@@ -17,12 +17,14 @@ namespace Municiple_Project_st10259527.Controllers
         private readonly IUserRepository _userRepository;
         private readonly IReportRepository _reportRepository;
         private readonly IEventsRepository _eventsRepository;
+        private readonly IServiceRequestRepository _serviceRequestRepository;
 
-        public UserController(IUserRepository userRepository, IReportRepository reportRepository, IEventsRepository eventsRepository)
+        public UserController(IUserRepository userRepository, IReportRepository reportRepository, IEventsRepository eventsRepository, IServiceRequestRepository serviceRequestRepository)
         {
             _userRepository = userRepository;
             _reportRepository = reportRepository;
             _eventsRepository = eventsRepository;
+            _serviceRequestRepository = serviceRequestRepository;
         }
         #endregion
         //==============================================================================================
@@ -125,6 +127,14 @@ namespace Municiple_Project_st10259527.Controllers
                 var upcomingEventsQueue = await _eventsRepository.GetUpcomingEventsQueueAsync();
                 viewModel.NextUpcomingEvent = await _eventsRepository.GetNextUpcomingEventAsync();
                 viewModel.QueueCount = upcomingEventsQueue.Count;
+
+                // Compute open service requests (not Completed)
+                int openCount = 0;
+                await foreach (var r in _serviceRequestRepository.GetByUserAsync(userId.Value))
+                {
+                    if (r.Status != ServiceRequestStatus.Completed) openCount++;
+                }
+                viewModel.OpenServiceRequests = openCount;
 
             }
             catch (Exception ex)

@@ -166,7 +166,8 @@ namespace Municiple_Project_st10259527.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id, ServiceRequestStatus status, int priority)
         {
-            await _repo.UpdateStatusAndPriorityAsync(id, status, priority);
+            var clamped = priority < 1 ? 1 : (priority > 3 ? 3 : priority);
+            await _repo.UpdateStatusAndPriorityAsync(id, status, clamped);
             return RedirectToAction("ManageServiceRequest");
         }
         //==============================================================================================
